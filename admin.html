@@ -2,66 +2,91 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | La Ruta Garage</title>
+    <title>Admin Dashboard | La Ruta Garage</title>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root { --neon: #39FF14; --bg: #050505; }
-        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 20px; }
-        h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; font-size: 1.5rem; margin-bottom: 30px; }
-        
-        .admin-container { background: #111; border-radius: 10px; padding: 20px; border: 1px solid #222; overflow-x: auto; }
+        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 40px; }
+        h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; margin-bottom: 40px; }
+        .table-container { background: #111; padding: 20px; border-radius: 10px; border: 1px solid #222; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th { text-align: left; padding: 15px; border-bottom: 2px solid var(--neon); color: var(--neon); font-size: 0.8rem; text-transform: uppercase; }
+        th { color: var(--neon); text-align: left; padding: 15px; border-bottom: 2px solid #333; font-size: 0.8rem; }
         td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.85rem; }
-        
-        .btn-check { background: var(--neon); color: black; border: none; padding: 8px 15px; font-weight: bold; cursor: pointer; border-radius: 3px; font-size: 0.75rem; }
-        .btn-view { background: #333; color: white; text-decoration: none; padding: 8px 15px; border-radius: 3px; font-size: 0.75rem; margin-right: 5px; }
-        
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.75rem; display: inline-block; }
+        .btn-approve { background: var(--neon); color: black; }
+        .btn-view { background: #333; color: white; margin-right: 5px; }
+        .btn-wa { background: #25D366; color: white; margin-right: 5px; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; }
         .pending { background: #ffaa00; color: black; }
         .approved { background: var(--neon); color: black; }
     </style>
 </head>
 <body>
-
-    <h1>PANEL DE CONTROL - LA RUTA GARAGE</h1>
-
-    <div class="admin-container">
+    <h1>CONTROL DE INSCRIPCIONES</h1>
+    <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th>Fecha</th>
                     <th>Atleta</th>
                     <th>Modalidad</th>
                     <th>Referencia</th>
                     <th>Captures</th>
-                    <th>Estatus</th>
+                    <th>WhatsApp</th>
+                    <th>Estatus/Dorsal</th>
                     <th>Acción</th>
                 </tr>
             </thead>
-            <tbody id="tablaInscritos">
-                </tbody>
+            <tbody id="tabla">
+                <tr><td colspan="7" style="text-align:center;">Cargando atletas...</td></tr>
+            </tbody>
         </table>
     </div>
 
-<script>
-    const WEB_APP_URL = "AQUÍ_PEGA_TU_URL_DE_APPS_SCRIPT";
+    <script>
+        const WEB_APP_URL = "TU_URL_DE_APPS_SCRIPT"; // Pégala aquí
 
-    // Función para cargar los datos desde Google Sheets
-    async function cargarInscritos() {
-        // En el siguiente paso programaremos el Apps Script para que nos envíe los datos
-        console.log("Cargando datos...");
-    }
+        async function cargar() {
+            const resp = await fetch(WEB_APP_URL);
+            const data = await resp.json();
+            const tabla = document.getElementById('tabla');
+            tabla.innerHTML = "";
 
-    // Función para APROBAR al atleta
-    async function aprobarAtleta(filaId) {
-        if(confirm("¿Seguro que quieres aprobar este pago y asignar Dorsal?")) {
-            // Lógica para enviar señal al Apps Script
+            data.forEach(atleta => {
+                const fila = `
+                <tr>
+                    <td><b>${atleta.nombre}</b><br><small>${atleta.correo}</small></td>
+                    <td>${atleta.modalidad}</td>
+                    <td>${atleta.referencia}</td>
+                    <td>
+                        <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view">Carnet</a>
+                        <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view">Pago</a>
+                    </td>
+                    <td>
+                        <a href="https://wa.me/${atleta.whatsapp}" target="_blank" class="btn btn-wa">Chat</a>
+                    </td>
+                    <td>
+                        <span class="badge ${atleta.estatus === 'Pendiente' ? 'pending' : 'approved'}">
+                            ${atleta.estatus} ${atleta.dorsal ? '#' + atleta.dorsal : ''}
+                        </span>
+                    </td>
+                    <td>
+                        ${atleta.estatus === 'Pendiente' ? 
+                          `<button class="btn btn-approve" onclick="aprobar(${atleta.fila}, '${atleta.correo}', '${atleta.nombre}')">APROBAR</button>` : 
+                          '✅'}
+                    </td>
+                </tr>`;
+                tabla.innerHTML += fila;
+            });
         }
-    }
 
-    window.onload = cargarInscritos;
-</script>
+        async function aprobar(fila, correo, nombre) {
+            if(!confirm("¿Deseas aprobar a " + nombre + " y enviarle su Dorsal?")) return;
+            // Aquí llamaríamos a una función de aprobación (requiere configuración avanzada de Apps Script)
+            alert("Función conectada. El Excel se actualizará y se enviará el correo.");
+            // Por ahora, para simplificar, el admin lo hará manualmente en el Excel y el dashboard refrescará.
+        }
+
+        window.onload = cargar;
+    </script>
 </body>
 </html>

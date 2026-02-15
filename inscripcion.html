@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscripción | La Ruta Garage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon: #39FF14; --bg: #050505; --card: #111; }
+        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0; padding: 40px 20px; }
+        
+        .form-container { max-width: 800px; margin: 0 auto; background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 40px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        h2 { font-family: 'Syncopate'; color: var(--neon); text-align: center; letter-spacing: 2px; margin-bottom: 40px; border-bottom: 1px solid var(--neon); padding-bottom: 10px; }
+        
+        .section-label { color: var(--neon); font-size: 0.8rem; font-weight: bold; text-transform: uppercase; margin: 30px 0 15px; display: block; letter-spacing: 2px; border-left: 3px solid var(--neon); padding-left: 10px; }
+        
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: span 2; }
+        
+        label { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 8px; }
+        input, select { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 5px; box-sizing: border-box; font-family: 'Montserrat'; font-size: 0.9rem; }
+        input:focus { border-color: var(--neon); outline: none; }
+
+        .pago-box { background: #1a1a1a; padding: 25px; border-radius: 10px; margin-top: 20px; border: 1px solid #333; }
+        .info-bancaria { background: #000; padding: 15px; border-radius: 5px; font-size: 0.85rem; margin-bottom: 20px; display: none; line-height: 1.6; border-left: 2px solid var(--neon); }
+        
+        .price-tag { font-family: 'Syncopate'; font-size: 1.2rem; color: #fff; margin-bottom: 10px; display: block; }
+        
+        .btn-submit { width: 100%; padding: 20px; background: var(--neon); color: black; border: none; font-weight: 900; font-family: 'Syncopate'; cursor: pointer; margin-top: 30px; transition: 0.3s; clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%); }
+        .btn-submit:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+        @media (max-width: 600px) { .grid-form { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>REGISTRO ATLETA</h2>
+    
+    <form id="registroForm">
+        <span class="section-label">1. Datos Personales</span>
+        <div class="grid-form">
+            <div><label>Nombre</label><input type="text" id="nombre" required></div>
+            <div><label>Apellido</label><input type="text" id="apellido" required></div>
+            <div><label>Cédula</label><input type="text" id="cedula" required></div>
+            <div><label>Fecha de Nacimiento</label><input type="date" id="fechaNac" required></div>
+            <div><label>Sexo</label><select id="sexo"><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option></select></div>
+            <div><label>Ciudad</label><input type="text" id="ciudad" required></div>
+            <div><label>WhatsApp</label><input type="tel" id="telefono" placeholder="+58" required></div>
+            <div><label>Correo Electrónico</label><input type="email" id="correo" required></div>
+            <div class="full-width"><label>Centro de Entrenamiento / Box</label><input type="text" id="box"></div>
+            <div><label>Talla de Franela</label><select id="talla"><option>S</option><option>M</option><option>L</option><option>XL</option></select></div>
+            <div>
+                <label>Foto Tipo Carnet</label>
+                <input type="file" id="fotoCarnet" accept="image/*" required>
+            </div>
+        </div>
+
+        <span class="section-label">2. Modalidad y Categoría</span>
+        <div class="grid-form">
+            <div>
+                <label>Modalidad</label>
+                <select id="modalidad" onchange="ajustarCategorias()">
+                    <option value="Ruta Race">Ruta Race ($25)</option>
+                    <option value="Ruta CrossFit">Ruta CrossFit ($30)</option>
+                </select>
+            </div>
+            <div>
+                <label>Categoría</label>
+                <select id="categoria"></select>
+            </div>
+        </div>
+
+        <span class="section-label">3. Información de Pago</span>
+        <div class="pago-box">
+            <span id="labelPrecio" class="price-tag">TOTAL: $25</span>
+            <label>Método de Pago</label>
+            <select id="metodoPago" onchange="mostrarInstrucciones()" required>
+                <option value="">Seleccione...</option>
+                <option value="Pago Móvil">Pago Móvil</option>
+                <option value="Zelle">Zelle</option>
+                <option value="Transferencia">Transferencia Bancaria</option>
+            </select>
+
+            <div id="instrucciones" class="info-bancaria"></div>
+
+            <div class="grid-form" style="margin-top: 15px;">
+                <div><label>Monto en Bs (Tasa BCV)</label><input type="text" id="montoBs" readonly></div>
+                <div><label>Nro. de Referencia</label><input type="text" id="referencia" required></div>
+                <div class="full-width">
+                    <label>Adjuntar Comprobante (Capture)</label>
+                    <input type="file" id="fotoPago" accept="image/*" required>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" id="btnEnviar" class="btn-submit">FINALIZAR INSCRIPCIÓN</button>
+    </form>
+    <div id="mensajeFinal" style="display:none; text-align:center; padding:20px;">
+        <h3 style="color:var(--neon)">¡SOLICITUD RECIBIDA!</h3>
+        <p>Gracias por inscribirte. Tu inscripción está en <b>proceso de validación</b>. Revisa tu correo electrónico para más detalles.</p>
+    </div>
+</div>
+
+<script>
+    const WEB_APP_URL = "AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp"; 
+    const TASA_BCV = 36.50; // Esto lo actualizaremos luego
+
+    function ajustarCategorias() {
+        const mod = document.getElementById('modalidad').value;
+        const cat = document.getElementById('categoria');
+        const price = document.getElementById('labelPrecio');
+        
+        if(mod === "Ruta Race") {
+            cat.innerHTML = '<option value="General">General</option>';
+            price.innerText = "TOTAL: $25";
+            document.getElementById('montoBs').value = (25 * TASA_BCV).toFixed(2) + " Bs";
+        } else {
+            cat.innerHTML = `
+                <option value="Escalado Femenino">Escalado Femenino</option>
+                <option value="Escalado Masculino">Escalado Masculino</option>
+                <option value="Avanzado Femenino">Avanzado Femenino</option>
+                <option value="Avanzado Masculino">Avanzado Masculino</option>
+            `;
+            price.innerText = "TOTAL: $30";
+            document.getElementById('montoBs').value = (30 * TASA_BCV).toFixed(2) + " Bs";
+        }
+    }
+
+    function mostrarInstrucciones() {
+        const metodo = document.getElementById('metodoPago').value;
+        const inst = document.getElementById('instrucciones');
+        inst.style.display = "block";
+        
+        if(metodo === "Pago Móvil") {
+            inst.innerHTML = "<b>DATOS PAGO MÓVIL:</b><br>Banco: Mercantil (0105)<br>Cédula: V-12.345.678<br>Teléfono: 0412-1234567";
+        } else if(metodo === "Zelle") {
+            inst.innerHTML = "<b>DATOS ZELLE:</b><br>Correo: pagos@larutagarage.com<br>A nombre de: La Ruta Garage LLC";
+        } else if(metodo === "Transferencia") {
+            inst.innerHTML = "<b>TRANSFERENCIA:</b><br>Banco: Banesco<br>Cuenta: 0134-XXXX-XXXX-XXXX<br>Titular: La Ruta Garage";
+        } else { inst.style.display = "none"; }
+    }
+
+    async function toBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    document.getElementById('registroForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnEnviar');
+        btn.disabled = true;
+        btn.innerText = "ENVIANDO...";
+
+        const data = {
+            nombre: document.getElementById('nombre').value,
+            apellido: document.getElementById('apellido').value,
+            cedula: document.getElementById('cedula').value,
+            fechaNac: document.getElementById('fechaNac').value,
+            sexo: document.getElementById('sexo').value,
+            ciudad: document.getElementById('ciudad').value,
+            telefono: document.getElementById('telefono').value,
+            correo: document.getElementById('correo').value,
+            box: document.getElementById('box').value,
+            talla: document.getElementById('talla').value,
+            modalidad: document.getElementById('modalidad').value,
+            categoria: document.getElementById('categoria').value,
+            metodo: document.getElementById('metodoPago').value,
+            referencia: document.getElementById('referencia').value,
+            montoBs: document.getElementById('montoBs').value,
+            fotoCarnet: await toBase64(document.getElementById('fotoCarnet').files[0]),
+            fotoPago: await toBase64(document.getElementById('fotoPago').files[0])
+        };
+
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(data)
+            });
+            document.getElementById('registroForm').style.display = 'none';
+            document.getElementById('mensajeFinal').style.display = 'block';
+        } catch (error) {
+            alert("Error al enviar. Verifica tu conexión.");
+            btn.disabled = false;
+            btn.innerText = "FINALIZAR INSCRIPCIÓN";
+        }
+    };
+
+    ajustarCategorias();
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | La Ruta Garage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon: #39FF14; --bg: #050505; }
+        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 20px; }
+        h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; font-size: 1.5rem; margin-bottom: 30px; }
+        
+        .admin-container { background: #111; border-radius: 10px; padding: 20px; border: 1px solid #222; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { text-align: left; padding: 15px; border-bottom: 2px solid var(--neon); color: var(--neon); font-size: 0.8rem; text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.85rem; }
+        
+        .btn-check { background: var(--neon); color: black; border: none; padding: 8px 15px; font-weight: bold; cursor: pointer; border-radius: 3px; font-size: 0.75rem; }
+        .btn-view { background: #333; color: white; text-decoration: none; padding: 8px 15px; border-radius: 3px; font-size: 0.75rem; margin-right: 5px; }
+        
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .pending { background: #ffaa00; color: black; }
+        .approved { background: var(--neon); color: black; }
+    </style>
+</head>
+<body>
+
+    <h1>PANEL DE CONTROL - LA RUTA GARAGE</h1>
+
+    <div class="admin-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Atleta</th>
+                    <th>Modalidad</th>
+                    <th>Referencia</th>
+                    <th>Captures</th>
+                    <th>Estatus</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tablaInscritos">
+                </tbody>
+        </table>
+    </div>
+
+<script>
+    const WEB_APP_URL = "AQUÍ_PEGA_TU_URL_DE_APPS_SCRIPT";
+
+    // Función para cargar los datos desde Google Sheets
+    async function cargarInscritos() {
+        // En el siguiente paso programaremos el Apps Script para que nos envíe los datos
+        console.log("Cargando datos...");
+    }
+
+    // Función para APROBAR al atleta
+    async function aprobarAtleta(filaId) {
+        if(confirm("¿Seguro que quieres aprobar este pago y asignar Dorsal?")) {
+            // Lógica para enviar señal al Apps Script
+        }
+    }
+
+    window.onload = cargarInscritos;
+</script>
+</body>
+</html>

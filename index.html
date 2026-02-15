@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Ruta Garage | Official Site</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --neon: #39FF14;
+            --neon-glow: rgba(57, 255, 20, 0.4);
+            --bg: #050505;
+            --surface: #111111;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: rgba(0,0,0,0.9);
+            border-bottom: 1px solid #222;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo { 
+            font-family: 'Syncopate', sans-serif; 
+            color: var(--neon); 
+            font-weight: 700; 
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--neon-glow);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(0deg, var(--bg) 0%, rgba(0,0,0,0.3) 100%),
+                        url('https://images.unsplash.com/photo-1547420810-b33a9c522263?q=80&w=2070') center/cover;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(2rem, 8vw, 5rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+        }
+
+        .hero h1 span { color: var(--neon); text-shadow: 0 0 20px var(--neon-glow); }
+
+        /* --- BOTÓN GLOW --- */
+        .btn-neon {
+            margin-top: 30px;
+            padding: 18px 50px;
+            background: var(--neon);
+            color: black;
+            font-weight: 900;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 5px;
+            box-shadow: 0 0 20px var(--neon-glow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-neon:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 0 40px var(--neon);
+        }
+
+        /* --- STATS HEXAGONALES --- */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            padding: 100px 5%;
+            margin-top: -80px;
+        }
+
+        .hex-stat {
+            width: 200px;
+            height: 220px;
+            background: var(--surface);
+            position: relative;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #333;
+            transition: 0.5s;
+        }
+
+        .hex-stat:hover {
+            background: #1a1a1a;
+            border-color: var(--neon);
+            transform: translateY(-10px);
+        }
+
+        .hex-stat i { color: var(--neon); font-size: 2rem; margin-bottom: 10px; }
+        .hex-stat h2 { font-family: 'Syncopate'; margin: 5px 0; font-size: 2rem; }
+        .hex-stat p { color: var(--text-muted); font-size: 0.8rem; letter-spacing: 1px; }
+
+        /* --- DESTELLO INFERIOR --- */
+        .glow-line {
+            width: 80px;
+            height: 4px;
+            background: var(--neon);
+            box-shadow: 0 0 15px var(--neon);
+            margin-top: 15px;
+        }
+
+        /* --- SECCIÓN CONTACTO --- */
+        .contact {
+            padding: 100px 10%;
+            text-align: center;
+            border-top: 1px solid #222;
+        }
+
+        .whatsapp-float {
+            background: #25D366;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .stats-container { margin-top: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">LA RUTA GARAGE</div>
+        <div>
+            <a href="inscripcion.html" class="btn-neon" style="padding: 10px 20px; font-size: 0.8rem;">REGISTRO</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <p style="letter-spacing: 8px; font-weight: 300;">VALENCIA, VENEZUELA</p>
+        <h1>FAST. <span>HARD.</span> AGAIN.</h1>
+        <p style="max-width: 600px; color: #888; margin-top: 20px;">
+            La competencia más exigente del año. Prepárate para demostrar de qué estás hecho en la edición 2026.
+        </p>
+        <a href="inscripcion.html" class="btn-neon">INSCRIBIRME AHORA</a>
+    </section>
+
+    <section class="stats-container">
+        <div class="hex-stat">
+            <i class="fas fa-user-ninja"></i>
+            <h2>120+</h2>
+            <p>ATLETAS</p>
+            <div class="glow-line"></div>
+        </div>
+
+        <div class="hex-stat">
+            <i class="fas fa-handshake"></i>
+            <h2>15</h2>
+            <p>SPONSORS</p>
+            <div class="glow-line"></div>
+        </div>
+
+        <div class="hex-stat">
+            <i class="fas fa-users"></i>
+            <h2>2K+</h2>
+            <p>VISITANTES</p>
+            <div class="glow-line"></div>
+        </div>
+    </section>
+
+    <section class="contact">
+        <h2 style="font-family: 'Syncopate'; margin-bottom: 40px;">¿NECESITAS AYUDA?</h2>
+        <a href="https://wa.me/TU_NUMERO" class="whatsapp-float">
+            <i class="fab fa-whatsapp"></i> CONTACTAR SOPORTE
+        </a>
+    </section>
+
+</body>
+</html>

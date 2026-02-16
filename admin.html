@@ -81,11 +81,11 @@
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Nombre, cédula, dorsal..." oninput="resetearYPaginacion()">
         </div>
-        <div class="filter-buttons">
-    <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('TODOS')">TODOS</button>
-    <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">RACE</button>
-    <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">CROSSFIT</button>
-</div>
+                <div class="filter-buttons">
+            <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('todos')">TODOS</button>
+            <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">RACE</button>
+            <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">CROSSFIT</button>
+        </div>
     </div>
 
     <div class="container">
@@ -145,10 +145,21 @@
 
     function filtrarModalidad(mod) {
         modalidadActual = mod;
+        
+        // 1. Quitamos la clase 'active' de todos los botones de filtro
         document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-        if(mod === 'TODOS') document.getElementById('btnAll').classList.add('active');
-        else if(mod === 'Ruta Race') document.getElementById('btnRace').classList.add('active');
-        else document.getElementById('btnCF').classList.add('active');
+        
+        // 2. Aplicamos la clase 'active' al botón correcto según lo que recibimos
+        // Comparamos en minúsculas para que coincida con lo que enviamos desde el HTML
+        if (mod.toLowerCase() === 'todos') {
+            document.getElementById('btnAll').classList.add('active');
+        } else if (mod.toLowerCase() === 'race') {
+            document.getElementById('btnRace').classList.add('active');
+        } else if (mod.toLowerCase() === 'crossfit') {
+            document.getElementById('btnCF').classList.add('active');
+        }
+        
+        // 3. Reiniciamos la paginación y aplicamos el filtro a la tabla
         resetearYPaginacion();
     }
 

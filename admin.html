@@ -122,7 +122,7 @@
     let atletasFiltrados = [];
     let paginaActual = 1;
     const registrosPorPagina = 20;
-    let modalidadActual = 'TODOS';
+    let modalidadActual = 'todos';
 
     function verificarAcceso() {
         const pass = document.getElementById('adminPass').value;
@@ -143,22 +143,21 @@
         }
     }
 
-    function filtrarModalidad(mod) {
-        // Guardamos el valor exacto que viene del botón
-        modalidadActual = mod; 
+function filtrarModalidad(mod) {
+        // Forzamos a minúsculas para que no haya errores de comparación
+        modalidadActual = mod.toLowerCase(); 
         
-        // 1. Manejo visual de los botones
+        // Manejo visual de los botones
         document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
         
-        if (mod === 'todos') {
+        if (modalidadActual === 'todos') {
             document.getElementById('btnAll').classList.add('active');
-        } else if (mod === 'race') {
+        } else if (modalidadActual === 'race') {
             document.getElementById('btnRace').classList.add('active');
-        } else if (mod === 'crossfit') {
+        } else if (modalidadActual === 'crossfit') {
             document.getElementById('btnCF').classList.add('active');
         }
         
-        // 2. Aplicar lógica y resetear página
         resetearYPaginacion();
     }
 
@@ -166,40 +165,12 @@
         const busqueda = document.getElementById('searchInput').value.toLowerCase();
         
         atletasFiltrados = todosLosAtletas.filter(atleta => {
-            // LÓGICA DE MODALIDAD (Aquí estaba el fallo)
-            // Si es 'todos', pasa siempre. Si no, comparamos el texto.
+            // LÓGICA DE MODALIDAD
+            // Si la modalidad actual es 'todos', dejamos pasar a cualquiera (true)
             const cumpleModalidad = (modalidadActual === 'todos' || 
-                                    atleta.modalidad.toLowerCase().includes(modalidadActual.toLowerCase()));
+                                    atleta.modalidad.toLowerCase().includes(modalidadActual));
             
             // LÓGICA DE BUSCADOR
-            const camposParaBuscar = [
-                atleta.nombre,
-                atleta.cedula,
-                atleta.referencia,
-                atleta.dorsal,
-                atleta.correo
-            ].join(' ').toLowerCase();
-            
-            const cumpleBusqueda = camposParaBuscar.includes(busqueda);
-            
-            return cumpleModalidad && cumpleBusqueda;
-        });
-
-        renderizarTabla();
-    }
-
-    function aplicarFiltros() {
-        const busqueda = document.getElementById('searchInput').value.toLowerCase();
-        
-        atletasFiltrados = todosLosAtletas.filter(atleta => {
-            // Convertimos todo a minúsculas para comparar sin errores
-            const modalidadAtleta = atleta.modalidad.toLowerCase();
-            const filtroSeleccionado = modalidadActual.toLowerCase();
-
-            // Filtro de Modalidad (TODOS o coincidencia de texto)
-            const cumpleModalidad = (modalidadActual === 'TODOS' || modalidadAtleta.includes(filtroSeleccionado));
-            
-            // Filtro de Buscador
             const camposParaBuscar = [
                 atleta.nombre,
                 atleta.cedula,

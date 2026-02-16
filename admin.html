@@ -35,15 +35,11 @@
         .btn-pag { background: #222; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; }
         #pageInfo { font-size: 0.8rem; font-weight: bold; color: var(--neon); }
 
-        /* Botones Acción */
         .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; justify-content: center; border: 1px solid transparent; }
         .btn-view { background: #1a1a1a; color: #ccc; border-color: #333; }
         .btn-approve { background: var(--neon); color: black; min-width: 100px; }
-        
-        /* WhatsApp ahora modo Outline para no cansar la vista */
         .btn-wa { background: #000; color: #25D366; border-color: #25D366; }
         
-        /* Dorsal Estilo Minimalista */
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; }
         .status-pendiente { border: 1px solid #ffaa00; color: #ffaa00; background: transparent; }
         .status-aprobado { border: 1px solid var(--neon); color: var(--neon); background: #000; }
@@ -55,7 +51,6 @@
             table tr { display: block; background: #111; margin-bottom: 15px; border: 1px solid #222; padding: 10px; border-radius: 8px; }
             table td { display: flex; justify-content: flex-end; align-items: center; padding: 12px 10px; border-bottom: 1px solid #1a1a1a; min-height: 45px; gap: 5px; flex-wrap: wrap; }
             table td::before { content: attr(data-label); font-weight: bold; color: #666; text-transform: uppercase; font-size: 0.6rem; margin-right: auto; }
-            
             .btn { width: 100%; font-size: 0.75rem; padding: 12px; margin-top: 5px; }
             .btn-text { display: inline; }
             .badge { width: auto; min-width: 60px; text-align: center; }
@@ -63,7 +58,6 @@
     </style>
 </head>
 <body>
-
     <div id="loginOverlay">
         <div id="loginBox">
             <img src="https://i.ibb.co/mF8DTRrm/Logo-Icono-Verde.png" width="80" style="margin-bottom: 20px;">
@@ -81,7 +75,7 @@
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Nombre, cédula, dorsal..." oninput="resetearYPaginacion()">
         </div>
-                <div class="filter-buttons">
+        <div class="filter-buttons">
             <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('todos')">TODOS</button>
             <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">RACE</button>
             <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">CROSSFIT</button>
@@ -143,48 +137,23 @@
         }
     }
 
-function filtrarModalidad(mod) {
-        // Forzamos a minúsculas para que no haya errores de comparación
+    function filtrarModalidad(mod) {
         modalidadActual = mod.toLowerCase(); 
-        
-        // Manejo visual de los botones
         document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-        
-        if (modalidadActual === 'todos') {
-            document.getElementById('btnAll').classList.add('active');
-        } else if (modalidadActual === 'race') {
-            document.getElementById('btnRace').classList.add('active');
-        } else if (modalidadActual === 'crossfit') {
-            document.getElementById('btnCF').classList.add('active');
-        }
-        
+        if (modalidadActual === 'todos') document.getElementById('btnAll').classList.add('active');
+        else if (modalidadActual === 'race') document.getElementById('btnRace').classList.add('active');
+        else if (modalidadActual === 'crossfit') document.getElementById('btnCF').classList.add('active');
         resetearYPaginacion();
     }
 
     function aplicarFiltros() {
         const busqueda = document.getElementById('searchInput').value.toLowerCase();
-        
         atletasFiltrados = todosLosAtletas.filter(atleta => {
-            // LÓGICA DE MODALIDAD
-            // Si la modalidad actual es 'todos', dejamos pasar a cualquiera (true)
-            const cumpleModalidad = (modalidadActual === 'todos' || 
-                                    atleta.modalidad.toLowerCase().includes(modalidadActual));
-            
-            // LÓGICA DE BUSCADOR
-            const camposParaBuscar = [
-                atleta.nombre,
-                atleta.cedula,
-                atleta.referencia,
-                atleta.dorsal,
-                atleta.correo,
-                atleta.modalidad
-            ].join(' ').toLowerCase();
-            
+            const cumpleModalidad = (modalidadActual === 'todos' || atleta.modalidad.toLowerCase().includes(modalidadActual));
+            const camposParaBuscar = [atleta.nombre, atleta.cedula, atleta.referencia, atleta.dorsal, atleta.correo, atleta.modalidad].join(' ').toLowerCase();
             const cumpleBusqueda = camposParaBuscar.includes(busqueda);
-            
             return cumpleModalidad && cumpleBusqueda;
         });
-
         renderizarTabla();
     }
 
@@ -213,7 +182,7 @@ function filtrarModalidad(mod) {
                     <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i> <span class="btn-text">Ver Pago</span></a>
                 </td>
                 <td data-label="WhatsApp">
-                    <a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> <span class="btn-text">Escribir Chat</span></a>
+                    <a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> <span class="btn-text">Enviar Chat</span></a>
                 </td>
                 <td data-label="Acción">
                     ${atleta.estatus === 'Pendiente' ? 
@@ -251,10 +220,11 @@ function filtrarModalidad(mod) {
         btn.innerText = "ESPERA...";
         try {
             await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: "aprobar", fila: fila, correo: correo, nombre: nombre }) });
-            alert("Aprobado correctamente.");
+            alert("Atleta aprobado.");
             cargarAtletas();
         } catch (error) { alert("Error."); btn.disabled = false; btn.innerText = "APROBAR"; }
     }
+    window.onload = cargarAtletas;
 </script>
 </body>
 </html>

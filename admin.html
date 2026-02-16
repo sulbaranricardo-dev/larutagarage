@@ -82,10 +82,10 @@
             <input type="text" id="searchInput" placeholder="Nombre, cédula, dorsal..." oninput="resetearYPaginacion()">
         </div>
         <div class="filter-buttons">
-            <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('TODOS')">TODOS</button>
-            <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('Ruta Race')">RACE</button>
-            <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('CROSSFIT')">CROSSFIT</button>
-        </div>
+    <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('TODOS')">TODOS</button>
+    <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">RACE</button>
+    <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">CROSSFIT</button>
+</div>
     </div>
 
     <div class="container">
@@ -154,12 +154,30 @@
 
     function aplicarFiltros() {
         const busqueda = document.getElementById('searchInput').value.toLowerCase();
+        
         atletasFiltrados = todosLosAtletas.filter(atleta => {
-            const cumpleModalidad = (modalidadActual === 'TODOS' || atleta.modalidad.includes(modalidadActual));
-            const camposParaBuscar = [atleta.nombre, atleta.cedula, atleta.referencia, atleta.dorsal, atleta.correo].join(' ').toLowerCase();
+            // Convertimos todo a minúsculas para comparar sin errores
+            const modalidadAtleta = atleta.modalidad.toLowerCase();
+            const filtroSeleccionado = modalidadActual.toLowerCase();
+
+            // Filtro de Modalidad (TODOS o coincidencia de texto)
+            const cumpleModalidad = (modalidadActual === 'TODOS' || modalidadAtleta.includes(filtroSeleccionado));
+            
+            // Filtro de Buscador
+            const camposParaBuscar = [
+                atleta.nombre,
+                atleta.cedula,
+                atleta.referencia,
+                atleta.dorsal,
+                atleta.correo,
+                atleta.modalidad
+            ].join(' ').toLowerCase();
+            
             const cumpleBusqueda = camposParaBuscar.includes(busqueda);
+            
             return cumpleModalidad && cumpleBusqueda;
         });
+
         renderizarTabla();
     }
 

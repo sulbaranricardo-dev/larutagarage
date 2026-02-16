@@ -25,6 +25,7 @@
         .info-bancaria { background: #000; padding: 15px; border-radius: 5px; font-size: 0.85rem; margin-bottom: 20px; display: none; line-height: 1.6; border-left: 2px solid var(--neon); }
         
         .price-tag { font-family: 'Syncopate'; font-size: 1.2rem; color: #fff; margin-bottom: 10px; display: block; }
+        .tasa-info { font-size: 0.7rem; color: var(--neon); margin-bottom: 15px; display: block; opacity: 0.8; }
         
         .btn-submit { width: 100%; padding: 20px; background: var(--neon); color: black; border: none; font-weight: 900; font-family: 'Syncopate'; cursor: pointer; margin-top: 30px; transition: 0.3s; clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%); }
         .btn-submit:disabled { background: #333; color: #666; cursor: not-allowed; }
@@ -74,6 +75,8 @@
         <span class="section-label">3. Información de Pago</span>
         <div class="pago-box">
             <span id="labelPrecio" class="price-tag">TOTAL: $25</span>
+            <span id="tasaDisplay" class="tasa-info">Cargando tasa BCV...</span>
+
             <label>Método de Pago</label>
             <select id="metodoPago" onchange="mostrarInstrucciones()" required>
                 <option value="">Seleccione...</option>
@@ -85,7 +88,7 @@
             <div id="instrucciones" class="info-bancaria"></div>
 
             <div class="grid-form" style="margin-top: 15px;">
-                <div><label>Monto en Bs (Tasa BCV)</label><input type="text" id="montoBs" readonly></div>
+                <div><label>Monto a transferir en Bs.</label><input type="text" id="montoBs" readonly placeholder="Calculando..."></div>
                 <div><label>Nro. de Referencia</label><input type="text" id="referencia" required></div>
                 <div class="full-width">
                     <label>Adjuntar Comprobante (Capture)</label>
@@ -96,6 +99,7 @@
 
         <button type="submit" id="btnEnviar" class="btn-submit">FINALIZAR INSCRIPCIÓN</button>
     </form>
+
     <div id="mensajeFinal" style="display:none; text-align:center; padding:20px;">
         <h3 style="color:var(--neon)">¡SOLICITUD RECIBIDA!</h3>
         <p>Gracias por inscribirte. Tu inscripción está en <b>proceso de validación</b>. Revisa tu correo electrónico para más detalles.</p>
@@ -103,18 +107,34 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp"; 
-    const TASA_BCV = 36.50; // Esto lo actualizaremos luego
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec"; 
+    let TASA_BCV = 0;
+
+    // Obtener tasa automática del Apps Script
+    async function obtenerTasa() {
+        try {
+            const response = await fetch(WEB_APP_URL + "?getTasa=true");
+            const data = await response.json();
+            TASA_BCV = data.tasa;
+            document.getElementById('tasaDisplay').innerText = "Tasa Oficial BCV: " + TASA_BCV.toLocaleString('es-VE') + " Bs.";
+            ajustarCategorias(); // Recalcular montos una vez obtenida la tasa
+        } catch (error) {
+            console.error("Error tasa:", error);
+            document.getElementById('tasaDisplay').innerText = "Error al cargar tasa. Recarga la página.";
+        }
+    }
 
     function ajustarCategorias() {
         const mod = document.getElementById('modalidad').value;
         const cat = document.getElementById('categoria');
         const price = document.getElementById('labelPrecio');
+        const montoInput = document.getElementById('montoBs');
+        
+        let precioDolar = (mod === "Ruta Race") ? 25 : 30;
         
         if(mod === "Ruta Race") {
             cat.innerHTML = '<option value="General">General</option>';
             price.innerText = "TOTAL: $25";
-            document.getElementById('montoBs').value = (25 * TASA_BCV).toFixed(2) + " Bs";
         } else {
             cat.innerHTML = `
                 <option value="Escalado Femenino">Escalado Femenino</option>
@@ -123,7 +143,10 @@
                 <option value="Avanzado Masculino">Avanzado Masculino</option>
             `;
             price.innerText = "TOTAL: $30";
-            document.getElementById('montoBs').value = (30 * TASA_BCV).toFixed(2) + " Bs";
+        }
+
+        if (TASA_BCV > 0) {
+            montoInput.value = (precioDolar * TASA_BCV).toLocaleString('es-VE', {minimumFractionDigits: 2}) + " Bs.";
         }
     }
 
@@ -154,7 +177,7 @@
         e.preventDefault();
         const btn = document.getElementById('btnEnviar');
         btn.disabled = true;
-        btn.innerText = "ENVIANDO...";
+        btn.innerText = "PROCESANDO...";
 
         const data = {
             nombre: document.getElementById('nombre').value,
@@ -184,6 +207,7 @@
             });
             document.getElementById('registroForm').style.display = 'none';
             document.getElementById('mensajeFinal').style.display = 'block';
+            window.scrollTo(0,0);
         } catch (error) {
             alert("Error al enviar. Verifica tu conexión.");
             btn.disabled = false;
@@ -191,7 +215,8 @@
         }
     };
 
-    ajustarCategorias();
+    // Al cargar, obtener tasa y ajustar categorías iniciales
+    window.onload = obtenerTasa;
 </script>
 </body>
 </html>

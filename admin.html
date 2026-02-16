@@ -10,7 +10,6 @@
         :root { --neon: #39FF14; --bg: #050505; }
         body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 10px; margin: 0; }
         
-        /* Login */
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #loginBox { background: #111; padding: 40px; border-radius: 15px; border: 1px solid var(--neon); text-align: center; max-width: 300px; }
         
@@ -18,45 +17,47 @@
         .header-admin img { width: 130px; margin-bottom: 5px; }
         h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; font-size: 0.9rem; margin: 10px 0; letter-spacing: 3px; }
 
-        /* Controles de Búsqueda y Filtros */
         .controls { max-width: 1200px; margin: 10px auto; display: flex; flex-wrap: wrap; gap: 10px; padding: 0 10px; }
         .search-box { flex: 1; min-width: 250px; position: relative; }
-        .search-box input { width: 100%; padding: 12px 40px 12px 15px; background: #111; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
-        .search-box i { position: absolute; right: 15px; top: 13px; color: var(--neon); }
+        .search-box input { width: 100%; padding: 12px 15px; background: #111; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
         
         .filter-buttons { display: flex; gap: 5px; width: 100%; }
         .btn-filter { flex: 1; padding: 12px; background: #111; color: white; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-family: 'Syncopate'; font-size: 0.6rem; transition: 0.3s; }
         .btn-filter.active { background: var(--neon); color: black; border-color: var(--neon); }
 
-        /* Tabla y Contenedor */
         .container { max-width: 1200px; margin: auto; background: #111; border-radius: 10px; border: 1px solid #222; overflow: hidden; }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         th { background: #1a1a1a; color: var(--neon); text-align: left; padding: 15px; font-size: 0.7rem; border-bottom: 2px solid var(--neon); }
         td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.8rem; }
 
-        /* Paginación */
         .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; padding: 20px; }
         .btn-pag { background: #222; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; }
-        .btn-pag:disabled { opacity: 0.3; cursor: not-allowed; }
         #pageInfo { font-size: 0.8rem; font-weight: bold; color: var(--neon); }
 
         /* Botones Acción */
-        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 5px; }
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; justify-content: center; }
         .btn-view { background: #333; color: white; }
-        .btn-approve { background: var(--neon); color: black; }
+        .btn-approve { background: var(--neon); color: black; min-width: 100px; }
         .btn-wa { background: #25D366; color: white; }
         
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; }
         .status-pendiente { background: #ffaa00; color: black; }
         .status-aprobado { background: var(--neon); color: black; }
 
+        /* Texto oculto por defecto para iconos */
+        .btn-text { display: none; }
+
         @media (max-width: 800px) {
             table thead { display: none; }
-            table tr { display: block; background: #161616; margin-bottom: 15px; border: 1px solid #333; padding: 10px; border-radius: 8px; }
-            table td { display: block; text-align: right; padding: 8px 10px; border-bottom: 1px solid #222; position: relative; }
-            table td::before { content: attr(data-label); position: absolute; left: 10px; font-weight: bold; color: var(--neon); text-transform: uppercase; font-size: 0.6rem; }
-            .btn { width: 100%; justify-content: center; padding: 12px; margin-bottom: 5px; }
+            table tr { display: block; background: #161616; margin-bottom: 15px; border: 1px solid #333; padding: 10px; border-radius: 8px; box-sizing: border-box; }
+            table td { display: flex; justify-content: flex-end; align-items: center; padding: 12px 10px; border-bottom: 1px solid #222; min-height: 40px; gap: 5px; flex-wrap: wrap; }
+            table td::before { content: attr(data-label); font-weight: bold; color: var(--neon); text-transform: uppercase; font-size: 0.65rem; margin-right: auto; }
+            
+            /* Botones largos en móvil */
+            .btn { width: 100%; font-size: 0.75rem; padding: 12px; margin-top: 5px; }
+            .btn-text { display: inline; } /* Mostrar texto en móvil */
+            .badge { width: 100%; text-align: center; padding: 10px; }
         }
     </style>
 </head>
@@ -77,13 +78,12 @@
 
     <div class="controls">
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Buscar por nombre, cédula, dorsal, pago..." oninput="resetearYPaginacion()">
-            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Nombre, cédula, dorsal, pago..." oninput="resetearYPaginacion()">
         </div>
         <div class="filter-buttons">
             <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('TODOS')">TODOS</button>
-            <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('Ruta Race')">RUTA RACE</button>
-            <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('Ruta CrossFit')">CROSSFIT</button>
+            <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('Ruta Race')">RACE</button>
+            <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('CROSSFIT')">CROSSFIT</button>
         </div>
     </div>
 
@@ -95,14 +95,14 @@
                         <th>Dorsal</th>
                         <th>Atleta / Talla</th>
                         <th>Modalidad</th>
-                        <th>Pago</th>
-                        <th>Links</th>
-                        <th>Chat</th>
+                        <th>Pago Info</th>
+                        <th>Multimedia</th>
+                        <th>WhatsApp</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody id="tablaAtletas">
-                    <tr><td colspan="7" style="text-align:center; padding:50px;">Cargando...</td></tr>
+                    <tr><td colspan="7" style="text-align:center; padding:50px;">Cargando registros...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -135,10 +135,10 @@
         try {
             const response = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
             todosLosAtletas = await response.json();
-            todosLosAtletas.reverse(); // Los más nuevos primero
+            todosLosAtletas.reverse();
             aplicarFiltros();
         } catch (error) {
-            document.getElementById('tablaAtletas').innerHTML = "<tr><td colspan='7' style='text-align:center'>Error al cargar.</td></tr>";
+            document.getElementById('tablaAtletas').innerHTML = "<tr><td colspan='7' style='text-align:center'>Error de conexión.</td></tr>";
         }
     }
 
@@ -148,32 +148,17 @@
         if(mod === 'TODOS') document.getElementById('btnAll').classList.add('active');
         else if(mod === 'Ruta Race') document.getElementById('btnRace').classList.add('active');
         else document.getElementById('btnCF').classList.add('active');
-        
         resetearYPaginacion();
     }
 
     function aplicarFiltros() {
         const busqueda = document.getElementById('searchInput').value.toLowerCase();
-        
         atletasFiltrados = todosLosAtletas.filter(atleta => {
-            // Filtro de Modalidad
             const cumpleModalidad = (modalidadActual === 'TODOS' || atleta.modalidad.includes(modalidadActual));
-            
-            // Filtro de Buscador (Nombre, Cédula, Referencia, Dorsal, Correo)
-            const camposParaBuscar = [
-                atleta.nombre,
-                atleta.cedula,
-                atleta.referencia,
-                atleta.dorsal,
-                atleta.correo,
-                atleta.modalidad
-            ].join(' ').toLowerCase();
-            
+            const camposParaBuscar = [atleta.nombre, atleta.cedula, atleta.referencia, atleta.dorsal, atleta.correo].join(' ').toLowerCase();
             const cumpleBusqueda = camposParaBuscar.includes(busqueda);
-            
             return cumpleModalidad && cumpleBusqueda;
         });
-
         renderizarTabla();
     }
 
@@ -184,8 +169,7 @@
         const atletasPagina = atletasFiltrados.slice(inicio, fin);
 
         if (atletasPagina.length === 0) {
-            tabla.innerHTML = "<tr><td colspan='7' style='text-align:center; padding:20px;'>No se encontraron resultados.</td></tr>";
-            actualizarControlesPagina(0);
+            tabla.innerHTML = "<tr><td colspan='7' style='text-align:center; padding:20px;'>No hay resultados.</td></tr>";
             return;
         }
 
@@ -194,24 +178,25 @@
             const waNumero = String(atleta.whatsapp || "").replace(/[^0-9]/g, '');
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal ? '#' + atleta.dorsal : 'PEND'}</span></td>
+                <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal ? '#' + atleta.dorsal : 'PENDIENTE'}</span></td>
                 <td data-label="Atleta"><strong>${atleta.nombre}</strong><br><small style="color:var(--neon)">Talla: ${atleta.talla || 'S/N'}</small></td>
                 <td data-label="Modalidad"><small>${atleta.modalidad}</small></td>
                 <td data-label="Pago"><small><strong>${atleta.metodo || 'S/M'}</strong></small><br><small style="color:#888">Ref: ${atleta.referencia}</small></td>
-                <td data-label="Links">
-                    <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i></a>
-                    <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i></a>
+                <td data-label="Multimedia">
+                    <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i> <span class="btn-text">Ver Carnet</span></a>
+                    <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i> <span class="btn-text">Ver Pago</span></a>
                 </td>
-                <td data-label="Chat"><a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
+                <td data-label="WhatsApp">
+                    <a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> <span class="btn-text">Enviar Chat</span></a>
+                </td>
                 <td data-label="Acción">
                     ${atleta.estatus === 'Pendiente' ? 
-                    `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila}, '${atleta.correo}', '${atleta.nombre}')">OK</button>` : 
-                    '<i class="fas fa-check-circle" style="color:var(--neon)"></i>'}
+                    `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila}, '${atleta.correo}', '${atleta.nombre}')"><i class="fas fa-check"></i> APROBAR</button>` : 
+                    '<span style="color:var(--neon); font-weight:bold;"><i class="fas fa-check-double"></i> LISTO</span>'}
                 </td>
             `;
             tabla.appendChild(tr);
         });
-
         actualizarControlesPagina(atletasFiltrados.length);
     }
 
@@ -235,11 +220,14 @@
 
     async function procesarAprobacion(fila, correo, nombre) {
         if(!confirm(`¿Aprobar a ${nombre}?`)) return;
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerText = "ESPERA...";
         try {
             await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: "aprobar", fila: fila, correo: correo, nombre: nombre }) });
-            alert("Aprobado correctamente.");
+            alert("Atleta aprobado.");
             cargarAtletas();
-        } catch (error) { alert("Error al procesar."); }
+        } catch (error) { alert("Error."); btn.disabled = false; btn.innerText = "APROBAR"; }
     }
 </script>
 </body>

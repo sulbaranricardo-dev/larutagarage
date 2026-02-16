@@ -8,43 +8,56 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --neon: #39FF14; --bg: #050505; }
-        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 20px; margin: 0; }
+        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 10px; margin: 0; }
         
-        /* Login Overlay */
+        /* Login */
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #loginBox { background: #111; padding: 40px; border-radius: 15px; border: 1px solid var(--neon); text-align: center; max-width: 300px; }
         
-        .header-admin { text-align: center; margin-bottom: 20px; }
-        .header-admin img { width: 150px; margin-bottom: 10px; }
-        h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; font-size: 1.1rem; margin: 10px 0 30px; letter-spacing: 3px; }
+        .header-admin { text-align: center; margin-bottom: 10px; }
+        .header-admin img { width: 130px; margin-bottom: 5px; }
+        h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; font-size: 0.9rem; margin: 10px 0; letter-spacing: 3px; }
+
+        /* Controles de Búsqueda y Filtros */
+        .controls { max-width: 1200px; margin: 10px auto; display: flex; flex-wrap: wrap; gap: 10px; padding: 0 10px; }
+        .search-box { flex: 1; min-width: 250px; position: relative; }
+        .search-box input { width: 100%; padding: 12px 40px 12px 15px; background: #111; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+        .search-box i { position: absolute; right: 15px; top: 13px; color: var(--neon); }
         
+        .filter-buttons { display: flex; gap: 5px; width: 100%; }
+        .btn-filter { flex: 1; padding: 12px; background: #111; color: white; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-family: 'Syncopate'; font-size: 0.6rem; transition: 0.3s; }
+        .btn-filter.active { background: var(--neon); color: black; border-color: var(--neon); }
+
+        /* Tabla y Contenedor */
         .container { max-width: 1200px; margin: auto; background: #111; border-radius: 10px; border: 1px solid #222; overflow: hidden; }
-        
-        /* Estilos de Tabla */
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #1a1a1a; color: var(--neon); text-align: left; padding: 15px; font-size: 0.7rem; text-transform: uppercase; border-bottom: 2px solid var(--neon); }
-        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.8rem; vertical-align: middle; }
-        
-        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 5px; transition: 0.3s; margin-bottom: 5px; }
+        th { background: #1a1a1a; color: var(--neon); text-align: left; padding: 15px; font-size: 0.7rem; border-bottom: 2px solid var(--neon); }
+        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.8rem; }
+
+        /* Paginación */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; padding: 20px; }
+        .btn-pag { background: #222; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 0.7rem; }
+        .btn-pag:disabled { opacity: 0.3; cursor: not-allowed; }
+        #pageInfo { font-size: 0.8rem; font-weight: bold; color: var(--neon); }
+
+        /* Botones Acción */
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 5px; }
         .btn-view { background: #333; color: white; }
         .btn-approve { background: var(--neon); color: black; }
         .btn-wa { background: #25D366; color: white; }
         
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; }
         .status-pendiente { background: #ffaa00; color: black; }
         .status-aprobado { background: var(--neon); color: black; }
-        
-        /* Optimización para Celulares */
+
         @media (max-width: 800px) {
             table thead { display: none; }
             table tr { display: block; background: #161616; margin-bottom: 15px; border: 1px solid #333; padding: 10px; border-radius: 8px; }
             table td { display: block; text-align: right; padding: 8px 10px; border-bottom: 1px solid #222; position: relative; }
             table td::before { content: attr(data-label); position: absolute; left: 10px; font-weight: bold; color: var(--neon); text-transform: uppercase; font-size: 0.6rem; }
-            .btn { width: 100%; justify-content: center; padding: 12px; font-size: 0.8rem; }
+            .btn { width: 100%; justify-content: center; padding: 12px; margin-bottom: 5px; }
         }
-
-        .loading { text-align: center; padding: 50px; color: var(--neon); font-family: 'Syncopate'; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -52,15 +65,26 @@
     <div id="loginOverlay">
         <div id="loginBox">
             <img src="https://i.ibb.co/mF8DTRrm/Logo-Icono-Verde.png" width="80" style="margin-bottom: 20px;">
-            <p style="font-size: 0.7rem; color: #888; margin-bottom: 20px;">ACCESO RESTRINGIDO</p>
-            <input type="password" id="adminPass" placeholder="Contraseña" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: white; border-radius: 5px;">
-            <button onclick="verificarAcceso()" class="btn btn-approve" style="width: 100%;">ENTRAR</button>
+            <input type="password" id="adminPass" placeholder="Contraseña" style="width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 5px; margin-bottom: 10px;">
+            <button onclick="verificarAcceso()" class="btn-filter active" style="width: 100%;">ENTRAR</button>
         </div>
     </div>
 
     <div class="header-admin">
         <img src="https://i.ibb.co/mF8DTRrm/Logo-Icono-Verde.png" alt="Logo">
         <h1>PANEL ADMINISTRATIVO</h1>
+    </div>
+
+    <div class="controls">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Buscar por nombre, cédula, dorsal, pago..." oninput="resetearYPaginacion()">
+            <i class="fas fa-search"></i>
+        </div>
+        <div class="filter-buttons">
+            <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('TODOS')">TODOS</button>
+            <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('Ruta Race')">RUTA RACE</button>
+            <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('Ruta CrossFit')">CROSSFIT</button>
+        </div>
     </div>
 
     <div class="container">
@@ -71,102 +95,151 @@
                         <th>Dorsal</th>
                         <th>Atleta / Talla</th>
                         <th>Modalidad</th>
-                        <th>Pago Info</th>
-                        <th>Multimedia</th>
+                        <th>Pago</th>
+                        <th>Links</th>
                         <th>Chat</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody id="tablaAtletas">
-                    <tr><td colspan="7" class="loading">Cargando registros...</td></tr>
+                    <tr><td colspan="7" style="text-align:center; padding:50px;">Cargando...</td></tr>
                 </tbody>
             </table>
+        </div>
+        <div class="pagination">
+            <button class="btn-pag" id="prevPage" onclick="cambiarPagina(-1)" disabled>Anterior</button>
+            <span id="pageInfo">Página 1</span>
+            <button class="btn-pag" id="nextPage" onclick="cambiarPagina(1)" disabled>Siguiente</button>
         </div>
     </div>
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
-    const PASS_CORRECTO = "Ruta2026"; // Cambia aquí tu contraseña
+    const PASS_CORRECTO = "Ruta2026"; 
+    
+    let todosLosAtletas = [];
+    let atletasFiltrados = [];
+    let paginaActual = 1;
+    const registrosPorPagina = 20;
+    let modalidadActual = 'TODOS';
 
     function verificarAcceso() {
         const pass = document.getElementById('adminPass').value;
         if(pass === PASS_CORRECTO) {
             document.getElementById('loginOverlay').style.display = 'none';
             cargarAtletas();
-        } else {
-            alert("Contraseña incorrecta");
-        }
+        } else { alert("Contraseña incorrecta"); }
     }
 
     async function cargarAtletas() {
         try {
             const response = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
-            const data = await response.json();
-            const tabla = document.getElementById('tablaAtletas');
-            
-            if (!data || data.length === 0) {
-                tabla.innerHTML = "<tr><td colspan='7' style='text-align:center'>No hay registros.</td></tr>";
-                return;
-            }
-
-            tabla.innerHTML = "";
-            data.reverse().forEach(atleta => {
-                const waNumero = String(atleta.whatsapp || "").replace(/[^0-9]/g, '');
-                
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td data-label="Dorsal">
-                        <span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">
-                            ${atleta.dorsal ? '#' + atleta.dorsal : 'SIN ASIGNAR'}
-                        </span>
-                    </td>
-                    <td data-label="Atleta">
-                        <strong>${atleta.nombre}</strong><br>
-                        <small style="color:var(--neon)">Talla: ${atleta.talla || 'S/N'}</small>
-                    </td>
-                    <td data-label="Modalidad"><small>${atleta.modalidad}</small></td>
-                    <td data-label="Pago">
-                        <small><strong>${atleta.metodo || 'S/M'}</strong></small><br>
-                        <small style="color:#888">Ref: ${atleta.referencia}</small>
-                    </td>
-                    <td data-label="Multimedia">
-                        <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i></a>
-                        <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i></a>
-                    </td>
-                    <td data-label="Chat">
-                        <a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a>
-                    </td>
-                    <td data-label="Acción">
-                        ${atleta.estatus === 'Pendiente' ? 
-                        `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila}, '${atleta.correo}', '${atleta.nombre}')">APROBAR</button>` : 
-                        '<span style="color:var(--neon); font-size:0.7rem;"><i class="fas fa-check-double"></i> LISTO</span>'}
-                    </td>
-                `;
-                tabla.appendChild(tr);
-            });
+            todosLosAtletas = await response.json();
+            todosLosAtletas.reverse(); // Los más nuevos primero
+            aplicarFiltros();
         } catch (error) {
-            console.error(error);
-            document.getElementById('tablaAtletas').innerHTML = "<tr><td colspan='7' style='text-align:center'>Error de conexión.</td></tr>";
+            document.getElementById('tablaAtletas').innerHTML = "<tr><td colspan='7' style='text-align:center'>Error al cargar.</td></tr>";
         }
+    }
+
+    function filtrarModalidad(mod) {
+        modalidadActual = mod;
+        document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+        if(mod === 'TODOS') document.getElementById('btnAll').classList.add('active');
+        else if(mod === 'Ruta Race') document.getElementById('btnRace').classList.add('active');
+        else document.getElementById('btnCF').classList.add('active');
+        
+        resetearYPaginacion();
+    }
+
+    function aplicarFiltros() {
+        const busqueda = document.getElementById('searchInput').value.toLowerCase();
+        
+        atletasFiltrados = todosLosAtletas.filter(atleta => {
+            // Filtro de Modalidad
+            const cumpleModalidad = (modalidadActual === 'TODOS' || atleta.modalidad.includes(modalidadActual));
+            
+            // Filtro de Buscador (Nombre, Cédula, Referencia, Dorsal, Correo)
+            const camposParaBuscar = [
+                atleta.nombre,
+                atleta.cedula,
+                atleta.referencia,
+                atleta.dorsal,
+                atleta.correo,
+                atleta.modalidad
+            ].join(' ').toLowerCase();
+            
+            const cumpleBusqueda = camposParaBuscar.includes(busqueda);
+            
+            return cumpleModalidad && cumpleBusqueda;
+        });
+
+        renderizarTabla();
+    }
+
+    function renderizarTabla() {
+        const tabla = document.getElementById('tablaAtletas');
+        const inicio = (paginaActual - 1) * registrosPorPagina;
+        const fin = inicio + registrosPorPagina;
+        const atletasPagina = atletasFiltrados.slice(inicio, fin);
+
+        if (atletasPagina.length === 0) {
+            tabla.innerHTML = "<tr><td colspan='7' style='text-align:center; padding:20px;'>No se encontraron resultados.</td></tr>";
+            actualizarControlesPagina(0);
+            return;
+        }
+
+        tabla.innerHTML = "";
+        atletasPagina.forEach(atleta => {
+            const waNumero = String(atleta.whatsapp || "").replace(/[^0-9]/g, '');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal ? '#' + atleta.dorsal : 'PEND'}</span></td>
+                <td data-label="Atleta"><strong>${atleta.nombre}</strong><br><small style="color:var(--neon)">Talla: ${atleta.talla || 'S/N'}</small></td>
+                <td data-label="Modalidad"><small>${atleta.modalidad}</small></td>
+                <td data-label="Pago"><small><strong>${atleta.metodo || 'S/M'}</strong></small><br><small style="color:#888">Ref: ${atleta.referencia}</small></td>
+                <td data-label="Links">
+                    <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i></a>
+                    <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i></a>
+                </td>
+                <td data-label="Chat"><a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
+                <td data-label="Acción">
+                    ${atleta.estatus === 'Pendiente' ? 
+                    `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila}, '${atleta.correo}', '${atleta.nombre}')">OK</button>` : 
+                    '<i class="fas fa-check-circle" style="color:var(--neon)"></i>'}
+                </td>
+            `;
+            tabla.appendChild(tr);
+        });
+
+        actualizarControlesPagina(atletasFiltrados.length);
+    }
+
+    function actualizarControlesPagina(totalRegistros) {
+        const totalPaginas = Math.ceil(totalRegistros / registrosPorPagina);
+        document.getElementById('pageInfo').innerText = `Página ${paginaActual} de ${totalPaginas || 1}`;
+        document.getElementById('prevPage').disabled = paginaActual === 1;
+        document.getElementById('nextPage').disabled = paginaActual >= totalPaginas;
+    }
+
+    function cambiarPagina(delta) {
+        paginaActual += delta;
+        renderizarTabla();
+        window.scrollTo(0,0);
+    }
+
+    function resetearYPaginacion() {
+        paginaActual = 1;
+        aplicarFiltros();
     }
 
     async function procesarAprobacion(fila, correo, nombre) {
         if(!confirm(`¿Aprobar a ${nombre}?`)) return;
-        
-        const payload = { accion: "aprobar", fila: fila, correo: correo, nombre: nombre };
-
         try {
-            await fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(payload)
-            });
-
-            alert("Atleta aprobado. Dorsal asignado.");
+            await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: "aprobar", fila: fila, correo: correo, nombre: nombre }) });
+            alert("Aprobado correctamente.");
             cargarAtletas();
-        } catch (error) {
-            alert("Error al procesar.");
-        }
+        } catch (error) { alert("Error al procesar."); }
     }
 </script>
 </body>

@@ -144,23 +144,48 @@
     }
 
     function filtrarModalidad(mod) {
-        modalidadActual = mod;
+        // Guardamos el valor exacto que viene del botón
+        modalidadActual = mod; 
         
-        // 1. Quitamos la clase 'active' de todos los botones de filtro
+        // 1. Manejo visual de los botones
         document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
         
-        // 2. Aplicamos la clase 'active' al botón correcto según lo que recibimos
-        // Comparamos en minúsculas para que coincida con lo que enviamos desde el HTML
-        if (mod.toLowerCase() === 'todos') {
+        if (mod === 'todos') {
             document.getElementById('btnAll').classList.add('active');
-        } else if (mod.toLowerCase() === 'race') {
+        } else if (mod === 'race') {
             document.getElementById('btnRace').classList.add('active');
-        } else if (mod.toLowerCase() === 'crossfit') {
+        } else if (mod === 'crossfit') {
             document.getElementById('btnCF').classList.add('active');
         }
         
-        // 3. Reiniciamos la paginación y aplicamos el filtro a la tabla
+        // 2. Aplicar lógica y resetear página
         resetearYPaginacion();
+    }
+
+    function aplicarFiltros() {
+        const busqueda = document.getElementById('searchInput').value.toLowerCase();
+        
+        atletasFiltrados = todosLosAtletas.filter(atleta => {
+            // LÓGICA DE MODALIDAD (Aquí estaba el fallo)
+            // Si es 'todos', pasa siempre. Si no, comparamos el texto.
+            const cumpleModalidad = (modalidadActual === 'todos' || 
+                                    atleta.modalidad.toLowerCase().includes(modalidadActual.toLowerCase()));
+            
+            // LÓGICA DE BUSCADOR
+            const camposParaBuscar = [
+                atleta.nombre,
+                atleta.cedula,
+                atleta.referencia,
+                atleta.dorsal,
+                atleta.correo
+            ].join(' ').toLowerCase();
+            
+            const cumpleBusqueda = camposParaBuscar.includes(busqueda);
+            
+            return cumpleModalidad && cumpleBusqueda;
+        });
+
+        renderizarTabla();
     }
 
     function aplicarFiltros() {

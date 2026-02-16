@@ -110,43 +110,42 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec"; 
     let TASA_BCV = 0;
 
-    // Obtener tasa automática del Apps Script
+    // AL CARGAR LA PÁGINA: Pedimos la tasa igual que en Blast Control
     async function obtenerTasa() {
         try {
             const response = await fetch(WEB_APP_URL + "?getTasa=true");
             const data = await response.json();
-            TASA_BCV = data.tasa;
-            document.getElementById('tasaDisplay').innerText = "Tasa Oficial BCV: " + TASA_BCV.toLocaleString('es-VE') + " Bs.";
-            ajustarCategorias(); // Recalcular montos una vez obtenida la tasa
+            if (data.tasa > 0) {
+                TASA_BCV = data.tasa;
+                document.getElementById('tasaDisplay').innerText = "TASA OFICIAL BCV: " + TASA_BCV.toFixed(2) + " Bs.";
+                ajustarCategorias(); 
+            }
         } catch (error) {
-            console.error("Error tasa:", error);
-            document.getElementById('tasaDisplay').innerText = "Error al cargar tasa. Recarga la página.";
+            console.error("Error cargando tasa:", error);
+            document.getElementById('tasaDisplay').innerText = "Error al conectar con BCV";
         }
     }
 
     function ajustarCategorias() {
         const mod = document.getElementById('modalidad').value;
         const cat = document.getElementById('categoria');
-        const price = document.getElementById('labelPrecio');
-        const montoInput = document.getElementById('montoBs');
+        const priceLabel = document.getElementById('labelPrecio');
+        const inputBs = document.getElementById('montoBs');
         
-        let precioDolar = (mod === "Ruta Race") ? 25 : 30;
+        let precioUSD = (mod === "Ruta Race") ? 25 : 30;
         
         if(mod === "Ruta Race") {
             cat.innerHTML = '<option value="General">General</option>';
-            price.innerText = "TOTAL: $25";
+            priceLabel.innerText = "TOTAL: $25";
         } else {
-            cat.innerHTML = `
-                <option value="Escalado Femenino">Escalado Femenino</option>
-                <option value="Escalado Masculino">Escalado Masculino</option>
-                <option value="Avanzado Femenino">Avanzado Femenino</option>
-                <option value="Avanzado Masculino">Avanzado Masculino</option>
-            `;
-            price.innerText = "TOTAL: $30";
+            cat.innerHTML = `<option value="Escalado">Escalado</option><option value="Avanzado">Avanzado</option>`;
+            priceLabel.innerText = "TOTAL: $30";
         }
 
+        // Calculamos el monto en Bs si ya tenemos la tasa
         if (TASA_BCV > 0) {
-            montoInput.value = (precioDolar * TASA_BCV).toLocaleString('es-VE', {minimumFractionDigits: 2}) + " Bs.";
+            let totalBs = (precioUSD * TASA_BCV).toFixed(2);
+            inputBs.value = totalBs + " Bs.";
         }
     }
 

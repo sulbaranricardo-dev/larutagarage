@@ -165,20 +165,21 @@
         const atletasPagina = atletasFiltrados.slice(inicio, inicio + registrosPorPagina);
         
         tabla.innerHTML = "";
-        atletasPagina.forEach(atleta => {
+        atletasPagina.forEach((atleta, index) => {
             const tr = document.createElement('tr');
+            // Usamos un índice para referenciar al atleta de forma segura
             tr.innerHTML = `
                 <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal || 'PEND'}</span></td>
-                <td data-label="Atleta"><strong>${atleta.nombre}</strong><br><small style="color:var(--neon)">Talla: ${atleta.talla || 'S/N'}</small></td>
+                <td data-label="Atleta"><strong>${atleta.nombre} ${atleta.apellido || ''}</strong><br><small style="color:var(--neon)">Talla: ${atleta.talla || 'S/N'}</small></td>
                 <td data-label="Modalidad"><small>${atleta.modalidad}</small></td>
                 <td data-label="Pago"><small><strong>${atleta.metodo || 'S/M'}</strong></small><br><small style="color:#888">Ref: ${atleta.referencia}</small></td>
                 <td data-label="Multimedia">
                     <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i></a>
                     <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i></a>
                 </td>
-                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
+                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp || atleta.telefono).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
                 <td data-label="Acción">
-                    <button class="btn btn-view" onclick='abrirEditor(${JSON.stringify(atleta)})'><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-view" onclick='prepararEdicion(${inicio + index})'><i class="fas fa-edit"></i></button>
                     <button class="btn btn-delete" onclick="eliminarAtleta(${atleta.fila}, '${atleta.nombre}')"><i class="fas fa-trash"></i></button>
                     ${atleta.estatus === 'Pendiente' ? `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila},'${atleta.correo}','${atleta.nombre}')">APROBAR</button>` : ''}
                 </td>`;
@@ -187,6 +188,37 @@
         actualizarControlesPagina(atletasFiltrados.length);
     }
 
+    // Nueva función para abrir el editor cargando los datos correctamente
+    function prepararEdicion(indexEnFiltrados) {
+        atletaAEditar = atletasFiltrados[indexEnFiltrados];
+        const contenedor = document.getElementById('camposEditar');
+        contenedor.innerHTML = "";
+
+        // Definimos los campos y les asignamos el valor que viene de Google Sheets
+        const campos = [
+            {id: "nombre", label: "Nombre", valor: atletaAEditar.nombre},
+            {id: "apellido", label: "Apellido", valor: atletaAEditar.apellido},
+            {id: "cedula", label: "Cédula", valor: atletaAEditar.cedula},
+            {id: "telefono", label: "Teléfono", valor: atletaAEditar.telefono || atletaAEditar.whatsapp},
+            {id: "correo", label: "Correo", valor: atletaAEditar.correo},
+            {id: "talla", label: "Talla", valor: atletaAEditar.talla},
+            {id: "modalidad", label: "Modalidad", valor: atletaAEditar.modalidad},
+            {id: "categoria", label: "Categoría", valor: atletaAEditar.categoria},
+            {id: "dorsal", label: "Dorsal", valor: atletaAEditar.dorsal},
+            {id: "fecha", label: "Fecha Registro", valor: atletaAEditar.fecha}
+        ];
+
+        campos.forEach(c => {
+            contenedor.innerHTML += `
+                <div>
+                    <label>${c.label}</label>
+                    <input type="text" id="edit_${c.id}" value="${c.valor || ''}">
+                </div>`;
+        });
+
+        document.getElementById('modalEditar').style.display = 'block';
+        document.getElementById('btnGuardarEdit').onclick = guardarEdicion;
+    }
     function abrirEditor(atleta) {
         atletaAEditar = atleta;
         const contenedor = document.getElementById('camposEditar');

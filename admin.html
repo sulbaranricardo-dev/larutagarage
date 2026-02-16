@@ -59,9 +59,8 @@
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
 
-   async function cargarAtletas() {
+async function cargarAtletas() {
         try {
-            // Añadimos un timestamp para evitar que el navegador use datos viejos
             const response = await fetch(WEB_APP_URL + "?t=" + new Date().getTime(), {
                 method: 'GET',
                 redirect: 'follow'
@@ -72,13 +71,16 @@
             const data = await response.json();
             const tabla = document.getElementById('tablaAtletas');
             
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 tabla.innerHTML = "<tr><td colspan='7' style='text-align:center'>No hay atletas registrados aún.</td></tr>";
                 return;
             }
 
             tabla.innerHTML = "";
             data.reverse().forEach(atleta => {
+                // SOLUCIÓN AL ERROR: Convertimos WhatsApp a texto antes de usar .replace
+                const waNumero = String(atleta.whatsapp || "").replace(/[^0-9]/g, '');
+                
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${atleta.nombre}</strong><br><small style="color:#666">${atleta.correo}</small></td>
@@ -89,7 +91,7 @@
                         <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i> Pago</a>
                     </td>
                     <td>
-                        <a href="https://wa.me/${atleta.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> Chat</a>
+                        <a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> Chat</a>
                     </td>
                     <td>
                         <span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">
@@ -106,7 +108,7 @@
             });
         } catch (error) {
             console.error("Error detallado:", error);
-            document.getElementById('tablaAtletas').innerHTML = "<tr><td colspan='7' style='text-align:center'>Error al conectar con Google. <br><small>Intenta abrir el panel en Incógnito o recargar con Ctrl+F5</small></td></tr>";
+            document.getElementById('tablaAtletas').innerHTML = "<tr><td colspan='7' style='text-align:center'>Error al procesar datos del Excel. <br><small>Revisa que el campo WhatsApp no esté vacío.</small></td></tr>";
         }
     }
 

@@ -36,28 +36,29 @@
         #pageInfo { font-size: 0.8rem; font-weight: bold; color: var(--neon); }
 
         /* Botones Acción */
-        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; justify-content: center; }
-        .btn-view { background: #333; color: white; }
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; justify-content: center; border: 1px solid transparent; }
+        .btn-view { background: #1a1a1a; color: #ccc; border-color: #333; }
         .btn-approve { background: var(--neon); color: black; min-width: 100px; }
-        .btn-wa { background: #25D366; color: white; }
         
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; }
-        .status-pendiente { background: #ffaa00; color: black; }
-        .status-aprobado { background: var(--neon); color: black; }
+        /* WhatsApp ahora modo Outline para no cansar la vista */
+        .btn-wa { background: #000; color: #25D366; border-color: #25D366; }
+        
+        /* Dorsal Estilo Minimalista */
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; }
+        .status-pendiente { border: 1px solid #ffaa00; color: #ffaa00; background: transparent; }
+        .status-aprobado { border: 1px solid var(--neon); color: var(--neon); background: #000; }
 
-        /* Texto oculto por defecto para iconos */
         .btn-text { display: none; }
 
         @media (max-width: 800px) {
             table thead { display: none; }
-            table tr { display: block; background: #161616; margin-bottom: 15px; border: 1px solid #333; padding: 10px; border-radius: 8px; box-sizing: border-box; }
-            table td { display: flex; justify-content: flex-end; align-items: center; padding: 12px 10px; border-bottom: 1px solid #222; min-height: 40px; gap: 5px; flex-wrap: wrap; }
-            table td::before { content: attr(data-label); font-weight: bold; color: var(--neon); text-transform: uppercase; font-size: 0.65rem; margin-right: auto; }
+            table tr { display: block; background: #111; margin-bottom: 15px; border: 1px solid #222; padding: 10px; border-radius: 8px; }
+            table td { display: flex; justify-content: flex-end; align-items: center; padding: 12px 10px; border-bottom: 1px solid #1a1a1a; min-height: 45px; gap: 5px; flex-wrap: wrap; }
+            table td::before { content: attr(data-label); font-weight: bold; color: #666; text-transform: uppercase; font-size: 0.6rem; margin-right: auto; }
             
-            /* Botones largos en móvil */
             .btn { width: 100%; font-size: 0.75rem; padding: 12px; margin-top: 5px; }
-            .btn-text { display: inline; } /* Mostrar texto en móvil */
-            .badge { width: 100%; text-align: center; padding: 10px; }
+            .btn-text { display: inline; }
+            .badge { width: auto; min-width: 60px; text-align: center; }
         }
     </style>
 </head>
@@ -67,7 +68,7 @@
         <div id="loginBox">
             <img src="https://i.ibb.co/mF8DTRrm/Logo-Icono-Verde.png" width="80" style="margin-bottom: 20px;">
             <input type="password" id="adminPass" placeholder="Contraseña" style="width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 5px; margin-bottom: 10px;">
-            <button onclick="verificarAcceso()" class="btn-filter active" style="width: 100%;">ENTRAR</button>
+            <button onclick="verificarAcceso()" class="btn btn-approve" style="width: 100%;">ENTRAR</button>
         </div>
     </div>
 
@@ -78,7 +79,7 @@
 
     <div class="controls">
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Nombre, cédula, dorsal, pago..." oninput="resetearYPaginacion()">
+            <input type="text" id="searchInput" placeholder="Nombre, cédula, dorsal..." oninput="resetearYPaginacion()">
         </div>
         <div class="filter-buttons">
             <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('TODOS')">TODOS</button>
@@ -187,12 +188,12 @@
                     <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i> <span class="btn-text">Ver Pago</span></a>
                 </td>
                 <td data-label="WhatsApp">
-                    <a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> <span class="btn-text">Enviar Chat</span></a>
+                    <a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> <span class="btn-text">Escribir Chat</span></a>
                 </td>
                 <td data-label="Acción">
                     ${atleta.estatus === 'Pendiente' ? 
                     `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila}, '${atleta.correo}', '${atleta.nombre}')"><i class="fas fa-check"></i> APROBAR</button>` : 
-                    '<span style="color:var(--neon); font-weight:bold;"><i class="fas fa-check-double"></i> LISTO</span>'}
+                    '<span style="color:var(--neon); font-weight:bold; font-size: 0.7rem;"><i class="fas fa-check-double"></i> LISTO</span>'}
                 </td>
             `;
             tabla.appendChild(tr);
@@ -225,7 +226,7 @@
         btn.innerText = "ESPERA...";
         try {
             await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ accion: "aprobar", fila: fila, correo: correo, nombre: nombre }) });
-            alert("Atleta aprobado.");
+            alert("Aprobado correctamente.");
             cargarAtletas();
         } catch (error) { alert("Error."); btn.disabled = false; btn.innerText = "APROBAR"; }
     }

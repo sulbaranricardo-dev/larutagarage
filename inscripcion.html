@@ -37,13 +37,11 @@
         #instruccionesPago { background: #000; padding: 15px; border-radius: 5px; font-size: 0.8rem; margin-top: 15px; border-left: 3px solid var(--neon); line-height: 1.6; display: none; }
 
         .btn-submit { width: 100%; padding: 18px; background: var(--neon); color: black; border: none; font-weight: 900; font-family: 'Syncopate'; cursor: pointer; margin-top: 30px; transition: 0.3s; clip-path: polygon(3% 0%, 100% 0%, 97% 100%, 0% 100%); }
-        .btn-submit:hover { background: #fff; }
+        .btn-submit:hover { transform: scale(1.02); background: white; }
 
-        /* Botón de Ayuda Flotante con Mensaje */
         .help-container { position: fixed; bottom: 20px; right: 20px; display: flex; align-items: center; gap: 10px; z-index: 100; text-decoration: none; }
         .help-msg { background: white; color: black; padding: 8px 15px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); white-space: nowrap; }
         .btn-help { background: #25D366; color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s; }
-        .help-container:hover .btn-help { transform: scale(1.1); }
 
         @media (max-width: 600px) { .grid-form { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } .help-msg { display: none; } }
     </style>
@@ -82,7 +80,7 @@
                 <div class="foto-guia">
                     <div class="foto-ejemplo"><i class="fas fa-user"></i></div>
                     <div class="foto-instruccion">
-                        Fondo unicolor, rostro despejado y buena iluminación.<br>
+                        Fondo unicolor, rostro despejado.<br>
                         <strong>Máximo 1MB (Usa una captura de pantalla si pesa mucho).</strong>
                     </div>
                 </div>
@@ -132,48 +130,48 @@
     </form>
     <div id="mensajeFinal" style="display:none; text-align:center; padding:20px;">
         <h3 style="color:var(--neon)">¡REGISTRO ENVIADO!</h3>
-        <p>Estamos validando tus datos. Tu dorsal será enviado al correo tras confirmar el pago.</p>
+        <p>Tu inscripción está siendo procesada. Revisa tu correo.</p>
     </div>
 </div>
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec"; 
     let TASA_BCV = 0;
+    let inscritos = [];
 
     async function inicializar() {
         try {
-            const respTasa = await fetch(WEB_APP_URL + "?getTasa=true");
+            // Cargamos tasa y lista de inscritos al mismo tiempo
+            const [respTasa, respInscritos] = await Promise.all([
+                fetch(WEB_APP_URL + "?getTasa=true"),
+                fetch(WEB_APP_URL)
+            ]);
+            
             const dataTasa = await respTasa.json();
             TASA_BCV = dataTasa.tasa;
             document.getElementById('tasaDisplay').innerText = "Tasa Oficial BCV: " + TASA_BCV.toFixed(2) + " Bs.";
+            
+            inscritos = await respInscritos.json();
             ajustarCategorias();
-        } catch (e) { 
-            document.getElementById('tasaDisplay').innerText = "Error al conectar con BCV";
-        }
+        } catch (e) { console.error("Error inicializando"); }
     }
 
     function ajustarCategorias() {
         const mod = document.getElementById('modalidad').value;
         const cat = document.getElementById('categoria');
         const precioUSD = (mod === "Ruta Race") ? 25 : 30;
-        
         cat.innerHTML = mod === "Ruta Race" ? '<option>General</option>' : '<option>Escalado</option><option>Avanzado</option>';
         document.getElementById('labelPrecio').innerText = "TOTAL: $" + precioUSD;
-        
-        if(TASA_BCV > 0) {
-            document.getElementById('montoBs').value = (precioUSD * TASA_BCV).toFixed(2) + " Bs.";
-        }
+        if(TASA_BCV > 0) document.getElementById('montoBs').value = (precioUSD * TASA_BCV).toFixed(2) + " Bs.";
     }
 
     function mostrarInstrucciones() {
         const metodo = document.getElementById('metodoPago').value;
         const div = document.getElementById('instruccionesPago');
-        if(!metodo) { div.style.display="none"; return; }
-        
-        div.style.display = "block";
+        div.style.display = metodo ? "block" : "none";
         if(metodo === "Pago Móvil") {
             div.innerHTML = `<strong>DATOS PAGO MÓVIL:</strong><br>Banco: Mercantil (0105)<br>Teléfono: 04121234567<br>Cédula: V-12345678`;
-        } else {
+        } else if(metodo === "Zelle") {
             div.innerHTML = `<strong>DATOS ZELLE:</strong><br>Correo: pagos@larutagarage.com<br>Titular: La Ruta Garage LLC`;
         }
     }
@@ -188,8 +186,18 @@
 
     document.getElementById('registroForm').onsubmit = async (e) => {
         e.preventDefault();
-        
         const btn = document.getElementById('btnEnviar');
+        const cedulaInput = document.getElementById('cedula').value;
+        const refInput = document.getElementById('referencia').value;
+
+        // VERIFICACIÓN DE DUPLICADOS CON ALERTA
+        const duplicado = inscritos.find(a => a.referencia == refInput);
+        
+        if(duplicado) {
+            alert("⚠️ Error: Este número de referencia ya ha sido registrado.");
+            return; // Detiene el envío
+        }
+
         btn.disabled = true;
         btn.innerText = "ENVIANDO...";
 
@@ -197,7 +205,7 @@
             const data = {
                 nombre: document.getElementById('nombre').value,
                 apellido: document.getElementById('apellido').value,
-                cedula: document.getElementById('cedula').value,
+                cedula: cedulaInput,
                 fechaNac: document.getElementById('fechaNac').value,
                 sexo: document.getElementById('sexo').value,
                 ciudad: document.getElementById('ciudad').value,
@@ -205,19 +213,18 @@
                 correo: document.getElementById('correo').value,
                 modalidad: document.getElementById('modalidad').value,
                 categoria: document.getElementById('categoria').value,
-                referencia: document.getElementById('referencia').value,
+                referencia: refInput,
                 montoBs: document.getElementById('montoBs').value,
                 fotoCarnet: await processFile(document.getElementById('fotoCarnet').files[0]),
                 fotoPago: await processFile(document.getElementById('fotoPago').files[0])
             };
 
             await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            
             document.getElementById('registroForm').style.display = 'none';
             document.getElementById('mensajeFinal').style.display = 'block';
             window.scrollTo(0,0);
         } catch (error) {
-            alert("Error al enviar datos. Inténtalo de nuevo.");
+            alert("Ocurrió un error. Revisa tu internet.");
             btn.disabled = false;
             btn.innerText = "ENVIAR INSCRIPCIÓN";
         }

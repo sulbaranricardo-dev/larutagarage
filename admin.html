@@ -9,43 +9,71 @@
     <style>
         :root { --neon: #39FF14; --bg: #050505; }
         body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 20px; margin: 0; }
-        h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; font-size: 1.5rem; margin: 30px 0; letter-spacing: 5px; }
+        
+        /* Login Overlay */
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #loginBox { background: #111; padding: 40px; border-radius: 15px; border: 1px solid var(--neon); text-align: center; max-width: 300px; }
+        
+        .header-admin { text-align: center; margin-bottom: 20px; }
+        .header-admin img { width: 150px; margin-bottom: 10px; }
+        h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; font-size: 1.1rem; margin: 10px 0 30px; letter-spacing: 3px; }
         
         .container { max-width: 1200px; margin: auto; background: #111; border-radius: 10px; border: 1px solid #222; overflow: hidden; }
-        .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th { background: #1a1a1a; color: var(--neon); text-align: left; padding: 15px; font-size: 0.75rem; text-transform: uppercase; border-bottom: 2px solid var(--neon); }
-        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.85rem; vertical-align: middle; }
         
-        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 5px; transition: 0.3s; }
+        /* Estilos de Tabla */
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #1a1a1a; color: var(--neon); text-align: left; padding: 15px; font-size: 0.7rem; text-transform: uppercase; border-bottom: 2px solid var(--neon); }
+        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.8rem; vertical-align: middle; }
+        
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 5px; transition: 0.3s; margin-bottom: 5px; }
         .btn-view { background: #333; color: white; }
-        .btn-view:hover { background: #444; }
         .btn-approve { background: var(--neon); color: black; }
-        .btn-approve:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--neon); }
         .btn-wa { background: #25D366; color: white; }
-
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
         .status-pendiente { background: #ffaa00; color: black; }
         .status-aprobado { background: var(--neon); color: black; }
         
-        .loading { text-align: center; padding: 50px; color: var(--neon); font-family: 'Syncopate'; }
+        /* Optimización para Celulares */
+        @media (max-width: 800px) {
+            table thead { display: none; }
+            table tr { display: block; background: #161616; margin-bottom: 15px; border: 1px solid #333; padding: 10px; border-radius: 8px; }
+            table td { display: block; text-align: right; padding: 8px 10px; border-bottom: 1px solid #222; position: relative; }
+            table td::before { content: attr(data-label); position: absolute; left: 10px; font-weight: bold; color: var(--neon); text-transform: uppercase; font-size: 0.6rem; }
+            .btn { width: 100%; justify-content: center; padding: 12px; font-size: 0.8rem; }
+        }
+
+        .loading { text-align: center; padding: 50px; color: var(--neon); font-family: 'Syncopate'; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <h1>PANEL ADMINISTRATIVO</h1>
+    <div id="loginOverlay">
+        <div id="loginBox">
+            <img src="https://i.ibb.co/mF8DTRrm/Logo-Icono-Verde.png" width="80" style="margin-bottom: 20px;">
+            <p style="font-size: 0.7rem; color: #888; margin-bottom: 20px;">ACCESO RESTRINGIDO</p>
+            <input type="password" id="adminPass" placeholder="Contraseña" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: white; border-radius: 5px;">
+            <button onclick="verificarAcceso()" class="btn btn-approve" style="width: 100%;">ENTRAR</button>
+        </div>
+    </div>
+
+    <div class="header-admin">
+        <img src="https://i.ibb.co/mF8DTRrm/Logo-Icono-Verde.png" alt="Logo">
+        <h1>PANEL ADMINISTRATIVO</h1>
+    </div>
 
     <div class="container">
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>Atleta</th>
+                        <th>Dorsal</th>
+                        <th>Atleta / Talla</th>
                         <th>Modalidad</th>
-                        <th>Pago/Ref</th>
+                        <th>Pago Info</th>
                         <th>Multimedia</th>
-                        <th>WhatsApp</th>
-                        <th>Estatus</th>
+                        <th>Chat</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
@@ -58,74 +86,74 @@
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
+    const PASS_CORRECTO = "Ruta2026"; // Cambia aquí tu contraseña
 
-async function cargarAtletas() {
+    function verificarAcceso() {
+        const pass = document.getElementById('adminPass').value;
+        if(pass === PASS_CORRECTO) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            cargarAtletas();
+        } else {
+            alert("Contraseña incorrecta");
+        }
+    }
+
+    async function cargarAtletas() {
         try {
-            const response = await fetch(WEB_APP_URL + "?t=" + new Date().getTime(), {
-                method: 'GET',
-                redirect: 'follow'
-            });
-            
-            if (!response.ok) throw new Error("Error en respuesta");
-            
+            const response = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
             const data = await response.json();
             const tabla = document.getElementById('tablaAtletas');
             
             if (!data || data.length === 0) {
-                tabla.innerHTML = "<tr><td colspan='7' style='text-align:center'>No hay atletas registrados aún.</td></tr>";
+                tabla.innerHTML = "<tr><td colspan='7' style='text-align:center'>No hay registros.</td></tr>";
                 return;
             }
 
             tabla.innerHTML = "";
             data.reverse().forEach(atleta => {
-                // SOLUCIÓN AL ERROR: Convertimos WhatsApp a texto antes de usar .replace
                 const waNumero = String(atleta.whatsapp || "").replace(/[^0-9]/g, '');
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>${atleta.nombre}</strong><br><small style="color:#666">${atleta.correo}</small></td>
-                    <td><small>${atleta.modalidad}</small></td>
-                    <td><small>Ref: ${atleta.referencia}</small></td>
-                    <td>
-                        <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i> Carnet</a>
-                        <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i> Pago</a>
-                    </td>
-                    <td>
-                        <a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> Chat</a>
-                    </td>
-                    <td>
+                    <td data-label="Dorsal">
                         <span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">
-                            ${atleta.estatus} ${atleta.dorsal ? '#' + atleta.dorsal : ''}
+                            ${atleta.dorsal ? '#' + atleta.dorsal : 'SIN ASIGNAR'}
                         </span>
                     </td>
-                    <td>
+                    <td data-label="Atleta">
+                        <strong>${atleta.nombre}</strong><br>
+                        <small style="color:var(--neon)">Talla: ${atleta.talla || 'S/N'}</small>
+                    </td>
+                    <td data-label="Modalidad"><small>${atleta.modalidad}</small></td>
+                    <td data-label="Pago">
+                        <small><strong>${atleta.metodo || 'S/M'}</strong></small><br>
+                        <small style="color:#888">Ref: ${atleta.referencia}</small>
+                    </td>
+                    <td data-label="Multimedia">
+                        <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i></a>
+                        <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i></a>
+                    </td>
+                    <td data-label="Chat">
+                        <a href="https://wa.me/${waNumero}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a>
+                    </td>
+                    <td data-label="Acción">
                         ${atleta.estatus === 'Pendiente' ? 
-                        `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila}, '${atleta.correo}', '${atleta.nombre}')"><i class="fas fa-check"></i> APROBAR</button>` : 
-                        '<i class="fas fa-check-circle" style="color:var(--neon); font-size:1.2rem"></i>'}
+                        `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila}, '${atleta.correo}', '${atleta.nombre}')">APROBAR</button>` : 
+                        '<span style="color:var(--neon); font-size:0.7rem;"><i class="fas fa-check-double"></i> LISTO</span>'}
                     </td>
                 `;
                 tabla.appendChild(tr);
             });
         } catch (error) {
-            console.error("Error detallado:", error);
-            document.getElementById('tablaAtletas').innerHTML = "<tr><td colspan='7' style='text-align:center'>Error al procesar datos del Excel. <br><small>Revisa que el campo WhatsApp no esté vacío.</small></td></tr>";
+            console.error(error);
+            document.getElementById('tablaAtletas').innerHTML = "<tr><td colspan='7' style='text-align:center'>Error de conexión.</td></tr>";
         }
     }
 
     async function procesarAprobacion(fila, correo, nombre) {
-        if(!confirm(`¿Deseas aprobar a ${nombre}? Se le asignará un dorsal y se enviará el correo de confirmación automáticamente.`)) return;
+        if(!confirm(`¿Aprobar a ${nombre}?`)) return;
         
-        // Bloquear botón para evitar doble clic
-        const btn = event.target;
-        btn.disabled = true;
-        btn.innerText = "PROCESANDO...";
-
-        const payload = {
-            accion: "aprobar",
-            fila: fila,
-            correo: correo,
-            nombre: nombre
-        };
+        const payload = { accion: "aprobar", fila: fila, correo: correo, nombre: nombre };
 
         try {
             await fetch(WEB_APP_URL, {
@@ -134,16 +162,12 @@ async function cargarAtletas() {
                 body: JSON.stringify(payload)
             });
 
-            alert("¡Atleta aprobado con éxito! El dorsal ha sido asignado y el correo enviado.");
-            cargarAtletas(); // Recargar tabla
+            alert("Atleta aprobado. Dorsal asignado.");
+            cargarAtletas();
         } catch (error) {
-            alert("Error al procesar. Revisa el Excel.");
-            btn.disabled = false;
-            btn.innerText = "APROBAR";
+            alert("Error al procesar.");
         }
     }
-
-    window.onload = cargarAtletas;
 </script>
 </body>
 </html>

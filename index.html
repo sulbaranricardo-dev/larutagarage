@@ -8,6 +8,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
+
+        .logo-container {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.nav-logo {
+    height: 40px; /* Ajusta la altura según qué tan grande quieras que se vea */
+    width: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.nav-logo:hover {
+    transform: scale(1.05); /* Efecto sutil al pasar el mouse */
+}
+
+/* Ajuste para el nav para que todo esté centrado verticalmente */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+}
+        
         :root {
             --neon: #39FF14;
             --neon-glow: rgba(57, 255, 20, 0.4);

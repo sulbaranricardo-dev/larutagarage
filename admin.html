@@ -2,91 +2,146 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | La Ruta Garage</title>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --neon: #39FF14; --bg: #050505; }
-        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 40px; }
-        h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; margin-bottom: 40px; }
-        .table-container { background: #111; padding: 20px; border-radius: 10px; border: 1px solid #222; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-        th { color: var(--neon); text-align: left; padding: 15px; border-bottom: 2px solid #333; font-size: 0.8rem; }
-        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.85rem; }
-        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.75rem; display: inline-block; }
+        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 20px; margin: 0; }
+        h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; font-size: 1.5rem; margin: 30px 0; letter-spacing: 5px; }
+        
+        .container { max-width: 1200px; margin: auto; background: #111; border-radius: 10px; border: 1px solid #222; overflow: hidden; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th { background: #1a1a1a; color: var(--neon); text-align: left; padding: 15px; font-size: 0.75rem; text-transform: uppercase; border-bottom: 2px solid var(--neon); }
+        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.85rem; vertical-align: middle; }
+        
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .btn-view { background: #333; color: white; }
+        .btn-view:hover { background: #444; }
         .btn-approve { background: var(--neon); color: black; }
-        .btn-view { background: #333; color: white; margin-right: 5px; }
-        .btn-wa { background: #25D366; color: white; margin-right: 5px; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; }
-        .pending { background: #ffaa00; color: black; }
-        .approved { background: var(--neon); color: black; }
+        .btn-approve:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--neon); }
+        .btn-wa { background: #25D366; color: white; }
+
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .status-pendiente { background: #ffaa00; color: black; }
+        .status-aprobado { background: var(--neon); color: black; }
+        
+        .loading { text-align: center; padding: 50px; color: var(--neon); font-family: 'Syncopate'; }
     </style>
 </head>
 <body>
-    <h1>CONTROL DE INSCRIPCIONES</h1>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Atleta</th>
-                    <th>Modalidad</th>
-                    <th>Referencia</th>
-                    <th>Captures</th>
-                    <th>WhatsApp</th>
-                    <th>Estatus/Dorsal</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody id="tabla">
-                <tr><td colspan="7" style="text-align:center;">Cargando atletas...</td></tr>
-            </tbody>
-        </table>
+
+    <h1>PANEL ADMINISTRATIVO</h1>
+
+    <div class="container">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Atleta</th>
+                        <th>Modalidad</th>
+                        <th>Pago/Ref</th>
+                        <th>Multimedia</th>
+                        <th>WhatsApp</th>
+                        <th>Estatus</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaAtletas">
+                    <tr><td colspan="7" class="loading">Cargando registros...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <script>
-        const WEB_APP_URL = "TU_URL_DE_APPS_SCRIPT"; // Pégala aquí
+<script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
 
-        async function cargar() {
-            const resp = await fetch(WEB_APP_URL);
-            const data = await resp.json();
-            const tabla = document.getElementById('tabla');
+   async function cargarAtletas() {
+        try {
+            // Añadimos un timestamp para evitar que el navegador use datos viejos
+            const response = await fetch(WEB_APP_URL + "?t=" + new Date().getTime(), {
+                method: 'GET',
+                redirect: 'follow'
+            });
+            
+            if (!response.ok) throw new Error("Error en respuesta");
+            
+            const data = await response.json();
+            const tabla = document.getElementById('tablaAtletas');
+            
+            if (data.length === 0) {
+                tabla.innerHTML = "<tr><td colspan='7' style='text-align:center'>No hay atletas registrados aún.</td></tr>";
+                return;
+            }
+
             tabla.innerHTML = "";
-
-            data.forEach(atleta => {
-                const fila = `
-                <tr>
-                    <td><b>${atleta.nombre}</b><br><small>${atleta.correo}</small></td>
-                    <td>${atleta.modalidad}</td>
-                    <td>${atleta.referencia}</td>
+            data.reverse().forEach(atleta => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${atleta.nombre}</strong><br><small style="color:#666">${atleta.correo}</small></td>
+                    <td><small>${atleta.modalidad}</small></td>
+                    <td><small>Ref: ${atleta.referencia}</small></td>
                     <td>
-                        <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view">Carnet</a>
-                        <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view">Pago</a>
+                        <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i> Carnet</a>
+                        <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i> Pago</a>
                     </td>
                     <td>
-                        <a href="https://wa.me/${atleta.whatsapp}" target="_blank" class="btn btn-wa">Chat</a>
+                        <a href="https://wa.me/${atleta.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> Chat</a>
                     </td>
                     <td>
-                        <span class="badge ${atleta.estatus === 'Pendiente' ? 'pending' : 'approved'}">
+                        <span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">
                             ${atleta.estatus} ${atleta.dorsal ? '#' + atleta.dorsal : ''}
                         </span>
                     </td>
                     <td>
                         ${atleta.estatus === 'Pendiente' ? 
-                          `<button class="btn btn-approve" onclick="aprobar(${atleta.fila}, '${atleta.correo}', '${atleta.nombre}')">APROBAR</button>` : 
-                          '✅'}
+                        `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila}, '${atleta.correo}', '${atleta.nombre}')"><i class="fas fa-check"></i> APROBAR</button>` : 
+                        '<i class="fas fa-check-circle" style="color:var(--neon); font-size:1.2rem"></i>'}
                     </td>
-                </tr>`;
-                tabla.innerHTML += fila;
+                `;
+                tabla.appendChild(tr);
             });
+        } catch (error) {
+            console.error("Error detallado:", error);
+            document.getElementById('tablaAtletas').innerHTML = "<tr><td colspan='7' style='text-align:center'>Error al conectar con Google. <br><small>Intenta abrir el panel en Incógnito o recargar con Ctrl+F5</small></td></tr>";
         }
+    }
 
-        async function aprobar(fila, correo, nombre) {
-            if(!confirm("¿Deseas aprobar a " + nombre + " y enviarle su Dorsal?")) return;
-            // Aquí llamaríamos a una función de aprobación (requiere configuración avanzada de Apps Script)
-            alert("Función conectada. El Excel se actualizará y se enviará el correo.");
-            // Por ahora, para simplificar, el admin lo hará manualmente en el Excel y el dashboard refrescará.
+    async function procesarAprobacion(fila, correo, nombre) {
+        if(!confirm(`¿Deseas aprobar a ${nombre}? Se le asignará un dorsal y se enviará el correo de confirmación automáticamente.`)) return;
+        
+        // Bloquear botón para evitar doble clic
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerText = "PROCESANDO...";
+
+        const payload = {
+            accion: "aprobar",
+            fila: fila,
+            correo: correo,
+            nombre: nombre
+        };
+
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
+
+            alert("¡Atleta aprobado con éxito! El dorsal ha sido asignado y el correo enviado.");
+            cargarAtletas(); // Recargar tabla
+        } catch (error) {
+            alert("Error al procesar. Revisa el Excel.");
+            btn.disabled = false;
+            btn.innerText = "APROBAR";
         }
+    }
 
-        window.onload = cargar;
-    </script>
+    window.onload = cargarAtletas;
+</script>
 </body>
 </html>

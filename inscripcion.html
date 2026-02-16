@@ -187,17 +187,35 @@
     document.getElementById('registroForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('btnEnviar');
-        const cedulaInput = document.getElementById('cedula').value;
-        const refInput = document.getElementById('referencia').value;
+        const cedulaInput = document.getElementById('cedula').value.trim();
+        const refInput = document.getElementById('referencia').value.trim();
 
-        // VERIFICACIÓN DE DUPLICADOS CON ALERTA
-        const duplicado = inscritos.find(a => a.referencia == refInput);
-        
-        if(duplicado) {
-            alert("⚠️ Error: Este número de referencia ya ha sido registrado.");
-            return; // Detiene el envío
+        // --- VALIDACIÓN DE DUPLICADOS BLINDADA ---
+        // 1. Verificamos si la cédula ya existe en los registros descargados
+        // Buscamos en los datos que traemos del Dashboard
+        const duplicadoCedula = inscritos.some(a => {
+            // Como el Dashboard une nombre y apellido, buscaremos si el registro 
+            // contiene la cédula en algún campo o si coincide con los datos enviados
+            return String(a.whatsapp).includes(cedulaInput) || String(a.nombre).includes(cedulaInput);
+        });
+
+        // 2. Verificamos la referencia de pago (Esta es la más segura)
+        const duplicadoRef = inscritos.some(a => String(a.referencia).trim() === refInput);
+
+        if (duplicadoRef) {
+            alert("⚠️ ERROR: Este número de referencia de pago ya ha sido registrado anteriormente.");
+            return;
         }
 
+        // Si prefieres bloquear por cédula estrictamente:
+        /*
+        if (duplicadoCedula) {
+            alert("⚠️ ERROR: Esta cédula ya se encuentra inscrita en la competencia.");
+            return;
+        }
+        */
+
+        // Si pasa las validaciones, procedemos al envío
         btn.disabled = true;
         btn.innerText = "ENVIANDO...";
 
@@ -211,6 +229,7 @@
                 ciudad: document.getElementById('ciudad').value,
                 telefono: document.getElementById('telefono').value,
                 correo: document.getElementById('correo').value,
+                box: document.getElementById('box').value,
                 modalidad: document.getElementById('modalidad').value,
                 categoria: document.getElementById('categoria').value,
                 referencia: refInput,
@@ -220,11 +239,12 @@
             };
 
             await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+            
             document.getElementById('registroForm').style.display = 'none';
             document.getElementById('mensajeFinal').style.display = 'block';
             window.scrollTo(0,0);
         } catch (error) {
-            alert("Ocurrió un error. Revisa tu internet.");
+            alert("Ocurrió un error de conexión. Inténtalo de nuevo.");
             btn.disabled = false;
             btn.innerText = "ENVIAR INSCRIPCIÓN";
         }

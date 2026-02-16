@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --neon: #39FF14; --bg: #050505; }
-        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 10px; margin: 0; display: none; } /* Oculto hasta validar KEY */
+        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 10px; margin: 0; display: none; }
         
         #modalEditar { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:2000; overflow-y:auto; padding:20px; box-sizing: border-box; }
         .modal-content { max-width:600px; margin:auto; background:#111; border:1px solid var(--neon); padding:25px; border-radius:15px; }
@@ -113,7 +113,7 @@
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
-    const SECRET_KEY = "RutaGarage2026"; // TU LLAVE SECRETA
+    const SECRET_KEY = "RutaGarage2026";
 
     let todosLosAtletas = [];
     let atletasFiltrados = [];
@@ -122,7 +122,6 @@
     let modalidadActual = 'todos';
     let atletaAEditar = null;
 
-    // VALIDACIÓN DE URL SECRETA
     (function validarAcceso() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('key') === SECRET_KEY) {
@@ -153,7 +152,7 @@
         const busqueda = document.getElementById('searchInput').value.toLowerCase();
         atletasFiltrados = todosLosAtletas.filter(atleta => {
             const cumpleMod = (modalidadActual === 'todos' || atleta.modalidad.toLowerCase().includes(modalidadActual));
-            const dataStr = [atleta.nombre, atleta.cedula, atleta.referencia, atleta.dorsal].join(' ').toLowerCase();
+            const dataStr = [atleta.nombre, atleta.apellido, atleta.cedula, atleta.referencia, atleta.dorsal].join(' ').toLowerCase();
             return cumpleMod && dataStr.includes(busqueda);
         });
         renderizarTabla();
@@ -167,7 +166,6 @@
         tabla.innerHTML = "";
         atletasPagina.forEach((atleta, index) => {
             const tr = document.createElement('tr');
-            // Usamos un índice para referenciar al atleta de forma segura
             tr.innerHTML = `
                 <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal || 'PEND'}</span></td>
                 <td data-label="Atleta"><strong>${atleta.nombre} ${atleta.apellido || ''}</strong><br><small style="color:var(--neon)">Talla: ${atleta.talla || 'S/N'}</small></td>
@@ -177,7 +175,7 @@
                     <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i></a>
                     <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i></a>
                 </td>
-                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp || atleta.telefono).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
+                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
                 <td data-label="Acción">
                     <button class="btn btn-view" onclick='prepararEdicion(${inicio + index})'><i class="fas fa-edit"></i></button>
                     <button class="btn btn-delete" onclick="eliminarAtleta(${atleta.fila}, '${atleta.nombre}')"><i class="fas fa-trash"></i></button>
@@ -188,18 +186,15 @@
         actualizarControlesPagina(atletasFiltrados.length);
     }
 
-    // Nueva función para abrir el editor cargando los datos correctamente
-    function prepararEdicion(indexEnFiltrados) {
-        atletaAEditar = atletasFiltrados[indexEnFiltrados];
+    function prepararEdicion(idx) {
+        atletaAEditar = atletasFiltrados[idx];
         const contenedor = document.getElementById('camposEditar');
         contenedor.innerHTML = "";
-
-        // Definimos los campos y les asignamos el valor que viene de Google Sheets
         const campos = [
             {id: "nombre", label: "Nombre", valor: atletaAEditar.nombre},
             {id: "apellido", label: "Apellido", valor: atletaAEditar.apellido},
             {id: "cedula", label: "Cédula", valor: atletaAEditar.cedula},
-            {id: "telefono", label: "Teléfono", valor: atletaAEditar.telefono || atletaAEditar.whatsapp},
+            {id: "telefono", label: "Teléfono", valor: atletaAEditar.telefono},
             {id: "correo", label: "Correo", valor: atletaAEditar.correo},
             {id: "talla", label: "Talla", valor: atletaAEditar.talla},
             {id: "modalidad", label: "Modalidad", valor: atletaAEditar.modalidad},
@@ -207,31 +202,8 @@
             {id: "dorsal", label: "Dorsal", valor: atletaAEditar.dorsal},
             {id: "fecha", label: "Fecha Registro", valor: atletaAEditar.fecha}
         ];
-
         campos.forEach(c => {
-            contenedor.innerHTML += `
-                <div>
-                    <label>${c.label}</label>
-                    <input type="text" id="edit_${c.id}" value="${c.valor || ''}">
-                </div>`;
-        });
-
-        document.getElementById('modalEditar').style.display = 'block';
-        document.getElementById('btnGuardarEdit').onclick = guardarEdicion;
-    }
-    function abrirEditor(atleta) {
-        atletaAEditar = atleta;
-        const contenedor = document.getElementById('camposEditar');
-        contenedor.innerHTML = "";
-        const campos = [
-            {id: "nombre", label: "Nombre"}, {id: "apellido", label: "Apellido"},
-            {id: "cedula", label: "Cédula"}, {id: "telefono", label: "Teléfono"},
-            {id: "correo", label: "Correo"}, {id: "talla", label: "Talla"},
-            {id: "modalidad", label: "Modalidad"}, {id: "categoria", label: "Categoría"},
-            {id: "dorsal", label: "Dorsal"}, {id: "fecha", label: "Fecha"}
-        ];
-        campos.forEach(c => {
-            contenedor.innerHTML += `<div><label>${c.label}</label><input type="text" id="edit_${c.id}" value="${atleta[c.id] || ''}"></div>`;
+            contenedor.innerHTML += `<div><label>${c.label}</label><input type="text" id="edit_${c.id}" value="${c.valor || ''}"></div>`;
         });
         document.getElementById('modalEditar').style.display = 'block';
         document.getElementById('btnGuardarEdit').onclick = guardarEdicion;

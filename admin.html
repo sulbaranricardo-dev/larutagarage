@@ -4,56 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | La Ruta Garage</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FFavicon.png?alt=media&token=0e2d4383-2c9b-4005-9b46-943b40c0637d">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --neon: #39FF14; --bg: #050505; }
-        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 10px; margin: 0; display: none; }
+        :root { 
+            --neon: #d8ff5e; 
+            --bg: #050505; 
+            --glass: rgba(20, 20, 20, 0.7);
+        }
+
+        body { 
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1533106497176-45ae19e68ba2?auto=format&fit=crop&q=80&w=2070'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white; 
+            font-family: 'Montserrat', sans-serif; 
+            padding: 10px; 
+            margin: 0; 
+            display: none; /* Validado por JS */
+            min-height: 100vh;
+        }
         
-        #modalEditar { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:2000; overflow-y:auto; padding:20px; box-sizing: border-box; }
-        .modal-content { max-width:600px; margin:auto; background:#111; border:1px solid var(--neon); padding:25px; border-radius:15px; }
+        /* Modal Editar con Efecto Espejo */
+        #modalEditar { 
+            display:none; 
+            position:fixed; 
+            top:0; left:0; 
+            width:100%; height:100%; 
+            background:rgba(0,0,0,0.9); 
+            z-index:2000; 
+            overflow-y:auto; 
+            padding:20px; 
+            box-sizing: border-box; 
+        }
+        .modal-content { 
+            max-width:600px; 
+            margin:auto; 
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(216, 255, 94, 0.2);
+            padding:30px; 
+            border-radius:20px; 
+        }
         .edit-grid { display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top: 20px; }
         .edit-grid div { display: flex; flex-direction: column; }
-        .edit-grid label { font-size: 0.6rem; color: #666; text-transform: uppercase; margin-bottom: 5px; }
-        .edit-grid input { background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 5px; font-size: 0.8rem; }
+        .edit-grid label { font-size: 0.65rem; color: var(--neon); text-transform: uppercase; margin-bottom: 5px; font-weight: 600; }
+        .edit-grid input { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-size: 0.85rem; font-family: 'Montserrat'; }
+        .edit-grid input:focus { border-color: var(--neon); outline: none; }
 
-        .header-admin { text-align: center; margin-bottom: 10px; }
-        .header-admin img { width: 130px; margin-bottom: 5px; }
-        h1 { font-family: 'Syncopate'; color: var(--neon); text-align: center; font-size: 0.9rem; margin: 10px 0; letter-spacing: 3px; }
+        .header-admin { text-align: center; margin-bottom: 20px; padding-top: 20px; }
+        .header-admin img { width: 120px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(216, 255, 94, 0.2)); }
+        h1 { 
+            font-weight: 900; 
+            color: var(--neon); 
+            text-align: center; 
+            font-size: 1.4rem; 
+            margin: 0; 
+            letter-spacing: 2px; 
+            text-transform: uppercase;
+        }
 
-        .controls { max-width: 1200px; margin: 10px auto; display: flex; flex-wrap: wrap; gap: 10px; padding: 0 10px; }
+        .controls { max-width: 1200px; margin: 20px auto; display: flex; flex-wrap: wrap; gap: 10px; padding: 0 10px; }
         .search-box { flex: 1; min-width: 250px; }
-        .search-box input { width: 100%; padding: 12px 15px; background: #111; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+        .search-box input { 
+            width: 100%; 
+            padding: 15px; 
+            background: var(--glass); 
+            backdrop-filter: blur(10px);
+            border: 1px solid #333; 
+            color: white; 
+            border-radius: 12px; 
+            box-sizing: border-box; 
+            font-family: 'Montserrat';
+        }
         
-        .filter-buttons { display: flex; gap: 5px; width: 100%; }
-        .btn-filter { flex: 1; padding: 12px; background: #111; color: white; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-family: 'Syncopate'; font-size: 0.6rem; }
-        .btn-filter.active { background: var(--neon); color: black; border-color: var(--neon); }
+        .filter-buttons { display: flex; gap: 8px; width: 100%; }
+        .btn-filter { 
+            flex: 1; 
+            padding: 14px; 
+            background: rgba(0,0,0,0.6); 
+            color: white; 
+            border: 1px solid #333; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 0.7rem; 
+            text-transform: uppercase;
+            font-family: 'Montserrat';
+            transition: 0.3s;
+        }
+        .btn-filter.active { background: var(--neon); color: black; border-color: var(--neon); font-weight: 900; }
 
-        .container { max-width: 1200px; margin: auto; background: #111; border-radius: 10px; border: 1px solid #222; overflow: hidden; }
+        /* Contenedor de Tabla Glassmorphism */
+        .container { 
+            max-width: 1200px; 
+            margin: auto; 
+            background: var(--glass); 
+            backdrop-filter: blur(10px);
+            border-radius: 15px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #1a1a1a; color: var(--neon); text-align: left; padding: 15px; font-size: 0.7rem; border-bottom: 2px solid var(--neon); }
-        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.8rem; }
+        th { 
+            background: rgba(216, 255, 94, 0.05); 
+            color: var(--neon); 
+            text-align: left; 
+            padding: 18px; 
+            font-size: 0.75rem; 
+            font-weight: 900;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--neon); 
+        }
+        td { padding: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; font-weight: 300; }
+        strong { font-weight: 600; }
 
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; padding: 20px; }
-        .btn-pag { background: #222; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; padding: 25px; }
+        .btn-pag { 
+            background: #111; 
+            color: white; 
+            border: 1px solid #333; 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-family: 'Montserrat';
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
         
-        .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.65rem; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; border: 1px solid transparent; }
-        .btn-view { background: #1a1a1a; color: #ccc; border-color: #333; }
-        .btn-approve { background: var(--neon); color: black; }
-        .btn-wa { background: #000; color: #25D366; border-color: #25D366; }
-        .btn-delete { background: #1a1a1a; color: #ff4444; border-color: #333; }
+        /* Botones de Acción */
+        .btn { 
+            padding: 10px 14px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 0.7rem; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            border: 1px solid transparent; 
+            transition: 0.3s;
+        }
+        .btn-view { background: rgba(255,255,255,0.05); color: #ccc; border-color: #333; }
+        .btn-approve { background: var(--neon); color: black; font-weight: 900; }
+        .btn-wa { background: transparent; color: #25D366; border-color: #25D366; }
+        .btn-delete { background: transparent; color: #ff4444; border-color: rgba(255,68,68,0.3); }
+        .btn:hover { transform: scale(1.05); }
         
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; }
+        .badge { padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 900; }
         .status-pendiente { border: 1px solid #ffaa00; color: #ffaa00; background: transparent; }
-        .status-aprobado { border: 1px solid var(--neon); color: var(--neon); background: #000; }
+        .status-aprobado { border: 1px solid var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.1); }
 
         @media (max-width: 800px) {
             table thead { display: none; }
-            table tr { display: block; background: #111; margin-bottom: 15px; border: 1px solid #222; padding: 10px; border-radius: 8px; }
-            table td { display: flex; justify-content: flex-end; align-items: center; padding: 12px 10px; border-bottom: 1px solid #1a1a1a; gap: 5px; flex-wrap: wrap; }
-            table td::before { content: attr(data-label); font-weight: bold; color: #666; text-transform: uppercase; font-size: 0.6rem; margin-right: auto; }
-            .btn { width: 100%; font-size: 0.75rem; padding: 12px; margin-top: 5px; }
+            table tr { display: block; background: rgba(0,0,0,0.3); margin-bottom: 15px; border: 1px solid #222; padding: 15px; border-radius: 12px; }
+            table td { display: flex; justify-content: flex-end; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 8px; flex-wrap: wrap; }
+            table td::before { content: attr(data-label); font-weight: 900; color: #666; text-transform: uppercase; font-size: 0.6rem; margin-right: auto; }
+            .btn { width: 100%; padding: 15px; justify-content: center; }
             .edit-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -62,10 +177,10 @@
 
     <div id="modalEditar">
         <div class="modal-content">
-            <h2 style="font-family:'Syncopate'; color:var(--neon); font-size:0.8rem; margin:0;">EDITAR ATLETA</h2>
+            <h2 style="font-weight:900; color:var(--neon); font-size:1.1rem; margin:0; text-transform: uppercase; text-align: center;">Editar Atleta</h2>
             <div id="camposEditar" class="edit-grid"></div>
-            <div style="margin-top:25px; display:flex; gap:10px;">
-                <button id="btnGuardarEdit" class="btn btn-approve" style="flex:1;">GUARDAR</button>
+            <div style="margin-top:30px; display:flex; gap:12px;">
+                <button id="btnGuardarEdit" class="btn btn-approve" style="flex:1;">GUARDAR CAMBIOS</button>
                 <button onclick="document.getElementById('modalEditar').style.display='none'" class="btn btn-view" style="flex:1;">CANCELAR</button>
             </div>
         </div>
@@ -73,17 +188,17 @@
 
     <div class="header-admin">
         <img src="https://i.ibb.co/mF8DTRrm/Logo-Icono-Verde.png" alt="Logo">
-        <h1>PANEL ADMINISTRATIVO</h1>
+        <h1>Dashboard Administrativo</h1>
     </div>
 
     <div class="controls">
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Nombre, cédula, dorsal..." oninput="resetearYPaginacion()">
+            <input type="text" id="searchInput" placeholder="Buscar por nombre, cédula o dorsal..." oninput="resetearYPaginacion()">
         </div>
         <div class="filter-buttons">
-            <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('todos')">TODOS</button>
-            <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">RACE</button>
-            <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">CROSSFIT</button>
+            <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('todos')">Todos</button>
+            <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">Race</button>
+            <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">Crossfit</button>
         </div>
     </div>
 
@@ -106,7 +221,7 @@
         </div>
         <div class="pagination">
             <button class="btn-pag" id="prevPage" onclick="cambiarPagina(-1)" disabled>Anterior</button>
-            <span id="pageInfo">Página 1</span>
+            <span id="pageInfo" style="font-weight: 600; font-size: 0.8rem;">Página 1</span>
             <button class="btn-pag" id="nextPage" onclick="cambiarPagina(1)" disabled>Siguiente</button>
         </div>
     </div>
@@ -144,7 +259,8 @@
     function filtrarModalidad(mod) {
         modalidadActual = mod.toLowerCase(); 
         document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-        document.getElementById(mod === 'todos' ? 'btnAll' : mod === 'race' ? 'btnRace' : 'btnCF').classList.add('active');
+        const btnId = mod === 'todos' ? 'btnAll' : mod === 'race' ? 'btnRace' : 'btnCF';
+        document.getElementById(btnId).classList.add('active');
         resetearYPaginacion();
     }
 
@@ -168,14 +284,14 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal || 'PEND'}</span></td>
-                <td data-label="Atleta"><strong>${atleta.nombre} ${atleta.apellido || ''}</strong><br><small style="color:var(--neon)">Talla: ${atleta.talla || 'S/N'}</small></td>
+                <td data-label="Atleta"><strong>${atleta.nombre} ${atleta.apellido || ''}</strong><br><small style="color:var(--neon); font-weight:600">Talla: ${atleta.talla || 'S/N'}</small></td>
                 <td data-label="Modalidad"><small>${atleta.modalidad}</small></td>
-                <td data-label="Pago"><small><strong>${atleta.metodo || 'S/M'}</strong></small><br><small style="color:#888">Ref: ${atleta.referencia}</small></td>
+                <td data-label="Pago"><small><strong>${atleta.metodo || 'S/M'}</strong></small><br><small style="color:#777">Ref: ${atleta.referencia}</small></td>
                 <td data-label="Multimedia">
                     <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i></a>
                     <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i></a>
                 </td>
-                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
+                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp || atleta.telefono).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
                 <td data-label="Acción">
                     <button class="btn btn-view" onclick='prepararEdicion(${inicio + index})'><i class="fas fa-edit"></i></button>
                     <button class="btn btn-delete" onclick="eliminarAtleta(${atleta.fila}, '${atleta.nombre}')"><i class="fas fa-trash"></i></button>

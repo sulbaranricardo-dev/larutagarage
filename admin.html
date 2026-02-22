@@ -5,16 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | La Ruta Garage</title>
     <link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FFavicon.png?alt=media&token=0e2d4383-2c9b-4005-9b46-943b40c0637d">
-                <meta name="description" content="Vuelve la competencia que pone a prueba tus límites en Maturín. ¡Un Plan, Una Ruta, Una Meta!">
-                <meta property="og:title" content="La Ruta Garage | Official Event 2026">
-                <meta property="og:description" content="La competencia que pone a prueba tus límites en Maturín. ¡Un Plan, Una Ruta, Una Meta!">
-                <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FImageMetadatos.jpg?alt=media&token=293c8a99-ed99-4155-8bfa-ecbbcc72b846">
-                <meta property="og:url" content="https://www.larutagarage.com/inscripcion"> <meta property="og:type" content="website">
-                
-                <meta name="twitter:card" content="summary_large_image">
-                <meta name="twitter:title" content="La Ruta Garage | Official Event">
-                <meta name="twitter:description" content="Prepárate para la meta. Inscripciones abiertas para Ruta Race y Ruta CrossFit.">
-                <meta name="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FImageMetadatos.jpg?alt=media&token=293c8a99-ed99-4155-8bfa-ecbbcc72b846">
+    <meta name="description" content="Vuelve la competencia que pone a prueba tus límites en Maturín. ¡Un Plan, Una Ruta, Una Meta!">
+    <meta property="og:title" content="La Ruta Garage | Official Event 2026">
+    <meta property="og:description" content="La competencia que pone a prueba tus límites en Maturín. ¡Un Plan, Una Ruta, Una Meta!">
+    <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FImageMetadatos.jpg?alt=media&token=293c8a99-ed99-4155-8bfa-ecbbcc72b846">
+    <meta property="og:url" content="https://www.larutagarage.com/inscripcion"> 
+    <meta property="og:type" content="website">
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -34,11 +31,10 @@
             font-family: 'Montserrat', sans-serif; 
             padding: 10px; 
             margin: 0; 
-            display: none; /* Validado por JS */
+            display: none; 
             min-height: 100vh;
         }
         
-        /* Modal Editar con Efecto Espejo */
         #modalEditar { 
             display:none; 
             position:fixed; 
@@ -64,122 +60,49 @@
         .edit-grid div { display: flex; flex-direction: column; }
         .edit-grid label { font-size: 0.65rem; color: var(--neon); text-transform: uppercase; margin-bottom: 5px; font-weight: 600; }
         .edit-grid input { background: rgba(0,0,0,0.5); border: 1px solid #333; color: white; padding: 12px; border-radius: 8px; font-size: 0.85rem; font-family: 'Montserrat'; }
-        .edit-grid input:focus { border-color: var(--neon); outline: none; }
 
         .header-admin { text-align: center; margin-bottom: 20px; padding-top: 20px; }
         .header-admin img { width: 120px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(216, 255, 94, 0.2)); }
-        h1 { 
-            font-weight: 900; 
-            color: var(--neon); 
-            text-align: center; 
-            font-size: 1.4rem; 
-            margin: 0; 
-            letter-spacing: 2px; 
-            text-transform: uppercase;
-        }
+        h1 { font-weight: 900; color: var(--neon); text-align: center; font-size: 1.4rem; margin: 0; letter-spacing: 2px; text-transform: uppercase; }
 
         .controls { max-width: 1200px; margin: 20px auto; display: flex; flex-wrap: wrap; gap: 10px; padding: 0 10px; }
         .search-box { flex: 1; min-width: 250px; }
-        .search-box input { 
-            width: 100%; 
-            padding: 15px; 
-            background: var(--glass); 
-            backdrop-filter: blur(10px);
-            border: 1px solid #333; 
-            color: white; 
-            border-radius: 12px; 
-            box-sizing: border-box; 
-            font-family: 'Montserrat';
-        }
+        .search-box input { width: 100%; padding: 15px; background: var(--glass); backdrop-filter: blur(10px); border: 1px solid #333; color: white; border-radius: 12px; box-sizing: border-box; font-family: 'Montserrat'; }
         
-        .filter-buttons { display: flex; gap: 8px; width: 100%; }
-        .btn-filter { 
-            flex: 1; 
-            padding: 14px; 
-            background: rgba(0,0,0,0.6); 
-            color: white; 
-            border: 1px solid #333; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-size: 0.7rem; 
-            text-transform: uppercase;
-            font-family: 'Montserrat';
-            transition: 0.3s;
-        }
+        .filter-buttons { display: flex; gap: 8px; width: 100%; margin-bottom: 10px; }
+        .btn-filter { flex: 1; padding: 14px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #333; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; font-family: 'Montserrat'; transition: 0.3s; }
         .btn-filter.active { background: var(--neon); color: black; border-color: var(--neon); font-weight: 900; }
 
-        /* Contenedor de Tabla Glassmorphism */
-        .container { 
-            max-width: 1200px; 
-            margin: auto; 
-            background: var(--glass); 
-            backdrop-filter: blur(10px);
-            border-radius: 15px; 
-            border: 1px solid rgba(255,255,255,0.05); 
-            overflow: hidden; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        .container { max-width: 1200px; margin: auto; background: var(--glass); backdrop-filter: blur(10px); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 30px; }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th { 
-            background: rgba(216, 255, 94, 0.05); 
-            color: var(--neon); 
-            text-align: left; 
-            padding: 18px; 
-            font-size: 0.75rem; 
-            font-weight: 900;
-            text-transform: uppercase;
-            border-bottom: 2px solid var(--neon); 
-        }
+        th { background: rgba(216, 255, 94, 0.05); color: var(--neon); text-align: left; padding: 18px; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid var(--neon); }
         td { padding: 18px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; font-weight: 300; }
-        strong { font-weight: 600; }
 
         .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; padding: 25px; }
-        .btn-pag { 
-            background: #111; 
-            color: white; 
-            border: 1px solid #333; 
-            padding: 10px 20px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-family: 'Montserrat';
-            font-weight: 600;
-            font-size: 0.7rem;
-        }
+        .btn-pag { background: #111; color: white; border: 1px solid #333; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: 'Montserrat'; font-weight: 600; font-size: 0.7rem; }
         
-        /* Botones de Acción */
-        .btn { 
-            padding: 10px 14px; 
-            border: none; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-size: 0.7rem; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 8px; 
-            text-decoration: none; 
-            border: 1px solid transparent; 
-            transition: 0.3s;
-        }
+        .btn { padding: 10px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
         .btn-view { background: rgba(255,255,255,0.05); color: #ccc; border-color: #333; }
         .btn-approve { background: var(--neon); color: black; font-weight: 900; }
-        .btn-wa { background: transparent; color: #25D366; border-color: #25D366; }
-        .btn-delete { background: transparent; color: #ff4444; border-color: rgba(255,68,68,0.3); }
-        .btn:hover { transform: scale(1.05); }
-        
+        .btn-delete { background: transparent; color: #ff4444; border: 1px solid rgba(255,68,68,0.3); }
+        .btn-wa { background: transparent; color: #25D366; border: 1px solid #25D366; }
+
         .badge { padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 900; }
-        .status-pendiente { border: 1px solid #ffaa00; color: #ffaa00; background: transparent; }
+        .status-pendiente { border: 1px solid #ffaa00; color: #ffaa00; }
         .status-aprobado { border: 1px solid var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.1); }
+
+        /* Estilos Logística Heats */
+        .heat-header { background: var(--neon); color: black; padding: 15px; font-weight: 900; text-transform: uppercase; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .atleta-chip { cursor: pointer; padding: 10px 15px; border: 1px solid #333; border-radius: 30px; font-size: 0.75rem; transition: 0.3s; background: rgba(255,255,255,0.05); }
+        .atleta-chip.selected { border-color: var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.1); }
 
         @media (max-width: 800px) {
             table thead { display: none; }
             table tr { display: block; background: rgba(0,0,0,0.3); margin-bottom: 15px; border: 1px solid #222; padding: 15px; border-radius: 12px; }
             table td { display: flex; justify-content: flex-end; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 8px; flex-wrap: wrap; }
             table td::before { content: attr(data-label); font-weight: 900; color: #666; text-transform: uppercase; font-size: 0.6rem; margin-right: auto; }
-            .btn { width: 100%; padding: 15px; justify-content: center; }
-            .edit-grid { grid-template-columns: 1fr; }
+            .btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -202,37 +125,65 @@
     </div>
 
     <div class="controls">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Buscar por nombre, cédula o dorsal..." oninput="resetearYPaginacion()">
-        </div>
         <div class="filter-buttons">
-            <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('todos')">Todos</button>
-            <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">Race</button>
-            <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">Crossfit</button>
+            <button class="btn-filter active" id="tabGeneral" onclick="switchMainTab('general')">Atletas</button>
+            <button class="btn-filter" id="tabLogistica" onclick="switchMainTab('logistica')">Heats / Logística</button>
         </div>
     </div>
 
-    <div class="container">
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Dorsal</th>
-                        <th>Atleta / Talla</th>
-                        <th>Modalidad</th>
-                        <th>Pago Info</th>
-                        <th>Multimedia</th>
-                        <th>WhatsApp</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaAtletas"></tbody>
-            </table>
+    <div id="viewGeneral">
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar por nombre, cédula o dorsal..." oninput="resetearYPaginacion()">
+            </div>
+            <div class="filter-buttons">
+                <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('todos')">Todos</button>
+                <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">Race</button>
+                <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">Crossfit</button>
+            </div>
         </div>
-        <div class="pagination">
-            <button class="btn-pag" id="prevPage" onclick="cambiarPagina(-1)" disabled>Anterior</button>
-            <span id="pageInfo" style="font-weight: 600; font-size: 0.8rem;">Página 1</span>
-            <button class="btn-pag" id="nextPage" onclick="cambiarPagina(1)" disabled>Siguiente</button>
+        <div class="container">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dorsal</th>
+                            <th>Atleta / Talla</th>
+                            <th>Modalidad</th>
+                            <th>Pago Info</th>
+                            <th>Multimedia</th>
+                            <th>WhatsApp</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAtletas"></tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <button class="btn-pag" id="prevPage" onclick="cambiarPagina(-1)" disabled>Anterior</button>
+                <span id="pageInfo" style="font-weight: 600; font-size: 0.8rem;">Página 1</span>
+                <button class="btn-pag" id="nextPage" onclick="cambiarPagina(1)" disabled>Siguiente</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewLogistica" style="display:none;">
+        <div class="controls">
+            <div class="filter-buttons">
+                <button class="btn-filter active" id="btnHeatRace" onclick="switchHeatType('race')">Ruta Race (Auto)</button>
+                <button class="btn-filter" id="btnHeatCF" onclick="switchHeatType('cf')">CrossFit (Manual)</button>
+            </div>
+        </div>
+
+        <div id="containerHeatsRace"></div>
+
+        <div id="containerHeatsCF" style="display:none;">
+            <div class="container" style="padding: 20px;">
+                <p style="font-size:0.8rem; color:var(--neon); font-weight:600; margin-bottom:15px; text-transform:uppercase;">1. Selecciona Atletas de CrossFit:</p>
+                <div id="selectorAtletasCF" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"></div>
+                <button class="btn btn-approve" onclick="crearHeatManual()">Crear Heat con Seleccionados</button>
+            </div>
+            <div id="listaHeatsManuales"></div>
         </div>
     </div>
 
@@ -246,6 +197,7 @@
     const registrosPorPagina = 20;
     let modalidadActual = 'todos';
     let atletaAEditar = null;
+    let seleccionadosCF = [];
 
     (function validarAcceso() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -263,12 +215,128 @@
             todosLosAtletas = await response.json();
             todosLosAtletas.reverse();
             aplicarFiltros();
+            renderizarHeatsRace();
+            renderizarSelectorCF();
         } catch (error) { console.error(error); }
     }
 
+    // NAVEGACIÓN ENTRE SECCIONES
+    function switchMainTab(tab) {
+        document.getElementById('viewGeneral').style.display = tab === 'general' ? 'block' : 'none';
+        document.getElementById('viewLogistica').style.display = tab === 'logistica' ? 'block' : 'none';
+        document.getElementById('tabGeneral').classList.toggle('active', tab === 'general');
+        document.getElementById('tabLogistica').classList.toggle('active', tab === 'logistica');
+    }
+
+    function switchHeatType(type) {
+        document.getElementById('containerHeatsRace').style.display = type === 'race' ? 'block' : 'none';
+        document.getElementById('containerHeatsCF').style.display = type === 'cf' ? 'block' : 'none';
+        document.getElementById('btnHeatRace').classList.toggle('active', type === 'race');
+        document.getElementById('btnHeatCF').classList.toggle('active', type === 'cf');
+    }
+
+    // --- LÓGICA HEATS RACE (AUTOMÁTICOS POR EDAD) ---
+    function renderizarHeatsRace() {
+        const cont = document.getElementById('containerHeatsRace');
+        cont.innerHTML = "";
+        
+        let raceAtletas = todosLosAtletas
+            .filter(a => a.modalidad.toLowerCase().includes('race') && a.estatus === 'Aprobado')
+            .sort((a, b) => a.edad - b.edad);
+
+        if (raceAtletas.length === 0) {
+            cont.innerHTML = "<p style='text-align:center; padding:20px;'>No hay atletas aprobados en Ruta Race.</p>";
+            return;
+        }
+
+        for (let i = 0; i < raceAtletas.length; i += 10) {
+            let grupo = raceAtletas.slice(i, i + 10);
+            let heatNum = Math.floor(i / 10) + 1;
+            let div = document.createElement('div');
+            div.className = "container";
+            div.innerHTML = `
+                <div class="heat-header">
+                    <span>HEAT ${heatNum} (RUTA RACE)</span>
+                    <span style="font-size:0.7rem; font-weight:300;">Edades: ${grupo[0].edad} - ${grupo[grupo.length-1].edad} años</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Foto</th><th>Atleta</th><th>Dorsal</th><th>Edad</th></tr></thead>
+                        <tbody>
+                            ${grupo.map(a => `
+                                <tr>
+                                    <td><img src="${a.fotoCarnet}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:1px solid var(--neon);"></td>
+                                    <td><strong>${a.nombre} ${a.apellido}</strong></td>
+                                    <td><span class="badge status-aprobado">#${a.dorsal}</span></td>
+                                    <td>${a.edad} años</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            cont.appendChild(div);
+        }
+    }
+
+    // --- LÓGICA HEATS CROSSFIT (MANUAL) ---
+    function renderizarSelectorCF() {
+        const sel = document.getElementById('selectorAtletasCF');
+        sel.innerHTML = "";
+        let cfAtletas = todosLosAtletas.filter(a => a.modalidad.toLowerCase().includes('crossfit') && a.estatus === 'Aprobado');
+        
+        cfAtletas.forEach(a => {
+            let chip = document.createElement('div');
+            chip.className = "atleta-chip";
+            chip.innerText = `${a.nombre} (${a.categoria})`;
+            chip.onclick = () => {
+                chip.classList.toggle('selected');
+                if(seleccionadosCF.includes(a.fila)) {
+                    seleccionadosCF = seleccionadosCF.filter(f => f !== a.fila);
+                } else {
+                    seleccionadosCF.push(a.fila);
+                }
+            };
+            sel.appendChild(chip);
+        });
+    }
+
+    let contadorHeatCF = 1;
+    function crearHeatManual() {
+        if (seleccionadosCF.length === 0) return alert("Selecciona atletas primero.");
+        const cont = document.getElementById('listaHeatsManuales');
+        let atletas = todosLosAtletas.filter(a => seleccionadosCF.includes(a.fila));
+        
+        let div = document.createElement('div');
+        div.className = "container";
+        div.innerHTML = `
+            <div class="heat-header" style="background:#fff;"><span>HEAT ${contadorHeatCF} (CROSSFIT)</span></div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Foto</th><th>Atleta</th><th>Categoría</th><th>ID Interno</th></tr></thead>
+                    <tbody>
+                        ${atletas.map(a => `
+                            <tr>
+                                <td><img src="${a.fotoCarnet}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:1px solid #333;"></td>
+                                <td><strong>${a.nombre} ${a.apellido}</strong></td>
+                                <td>${a.categoria}</td>
+                                <td><small>${a.dorsal}</small></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        cont.prepend(div);
+        contadorHeatCF++;
+        seleccionadosCF = [];
+        renderizarSelectorCF();
+    }
+
+    // --- FUNCIONES TABLA GENERAL ---
     function filtrarModalidad(mod) {
         modalidadActual = mod.toLowerCase(); 
-        document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#viewGeneral .btn-filter').forEach(b => b.classList.remove('active'));
         const btnId = mod === 'todos' ? 'btnAll' : mod === 'race' ? 'btnRace' : 'btnCF';
         document.getElementById(btnId).classList.add('active');
         resetearYPaginacion();
@@ -288,7 +356,6 @@
         const tabla = document.getElementById('tablaAtletas');
         const inicio = (paginaActual - 1) * registrosPorPagina;
         const atletasPagina = atletasFiltrados.slice(inicio, inicio + registrosPorPagina);
-        
         tabla.innerHTML = "";
         atletasPagina.forEach((atleta, index) => {
             const tr = document.createElement('tr');
@@ -301,7 +368,7 @@
                     <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i></a>
                     <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i></a>
                 </td>
-                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp || atleta.telefono).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
+                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
                 <td data-label="Acción">
                     <button class="btn btn-view" onclick='prepararEdicion(${inicio + index})'><i class="fas fa-edit"></i></button>
                     <button class="btn btn-delete" onclick="eliminarAtleta(${atleta.fila}, '${atleta.nombre}')"><i class="fas fa-trash"></i></button>
@@ -317,16 +384,11 @@
         const contenedor = document.getElementById('camposEditar');
         contenedor.innerHTML = "";
         const campos = [
-            {id: "nombre", label: "Nombre", valor: atletaAEditar.nombre},
-            {id: "apellido", label: "Apellido", valor: atletaAEditar.apellido},
-            {id: "cedula", label: "Cédula", valor: atletaAEditar.cedula},
-            {id: "telefono", label: "Teléfono", valor: atletaAEditar.telefono},
-            {id: "correo", label: "Correo", valor: atletaAEditar.correo},
-            {id: "talla", label: "Talla", valor: atletaAEditar.talla},
-            {id: "modalidad", label: "Modalidad", valor: atletaAEditar.modalidad},
-            {id: "categoria", label: "Categoría", valor: atletaAEditar.categoria},
-            {id: "dorsal", label: "Dorsal", valor: atletaAEditar.dorsal},
-            {id: "fecha", label: "Fecha Registro", valor: atletaAEditar.fecha}
+            {id: "nombre", label: "Nombre", valor: atletaAEditar.nombre}, {id: "apellido", label: "Apellido", valor: atletaAEditar.apellido},
+            {id: "cedula", label: "Cédula", valor: atletaAEditar.cedula}, {id: "telefono", label: "Teléfono", valor: atletaAEditar.telefono},
+            {id: "correo", label: "Correo", valor: atletaAEditar.correo}, {id: "talla", label: "Talla", valor: atletaAEditar.talla},
+            {id: "modalidad", label: "Modalidad", valor: atletaAEditar.modalidad}, {id: "categoria", label: "Categoría", valor: atletaAEditar.categoria},
+            {id: "dorsal", label: "Dorsal", valor: atletaAEditar.dorsal}, {id: "fecha", label: "Fecha Registro", valor: atletaAEditar.fecha}
         ];
         campos.forEach(c => {
             contenedor.innerHTML += `<div><label>${c.label}</label><input type="text" id="edit_${c.id}" value="${c.valor || ''}"></div>`;
@@ -337,18 +399,12 @@
 
     async function guardarEdicion() {
         const payload = {
-            accion: "editar",
-            fila: atletaAEditar.fila,
-            nombre: document.getElementById('edit_nombre').value,
-            apellido: document.getElementById('edit_apellido').value,
-            cedula: document.getElementById('edit_cedula').value,
-            telefono: document.getElementById('edit_telefono').value,
-            correo: document.getElementById('edit_correo').value,
-            talla: document.getElementById('edit_talla').value,
-            modalidad: document.getElementById('edit_modalidad').value,
-            categoria: document.getElementById('edit_categoria').value,
-            dorsal: document.getElementById('edit_dorsal').value,
-            fecha: document.getElementById('edit_fecha').value
+            accion: "editar", fila: atletaAEditar.fila,
+            nombre: document.getElementById('edit_nombre').value, apellido: document.getElementById('edit_apellido').value,
+            cedula: document.getElementById('edit_cedula').value, telefono: document.getElementById('edit_telefono').value,
+            correo: document.getElementById('edit_correo').value, talla: document.getElementById('edit_talla').value,
+            modalidad: document.getElementById('edit_modalidad').value, categoria: document.getElementById('edit_categoria').value,
+            dorsal: document.getElementById('edit_dorsal').value, fecha: document.getElementById('edit_fecha').value
         };
         if(!confirm("¿Guardar cambios?")) return;
         await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });

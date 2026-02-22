@@ -4,113 +4,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripción | La Ruta Garage</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --neon: #39FF14; --bg: #050505; --card: #111; }
-        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px; }
+        :root { 
+            --neon: #d8ff5e; 
+            --bg: #0a0a0a; 
+            --card: rgba(20, 20, 20, 0.7); /* Fondo semi-transparente para el blur */
+        }
+
+        body { 
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FbglarutawebsiteBlack.jpg?alt=media&token=8e8d0ddb-b8a4-43f0-8199-98d31beaf078'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Esto hace que el fondo no se mueva al hacer scroll */
+    color: white; 
+    font-family: 'Montserrat', sans-serif; 
+    margin: 0; 
+    padding: 20px; 
+    min-height: 100vh;
+}
+
+        .header-registro { text-align: center; margin-bottom: 40px; }
+        .header-registro img { width: 180px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(216, 255, 94, 0.2)); }
         
-        .header-registro { text-align: center; margin-bottom: 30px; }
-        .header-registro img { width: 200px; margin-bottom: 10px; }
-        
-        /* Nueva fuente para el título principal */
+        /* Título Principal Grueso (800) */
         .header-registro h1 { 
-            font-family: 'Rajdhani', sans-serif; 
+            font-weight: 800; 
             color: var(--neon); 
-            font-size: 1.8rem; 
-            font-weight: 700;
+            font-size: 1.6rem; 
             margin: 0; 
-            letter-spacing: 2px; 
+            letter-spacing: -0.5px; 
             text-transform: uppercase;
         }
         
-        .header-registro p { font-size: 0.8rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 2px; }
-        
-        .form-container { max-width: 800px; margin: 0 auto; background: var(--card); border: 1px solid #222; border-radius: 15px; padding: 40px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        
-        /* Nueva fuente para subtítulos */
+        /* Subtítulo más delgado (300) */
+        .header-registro p { font-weight: 300; font-size: 0.85rem; opacity: 0.8; letter-spacing: 1px; }
+
+        /* Efecto Cristal (Blur + Espejo) */
+        .form-container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: var(--card); 
+            backdrop-filter: blur(15px); /* Desenfoque de fondo */
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(216, 255, 94, 0.15); /* Borde sutil verde */
+            border-radius: 20px; 
+            padding: 40px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
+        }
+
         h2 { 
-            font-family: 'Rajdhani', sans-serif; 
+            font-weight: 800; 
             color: var(--neon); 
             text-align: center; 
-            letter-spacing: 3px; 
-            margin-bottom: 30px; 
-            border-bottom: 1px solid var(--neon); 
-            padding-bottom: 10px; 
-            font-size: 1.5rem; 
-            font-weight: 700;
+            margin-bottom: 35px; 
+            font-size: 1.2rem; 
             text-transform: uppercase;
+            border-bottom: 1px solid rgba(216, 255, 94, 0.2);
+            padding-bottom: 15px;
         }
         
         .section-label { 
-            font-family: 'Rajdhani', sans-serif;
             color: var(--neon); 
-            font-size: 1rem; 
-            font-weight: 700; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
             text-transform: uppercase; 
-            margin: 30px 0 15px; 
-            display: block; 
-            letter-spacing: 1px; 
-            border-left: 3px solid var(--neon); 
-            padding-left: 10px; 
+            margin: 30px 0 20px; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
-        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .section-label i { font-size: 1rem; }
+
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-width { grid-column: span 2; }
         
-        label { display: block; font-size: 0.65rem; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+        .input-group { position: relative; }
+        .input-group i { position: absolute; left: 12px; top: 38px; color: #555; font-size: 0.9rem; }
         
-        input, select { width: 100%; padding: 10px; background: #000; border: 1px solid #333; color: white; border-radius: 5px; box-sizing: border-box; font-family: 'Montserrat'; font-size: 0.85rem; }
-        input:focus { border-color: var(--neon); outline: none; }
+        label { display: block; font-size: 0.7rem; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
         
-        .foto-guia { background: #1a1a1a; border: 1px dashed var(--neon); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; }
-        .foto-ejemplo { width: 60px; height: 60px; background: #333; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #555; }
-        .foto-instruccion { font-size: 0.7rem; color: #aaa; line-height: 1.4; }
-        
-        .pago-box { background: #1a1a1a; padding: 20px; border-radius: 10px; margin-top: 15px; border: 1px solid #333; }
-        
-        /* Fuente aplicada al precio */
-        .price-tag { 
-            font-family: 'Rajdhani', sans-serif; 
-            font-size: 1.4rem; 
-            font-weight: 700;
-            color: #fff; 
-            margin-bottom: 5px; 
-            display: block; 
+        input, select { 
+            width: 100%; 
+            padding: 12px 12px 12px 38px; /* Espacio para el icono */
+            background: rgba(0,0,0,0.4); 
+            border: 1px solid #333; 
+            color: white; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-family: 'Montserrat'; 
+            font-size: 0.85rem; 
+            transition: 0.3s;
         }
         
-        #instruccionesPago { background: #000; padding: 15px; border-radius: 5px; font-size: 0.8rem; margin-top: 15px; border-left: 3px solid var(--neon); line-height: 1.6; display: none; }
+        input:focus { border-color: var(--neon); outline: none; background: rgba(0,0,0,0.6); box-shadow: 0 0 10px rgba(216, 255, 94, 0.1); }
+
+        .foto-guia { background: rgba(216, 255, 94, 0.05); border: 1px dashed rgba(216, 255, 94, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; }
+        .foto-ejemplo { font-size: 1.5rem; color: var(--neon); opacity: 0.5; }
+        .foto-instruccion { font-size: 0.7rem; color: #bbb; line-height: 1.5; font-weight: 300; }
+
+        .pago-box { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 12px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .price-tag { font-weight: 800; font-size: 1.5rem; color: #fff; margin-bottom: 5px; display: block; }
         
-        /* Botón con la nueva fuente */
+        #instruccionesPago { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; font-size: 0.8rem; margin-top: 15px; border-left: 4px solid var(--neon); line-height: 1.6; display: none; font-weight: 300; }
+
         .btn-submit { 
             width: 100%; 
-            padding: 18px; 
+            padding: 20px; 
             background: var(--neon); 
             color: black; 
             border: none; 
-            font-weight: 700; 
-            font-family: 'Rajdhani', sans-serif; 
-            font-size: 1.2rem;
+            font-weight: 800; 
+            font-family: 'Montserrat'; 
+            font-size: 1rem;
             cursor: pointer; 
-            margin-top: 30px; 
-            transition: 0.3s; 
-            clip-path: polygon(3% 0%, 100% 0%, 97% 100%, 0% 100%); 
+            margin-top: 40px; 
+            transition: 0.4s; 
+            border-radius: 12px;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
-        .btn-submit:hover { transform: scale(1.02); background: white; }
-        
-        .help-container { position: fixed; bottom: 20px; right: 20px; display: flex; align-items: center; gap: 10px; z-index: 100; text-decoration: none; }
-        .help-msg { background: white; color: black; padding: 8px 15px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); white-space: nowrap; }
-        .btn-help { background: #25D366; color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s; }
-        
-        @media (max-width: 600px) { .grid-form { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } .help-msg { display: none; } }
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(216, 255, 94, 0.3); background: #f0ffcc; }
+
+        .help-container { position: fixed; bottom: 25px; right: 25px; display: flex; align-items: center; gap: 12px; z-index: 100; text-decoration: none; }
+        .help-msg { background: white; color: black; padding: 10px 18px; border-radius: 30px; font-size: 0.75rem; font-weight: 600; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        .btn-help { background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: 0.3s; }
+        .btn-help:hover { transform: scale(1.1); }
+
+        @media (max-width: 600px) { 
+            .grid-form { grid-template-columns: 1fr; } 
+            .full-width { grid-column: span 1; } 
+            .help-msg { display: none; } 
+            .form-container { padding: 25px; }
+        }
     </style>
 </head>
 <body>
 
 <a href="https://wa.me/584148670207?text=Hola!%20Tengo%20un%20problema%20con%20el%20formulario%20de%20inscripción" class="help-container" target="_blank">
-    <div class="help-msg">¿Tienes algún inconveniente? ¡Escríbenos!</div>
+    <div class="help-msg">¿Problemas con el registro?</div>
     <div class="btn-help"><i class="fab fa-whatsapp"></i></div>
 </a>
 
@@ -124,22 +160,63 @@
     <h2>REGISTRO DE ATLETA</h2>
     
     <form id="registroForm">
-        <span class="section-label">1. Datos Personales</span>
+        <span class="section-label"><i class="fas fa-user-circle"></i> 1. Datos Personales</span>
         <div class="grid-form">
-            <div><label>Nombre</label><input type="text" id="nombre" required></div>
-            <div><label>Apellido</label><input type="text" id="apellido" required></div>
-            <div><label>Cédula</label><input type="number" id="cedula" required></div>
-            <div><label>Fecha de Nacimiento</label><input type="date" id="fechaNac" required></div>
-            <div><label>Sexo</label><select id="sexo"><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option></select></div>
-            <div><label>Ciudad</label><input type="text" id="ciudad" required></div>
-            <div><label>WhatsApp (Ej: 04121234567)</label><input type="tel" id="telefono" maxlength="11" placeholder="04121234567" required></div>
-            <div><label>Correo Electrónico</label><input type="email" id="correo" required></div>
+            <div class="input-group">
+                <label>Nombre</label>
+                <i class="fas fa-user"></i>
+                <input type="text" id="nombre" required>
+            </div>
+            <div class="input-group">
+                <label>Apellido</label>
+                <i class="fas fa-user-tag"></i>
+                <input type="text" id="apellido" required>
+            </div>
+            <div class="input-group">
+                <label>Cédula</label>
+                <i class="fas fa-id-card"></i>
+                <input type="number" id="cedula" required>
+            </div>
+            <div class="input-group">
+                <label>Fecha de Nacimiento</label>
+                <i class="fas fa-calendar-alt"></i>
+                <input type="date" id="fechaNac" required>
+            </div>
+            <div class="input-group">
+                <label>Sexo</label>
+                <i class="fas fa-venus-mars"></i>
+                <select id="sexo">
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Ciudad</label>
+                <i class="fas fa-map-marker-alt"></i>
+                <input type="text" id="ciudad" required>
+            </div>
+            <div class="input-group">
+                <label>WhatsApp</label>
+                <i class="fab fa-whatsapp"></i>
+                <input type="tel" id="telefono" maxlength="11" placeholder="04121234567" required>
+            </div>
+            <div class="input-group">
+                <label>Correo Electrónico</label>
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="correo" required>
+            </div>
             
-            <div class="full-width"><label>Centro de Entrenamiento / Box</label><input type="text" id="box" placeholder="Nombre de tu gimnasio o box"></div>
-            <div>
+            <div class="full-width input-group">
+                <label>Centro de Entrenamiento / Box</label>
+                <i class="fas fa-dumbbell"></i>
+                <input type="text" id="box" placeholder="Nombre de tu gimnasio o box">
+            </div>
+            
+            <div class="input-group">
                 <label>Talla de Franela</label>
+                <i class="fas fa-shirt"></i>
                 <select id="talla" required>
-                    <option value="">Seleccione talla...</option>
+                    <option value="">Seleccione...</option>
                     <option value="S">S</option>
                     <option value="M">M</option>
                     <option value="L">L</option>
@@ -147,39 +224,46 @@
                 </select>
             </div>
             
-            <div class="full-width">
+            <div class="full-width input-group">
                 <label>Foto Tipo Carnet</label>
                 <div class="foto-guia">
-                    <div class="foto-ejemplo"><i class="fas fa-user"></i></div>
+                    <div class="foto-ejemplo"><i class="fas fa-camera"></i></div>
                     <div class="foto-instruccion">
                         Fondo unicolor, rostro despejado.<br>
-                        <strong>Máximo 1MB (Usa una captura de pantalla si pesa mucho).</strong>
+                        <strong>Máximo 1MB.</strong>
                     </div>
                 </div>
-                <input type="file" id="fotoCarnet" accept="image/*" required>
+                <i class="fas fa-upload" style="top:115px"></i>
+                <input type="file" id="fotoCarnet" accept="image/*" required style="padding-top: 10px;">
             </div>
         </div>
 
-        <span class="section-label">2. Modalidad</span>
+        <span class="section-label"><i class="fas fa-trophy"></i> 2. Modalidad de Competencia</span>
         <div class="grid-form">
-            <div>
+            <div class="input-group">
                 <label>Modalidad</label>
+                <i class="fas fa-running"></i>
                 <select id="modalidad" onchange="ajustarCategorias()">
                     <option value="Ruta Race">Ruta Race ($25)</option>
                     <option value="Ruta CrossFit">Ruta CrossFit ($30)</option>
                 </select>
             </div>
-            <div><label>Categoría</label><select id="categoria"></select></div>
+            <div class="input-group">
+                <label>Categoría</label>
+                <i class="fas fa-medal"></i>
+                <select id="categoria"></select>
+            </div>
         </div>
 
-        <span class="section-label">3. Pago</span>
+        <span class="section-label"><i class="fas fa-credit-card"></i> 3. Información de Pago</span>
         <div class="pago-box">
-            <span id="labelPrecio" class="price-tag">TOTAL: $25</span>
-            <span id="tasaDisplay" style="color:var(--neon); font-size: 0.7rem;">Cargando tasa oficial...</span>
+            <span id="labelPrecio" class="price-tag">TOTAL A PAGAR: $25</span>
+            <span id="tasaDisplay" style="color:var(--neon); font-size: 0.75rem; font-weight: 600;">Cargando tasa BCV...</span>
 
-            <div class="grid-form" style="margin-top: 15px;">
-                <div class="full-width">
+            <div class="grid-form" style="margin-top: 25px;">
+                <div class="full-width input-group">
                     <label>Método de Pago</label>
+                    <i class="fas fa-wallet"></i>
                     <select id="metodoPago" onchange="mostrarInstrucciones()" required>
                         <option value="">Seleccione...</option>
                         <option value="Pago Móvil">Pago Móvil (Bolívares)</option>
@@ -189,20 +273,30 @@
                 
                 <div id="instruccionesPago" class="full-width"></div>
 
-                <div><label>Monto a pagar</label><input type="text" id="montoBs" readonly></div>
-                <div><label>Referencia Bancaria</label><input type="text" id="referencia" required></div>
-                <div class="full-width">
+                <div class="input-group">
+                    <label>Monto a pagar</label>
+                    <i class="fas fa-money-bill-wave"></i>
+                    <input type="text" id="montoBs" readonly>
+                </div>
+                <div class="input-group">
+                    <label>Referencia Bancaria</label>
+                    <i class="fas fa-hashtag"></i>
+                    <input type="text" id="referencia" required>
+                </div>
+                <div class="full-width input-group">
                     <label>Adjuntar Comprobante</label>
-                    <input type="file" id="fotoPago" accept="image/*" required>
+                    <i class="fas fa-file-invoice-dollar" style="top:38px"></i>
+                    <input type="file" id="fotoPago" accept="image/*" required style="padding-top: 10px;">
                 </div>
             </div>
         </div>
 
         <button type="submit" id="btnEnviar" class="btn-submit">ENVIAR INSCRIPCIÓN</button>
     </form>
-    <div id="mensajeFinal" style="display:none; text-align:center; padding:20px;">
-        <h3 style="color:var(--neon)">¡REGISTRO ENVIADO!</h3>
-        <p>Tu inscripción está siendo procesada. Revisa tu correo.</p>
+    <div id="mensajeFinal" style="display:none; text-align:center; padding:40px;">
+        <i class="fas fa-check-circle" style="color:var(--neon); font-size: 4rem; margin-bottom: 20px;"></i>
+        <h3 style="color:var(--neon); font-weight: 800;">¡REGISTRO ENVIADO EXITOSAMENTE!</h3>
+        <p style="font-weight: 300;">Tu inscripción está en proceso de verificación. Revisa tu correo electrónico en las próximas horas.</p>
     </div>
 </div>
 
@@ -219,7 +313,7 @@
             ]);
             const dataTasa = await respTasa.json();
             TASA_BCV = dataTasa.tasa;
-            document.getElementById('tasaDisplay').innerText = "Tasa Oficial BCV: " + TASA_BCV.toFixed(2) + " Bs.";
+            document.getElementById('tasaDisplay').innerHTML = '<i class="fas fa-university"></i> Tasa Oficial BCV: ' + TASA_BCV.toFixed(2) + " Bs.";
             inscritos = await respInscritos.json();
             ajustarCategorias();
         } catch (e) { console.error("Error inicializando"); }
@@ -230,7 +324,7 @@
         const cat = document.getElementById('categoria');
         const precioUSD = (mod === "Ruta Race") ? 25 : 30;
         cat.innerHTML = mod === "Ruta Race" ? '<option>General</option>' : '<option>Escalado</option><option>Avanzado</option>';
-        document.getElementById('labelPrecio').innerText = "TOTAL: $" + precioUSD;
+        document.getElementById('labelPrecio').innerText = "TOTAL A PAGAR: $" + precioUSD;
         if(TASA_BCV > 0) document.getElementById('montoBs').value = (precioUSD * TASA_BCV).toFixed(2) + " Bs.";
     }
 
@@ -261,12 +355,12 @@
 
         const duplicadoRef = inscritos.some(a => String(a.referencia).trim() === refInput);
         if (duplicadoRef) {
-            alert("⚠️ ERROR: Este número de referencia ya ha sido registrado anteriormente.");
+            alert("⚠️ ERROR: Este número de referencia de pago ya ha sido registrado anteriormente.");
             return;
         }
 
         btn.disabled = true;
-        btn.innerText = "ENVIANDO...";
+        btn.innerText = "ENVIANDO DATOS...";
 
         try {
             const data = {

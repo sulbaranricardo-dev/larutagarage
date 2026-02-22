@@ -212,12 +212,21 @@
 
     // Función para limpiar URLs de fotos de Google Drive
     function formatImgUrl(url) {
-        if (!url) return "";
-        if (url.includes("drive.google.com")) {
-            return url.replace("file/d/", "uc?export=view&id=").split("/view")[0];
-        }
-        return url;
+    if (!url) return "https://via.placeholder.com/150";
+    // Extraer el ID del archivo sin importar el formato del link de Drive
+    var id = "";
+    if (url.includes("id=")) {
+        id = url.split("id=")[1].split("&")[0];
+    } else if (url.includes("file/d/")) {
+        id = url.split("file/d/")[1].split("/")[0];
     }
+    
+    if (id !== "") {
+        // Retornar link de visualización directa de alta calidad
+        return "https://docs.google.com/uc?export=view&id=" + id;
+    }
+    return url;
+}
 
     async function cargarAtletas() {
         try {
@@ -272,7 +281,10 @@
                         <tbody>
                             ${grupo.map(a => `
                                 <tr>
-                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:1px solid var(--neon);"></td>
+                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" 
+     style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid var(--neon);" 
+     referrerpolicy="no-referrer" 
+     onerror="this.src='https://via.placeholder.com/150'"></td>
                                     <td><strong>${a.nombre} ${a.apellido}</strong></td>
                                     <td><span class="badge status-aprobado">#${a.dorsal}</span></td>
                                     <td>${a.edad} años</td>
@@ -342,7 +354,10 @@
                         <tbody>
                             ${heat.atletas.map(a => `
                                 <tr>
-                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" style="width:35px; height:35px; border-radius:50%; object-fit:cover;"></td>
+                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" 
+     style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid var(--neon);" 
+     referrerpolicy="no-referrer" 
+     onerror="this.src='https://via.placeholder.com/150'"></td>
                                     <td><strong>${a.nombre} ${a.apellido}</strong></td>
                                     <td>${a.categoria}</td>
                                     <td><button class="btn-delete" onclick="quitarAtletaDeHeatCF(${heat.id}, ${a.fila})" style="padding:4px 8px;">Quitar</button></td>

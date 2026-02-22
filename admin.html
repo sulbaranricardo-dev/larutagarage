@@ -92,7 +92,6 @@
         .status-pendiente { border: 1px solid #ffaa00; color: #ffaa00; }
         .status-aprobado { border: 1px solid var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.1); }
 
-        /* Estilos Logística Heats */
         .heat-header { background: var(--neon); color: black; padding: 15px; font-weight: 900; text-transform: uppercase; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
         .atleta-chip { cursor: pointer; padding: 10px 15px; border: 1px solid #333; border-radius: 30px; font-size: 0.75rem; transition: 0.3s; background: rgba(255,255,255,0.05); }
         .atleta-chip.selected { border-color: var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.1); }
@@ -174,9 +173,7 @@
                 <button class="btn-filter" id="btnHeatCF" onclick="switchHeatType('cf')">CrossFit (Manual)</button>
             </div>
         </div>
-
         <div id="containerHeatsRace"></div>
-
         <div id="containerHeatsCF" style="display:none;">
             <div class="container" style="padding: 20px;">
                 <p style="font-size:0.8rem; color:var(--neon); font-weight:600; margin-bottom:15px; text-transform:uppercase;">1. Selecciona Atletas de CrossFit:</p>
@@ -210,23 +207,20 @@
         }
     })();
 
-    // Función para limpiar URLs de fotos de Google Drive
+    // FUNCIÓN CORREGIDA PARA FOTOS DE DRIVE
     function formatImgUrl(url) {
-    if (!url) return "https://via.placeholder.com/150";
-    // Extraer el ID del archivo sin importar el formato del link de Drive
-    var id = "";
-    if (url.includes("id=")) {
-        id = url.split("id=")[1].split("&")[0];
-    } else if (url.includes("file/d/")) {
-        id = url.split("file/d/")[1].split("/")[0];
+        if (!url || url === "") return "https://via.placeholder.com/150?text=No+Foto";
+        let id = "";
+        if (url.includes("id=")) {
+            id = url.split("id=")[1].split("&")[0];
+        } else if (url.includes("file/d/")) {
+            id = url.split("file/d/")[1].split("/")[0];
+        }
+        if (id !== "") {
+            return "https://docs.google.com/uc?export=view&id=" + id;
+        }
+        return url;
     }
-    
-    if (id !== "") {
-        // Retornar link de visualización directa de alta calidad
-        return "https://docs.google.com/uc?export=view&id=" + id;
-    }
-    return url;
-}
 
     async function cargarAtletas() {
         try {
@@ -282,9 +276,9 @@
                             ${grupo.map(a => `
                                 <tr>
                                     <td><img src="${formatImgUrl(a.fotoCarnet)}" 
-     style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid var(--neon);" 
-     referrerpolicy="no-referrer" 
-     onerror="this.src='https://via.placeholder.com/150'"></td>
+                                         style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid var(--neon);" 
+                                         referrerpolicy="no-referrer"
+                                         onerror="this.src='https://via.placeholder.com/150?text=Error'"></td>
                                     <td><strong>${a.nombre} ${a.apellido}</strong></td>
                                     <td><span class="badge status-aprobado">#${a.dorsal}</span></td>
                                     <td>${a.edad} años</td>
@@ -302,7 +296,6 @@
         sel.innerHTML = "";
         let ocupados = heatsCrossfitCreados.flatMap(h => h.atletas.map(at => at.fila));
         let cfAtletas = todosLosAtletas.filter(a => a.modalidad.toLowerCase().includes('crossfit') && a.estatus === 'Aprobado' && !ocupados.includes(a.fila));
-        
         cfAtletas.forEach(a => {
             let chip = document.createElement('div');
             chip.className = "atleta-chip" + (seleccionadosCF.includes(a.fila) ? " selected" : "");
@@ -355,9 +348,9 @@
                             ${heat.atletas.map(a => `
                                 <tr>
                                     <td><img src="${formatImgUrl(a.fotoCarnet)}" 
-     style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid var(--neon);" 
-     referrerpolicy="no-referrer" 
-     onerror="this.src='https://via.placeholder.com/150'"></td>
+                                         style="width:45px; height:45px; border-radius:50%; object-fit:cover; border:2px solid var(--neon);" 
+                                         referrerpolicy="no-referrer"
+                                         onerror="this.src='https://via.placeholder.com/150?text=Error'"></td>
                                     <td><strong>${a.nombre} ${a.apellido}</strong></td>
                                     <td>${a.categoria}</td>
                                     <td><button class="btn-delete" onclick="quitarAtletaDeHeatCF(${heat.id}, ${a.fila})" style="padding:4px 8px;">Quitar</button></td>
@@ -405,7 +398,7 @@
                     <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i></a>
                     <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i></a>
                 </td>
-                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
+                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp || atleta.telefono).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
                 <td data-label="Acción">
                     <button class="btn btn-view" onclick='prepararEdicion(${inicio + index})'><i class="fas fa-edit"></i></button>
                     <button class="btn btn-delete" onclick="eliminarAtleta(${atleta.fila}, '${atleta.nombre}')"><i class="fas fa-trash"></i></button>

@@ -4,41 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Ruta Garage | Official Event</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-
-        .logo-container {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-}
-
-.nav-logo {
-    height: 40px; /* Ajusta la altura según qué tan grande quieras que se vea */
-    width: auto;
-    display: block;
-    transition: transform 0.3s ease;
-}
-
-.nav-logo:hover {
-    transform: scale(1.05); /* Efecto sutil al pasar el mouse */
-}
-
-/* Ajuste para el nav para que todo esté centrado verticalmente */
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 5%;
-}
-        
         :root {
-            --neon: #39FF14;
-            --neon-glow: rgba(57, 255, 20, 0.4);
+            --neon: #d8ff5e; /* Tu nuevo verde */
+            --neon-glow: rgba(216, 255, 94, 0.4);
             --bg: #050505;
-            --surface: #111;
+            --surface: rgba(20, 20, 20, 0.6); /* Transparencia para Glassmorphism */
         }
 
         body {
@@ -50,27 +24,36 @@ nav {
             scroll-behavior: smooth;
         }
 
-        /* --- NAVBAR --- */
+        /* --- NAVBAR (Efecto Espejo) --- */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 5%;
-            background: rgba(0,0,0,0.95);
-            border-bottom: 1px solid #222;
+            background: rgba(0, 0, 0, 0.7);
+            border-bottom: 1px solid rgba(216, 255, 94, 0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
         }
 
-        .logo { 
-            font-family: 'Syncopate', sans-serif; 
-            color: var(--neon); 
-            font-weight: 700; 
-            font-size: 1.2rem;
+        .logo-container {
+            display: flex;
+            align-items: center;
             text-decoration: none;
-            text-shadow: 0 0 10px var(--neon-glow);
+        }
+
+        .nav-logo {
+            height: 40px;
+            width: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-logo:hover {
+            transform: scale(1.05);
         }
 
         /* --- HERO SECTION --- */
@@ -81,14 +64,14 @@ nav {
             justify-content: center;
             align-items: center;
             text-align: center;
-            /* Foto de fondo - Cámbiala por una real de tu evento luego */
-            background: linear-gradient(0deg, var(--bg) 0%, rgba(0,0,0,0.4) 100%),
-                        url('https://i.ibb.co/8L0bxwx3/bglarutawebsite.jpg') center/cover;
+            background: linear-gradient(0deg, var(--bg) 0%, rgba(0,0,0,0.3) 100%),
+                        url('https://i.ibb.co/8L0bxwx3/bglarutawebsite.jpg') center/cover fixed;
             padding: 0 20px;
         }
 
         .hero h1 {
-            font-family: 'Syncopate', sans-serif;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900; /* Extra Gruesa */
             font-size: clamp(2rem, 8vw, 4.5rem);
             margin: 10px 0;
             text-transform: uppercase;
@@ -96,7 +79,14 @@ nav {
             line-height: 1;
         }
 
-        .hero h1 span { color: var(--neon); text-shadow: 0 0 20px var(--neon-glow); }
+        .hero h1 span { 
+            color: var(--neon); 
+            text-shadow: 0 0 20px var(--neon-glow); 
+        }
+
+        .hero p {
+            font-weight: 300; /* Delgada */
+        }
 
         .btn-neon {
             margin-top: 30px;
@@ -107,25 +97,29 @@ nav {
             text-decoration: none;
             text-transform: uppercase;
             letter-spacing: 2px;
-            border-radius: 4px;
+            border-radius: 8px;
             box-shadow: 0 0 20px var(--neon-glow);
-            transition: 0.3s;
+            transition: 0.4s;
             display: inline-block;
+            font-family: 'Montserrat', sans-serif;
         }
 
         .btn-neon:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 40px var(--neon);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px var(--neon-glow);
+            background: white;
         }
 
-        /* --- ESTADÍSTICAS --- */
+        /* --- ESTADÍSTICAS (Efecto Glassmorphism) --- */
         .section-title {
             text-align: center;
-            font-family: 'Syncopate';
-            font-size: 1.5rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8rem;
             margin: 80px 0 40px;
             color: #fff;
             letter-spacing: 4px;
+            text-transform: uppercase;
         }
 
         .stats-container {
@@ -137,19 +131,43 @@ nav {
 
         .hex-stat {
             background: var(--surface);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 40px 20px;
             text-align: center;
-            border-radius: 15px;
-            border: 1px solid #222;
-            transition: 0.3s;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.4s;
             position: relative;
-            overflow: hidden;
         }
 
-        .hex-stat:hover { border-color: var(--neon); transform: translateY(-5px); }
-        .hex-stat i { color: var(--neon); font-size: 2.5rem; margin-bottom: 15px; display: block; }
-        .hex-stat h2 { font-family: 'Syncopate'; font-size: 2.2rem; margin: 5px 0; }
-        .hex-stat p { color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
+        .hex-stat:hover { 
+            border-color: var(--neon); 
+            transform: translateY(-10px);
+            background: rgba(216, 255, 94, 0.05);
+        }
+
+        .hex-stat i { 
+            color: var(--neon); 
+            font-size: 2.5rem; 
+            margin-bottom: 15px; 
+            display: block; 
+            filter: drop-shadow(0 0 10px var(--neon-glow));
+        }
+
+        .hex-stat h2 { 
+            font-weight: 900; 
+            font-size: 2.5rem; 
+            margin: 5px 0; 
+        }
+
+        .hex-stat p { 
+            color: #aaa; 
+            font-size: 0.8rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            font-weight: 600;
+        }
 
         /* --- BOTONES ACCIÓN --- */
         .actions {
@@ -165,14 +183,19 @@ nav {
             border: 2px solid var(--neon);
             color: var(--neon);
             text-decoration: none;
-            font-weight: bold;
-            font-family: 'Syncopate';
+            font-weight: 900;
+            font-family: 'Montserrat', sans-serif;
             font-size: 0.8rem;
-            border-radius: 4px;
+            border-radius: 8px;
             transition: 0.3s;
+            text-transform: uppercase;
         }
 
-        .btn-outline:hover { background: var(--neon); color: black; }
+        .btn-outline:hover { 
+            background: var(--neon); 
+            color: black; 
+            box-shadow: 0 0 20px var(--neon-glow);
+        }
 
         footer {
             padding: 60px 10%;
@@ -181,25 +204,32 @@ nav {
             border-top: 1px solid #111;
             color: #444;
             font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 2.5rem; }
+            nav { padding: 10px 5%; }
         }
     </style>
 </head>
 <body>
 
     <nav>
-    <a href="#" class="logo-container">
-        <img src="https://i.ibb.co/mF8DTRrm/Logo-Icono-Verde.png" alt="La Ruta Garage" class="nav-logo">
-    </a>
-    <a href="" class="btn-neon" style="padding: 8px 20px; font-size: 0.7rem; margin-top: 0;">PRONTO!</a>
-</nav>
+        <a href="#" class="logo-container">
+            <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="La Ruta Garage" class="nav-logo">
+        </a>
+        <a href="#" class="btn-neon" style="padding: 10px 20px; font-size: 0.7rem; margin-top: 0;">PRONTO!</a>
+    </nav>
 
     <section class="hero">
-        <p style="letter-spacing: 10px; font-weight: 300; color: var(--neon);">PRÓXIMAMENTE</p>
+        <p style="letter-spacing: 10px; font-weight: 300; color: var(--neon); text-transform: uppercase; margin-bottom: 0;">PRÓXIMAMENTE</p>
         <h1>UN PLAN. <span>UNA RUTA.</span> UNA META.</h1>
-        <p style="max-width: 700px; color: #aaa; margin-top: 20px; line-height: 1.8;">
+        <p style="max-width: 700px; color: #ccc; margin-top: 20px; line-height: 1.8; font-weight: 300;">
             Vuelve la competencia que pone a prueba tus límites. Maturín se prepara para recibir a los mejores atletas en una jornada de pura potencia y resistencia.
         </p>
-        <a href="" class="btn-neon">INSCRIPCIONES PRONTO</a>
+        <a href="#" class="btn-neon">INSCRIPCIONES PRONTO</a>
     </section>
 
     <h2 class="section-title">MEMORIAS 2025</h2>
@@ -223,12 +253,12 @@ nav {
 
     <div class="actions">
         <a href="https://drive.google.com/drive/u/0/folders/1jvNeuXgAO6jxJWh3sJoujsYOiHGAZHnr" target="_blank" class="btn-outline">VER GALERÍA DE FOTOS</a>
-        <a href="https://wa.me/https://wa.link/5j0kc7" target="_blank" class="btn-outline">QUIERES SER NUESTRO ALIADO?</a>
+        <a href="https://wa.link/5j0kc7" target="_blank" class="btn-outline">¿QUIERES SER NUESTRO ALIADO?</a>
     </div>
 
     <footer>
         &copy; 2026 LA RUTA GARAGE | MATURIN, VENEZUELA <br>
-        DESIGNED FOR CHAMPIONS
+        <span style="color: #222;">DESIGNED FOR CHAMPIONS</span>
     </footer>
 
 </body>

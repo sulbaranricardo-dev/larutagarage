@@ -24,38 +24,12 @@
         body { 
             background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
                         url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FbglarutawebsiteBlack.jpg?alt=media&token=8e8d0ddb-b8a4-43f0-8199-98d31beaf078'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: white; 
-            font-family: 'Montserrat', sans-serif; 
-            padding: 10px; 
-            margin: 0; 
-            display: none; 
-            min-height: 100vh;
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: white; font-family: 'Montserrat', sans-serif; padding: 10px; margin: 0; display: none; min-height: 100vh;
         }
         
-        #modalEditar { 
-            display:none; 
-            position:fixed; 
-            top:0; left:0; 
-            width:100%; height:100%; 
-            background:rgba(0,0,0,0.9); 
-            z-index:2000; 
-            overflow-y:auto; 
-            padding:20px; 
-            box-sizing: border-box; 
-        }
-        .modal-content { 
-            max-width:600px; 
-            margin:auto; 
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(216, 255, 94, 0.2);
-            padding:30px; 
-            border-radius:20px; 
-        }
+        #modalEditar { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; overflow-y:auto; padding:20px; box-sizing: border-box; }
+        .modal-content { max-width:600px; margin:auto; background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(216, 255, 94, 0.2); padding:30px; border-radius:20px; }
         .edit-grid { display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top: 20px; }
         .edit-grid div { display: flex; flex-direction: column; }
         .edit-grid label { font-size: 0.65rem; color: var(--neon); text-transform: uppercase; margin-bottom: 5px; font-weight: 600; }
@@ -97,37 +71,18 @@
         .atleta-chip { cursor: pointer; padding: 6px 12px; border: 1px solid #333; border-radius: 30px; font-size: 0.7rem; transition: 0.3s; background: rgba(255,255,255,0.05); }
         .atleta-chip.selected { border-color: var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.1); }
 
-        /* NUEVA VERSIÓN MÓVIL ULTRA COMPACTA */
+        /* MÓVIL: Versión Tarjeta para Atletas / Versión Compacta para Heats */
         @media (max-width: 800px) {
-            .header-admin img { width: 80px; }
-            h1 { font-size: 1.1rem; }
-            .btn-filter { padding: 10px; font-size: 0.6rem; }
-            
-            /* Forzar que se mantenga como tabla y no como bloques */
-            table thead { display: table-header-group; } /* Volver a mostrar cabeceras */
-            table th { padding: 8px 5px; font-size: 0.55rem; }
-            table td { 
-                display: table-cell; /* Volver a comportamiento de celda */
-                padding: 5px; 
-                font-size: 0.7rem; 
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-                vertical-align: middle;
-            }
-            table tr { display: table-row; background: none; margin-bottom: 0; border: none; }
-            
-            /* Ocultar etiquetas repetitivas del móvil anterior */
-            table td::before { display: none; }
-            
-            /* Ajustar botones para que quepan en línea */
-            .btn { padding: 5px; font-size: 0.6rem; min-width: auto; }
-            .btn i { margin: 0; }
-            .badge { font-size: 0.55rem; padding: 2px 4px; }
-            
-            /* Específico para multimedia y acciones para que no se rompan */
-            td[data-label="Multimedia"], td[data-label="Acción"], td[data-label="WhatsApp"] {
-                white-space: nowrap;
-                text-align: center;
-            }
+            /* Vista General (Tarjetas) */
+            #viewGeneral table thead { display: none; }
+            #viewGeneral table tr { display: block; background: rgba(0,0,0,0.3); margin-bottom: 15px; border: 1px solid #222; padding: 15px; border-radius: 12px; }
+            #viewGeneral table td { display: flex; justify-content: flex-end; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 8px; flex-wrap: wrap; }
+            #viewGeneral table td::before { content: attr(data-label); font-weight: 900; color: #666; text-transform: uppercase; font-size: 0.6rem; margin-right: auto; }
+            #viewGeneral .btn { width: 100%; justify-content: center; }
+
+            /* Vista Logística (Heats) - Seguimos queriendo que sea compacta */
+            #viewLogistica table th { padding: 8px 5px; font-size: 0.55rem; }
+            #viewLogistica table td { padding: 5px; font-size: 0.75rem; }
         }
     </style>
 </head>
@@ -159,12 +114,12 @@
     <div id="viewGeneral">
         <div class="controls">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Busca..." oninput="resetearYPaginacion()">
+                <input type="text" id="searchInput" placeholder="Buscar por nombre, cédula o dorsal..." oninput="resetearYPaginacion()">
             </div>
             <div class="filter-buttons">
                 <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('todos')">Todos</button>
                 <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">Race</button>
-                <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">CF</button>
+                <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">Crossfit</button>
             </div>
         </div>
         <div class="container">
@@ -172,22 +127,22 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Atleta</th>
-                            <th>Mod.</th>
-                            <th>Pago</th>
-                            <th>Docs</th>
-                            <th>WA</th>
-                            <th>Acc.</th>
+                            <th>Dorsal</th>
+                            <th>Atleta / Talla</th>
+                            <th>Modalidad</th>
+                            <th>Pago Info</th>
+                            <th>Multimedia</th>
+                            <th>WhatsApp</th>
+                            <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody id="tablaAtletas"></tbody>
                 </table>
             </div>
             <div class="pagination">
-                <button class="btn-pag" id="prevPage" onclick="cambiarPagina(-1)" disabled><i class="fas fa-chevron-left"></i></button>
-                <span id="pageInfo" style="font-weight: 600; font-size: 0.7rem;">Pág 1</span>
-                <button class="btn-pag" id="nextPage" onclick="cambiarPagina(1)" disabled><i class="fas fa-chevron-right"></i></button>
+                <button class="btn-pag" id="prevPage" onclick="cambiarPagina(-1)" disabled>Anterior</button>
+                <span id="pageInfo" style="font-weight: 600; font-size: 0.8rem;">Página 1</span>
+                <button class="btn-pag" id="nextPage" onclick="cambiarPagina(1)" disabled>Siguiente</button>
             </div>
         </div>
     </div>
@@ -195,16 +150,16 @@
     <div id="viewLogistica" style="display:none;">
         <div class="controls">
             <div class="filter-buttons">
-                <button class="btn-filter active" id="btnHeatRace" onclick="switchHeatType('race')">Race (Auto)</button>
-                <button class="btn-filter" id="btnHeatCF" onclick="switchHeatType('cf')">CF (Manual)</button>
+                <button class="btn-filter active" id="btnHeatRace" onclick="switchHeatType('race')">Ruta Race (Auto)</button>
+                <button class="btn-filter" id="btnHeatCF" onclick="switchHeatType('cf')">CrossFit (Manual)</button>
             </div>
         </div>
         <div id="containerHeatsRace"></div>
         <div id="containerHeatsCF" style="display:none;">
-            <div class="container" style="padding: 15px;">
-                <p style="font-size:0.7rem; color:var(--neon); font-weight:600; margin-bottom:10px; text-transform:uppercase;">Selecciona Atletas CF:</p>
-                <div id="selectorAtletasCF" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:15px;"></div>
-                <button class="btn btn-approve" onclick="crearHeatManual()">Crear Heat</button>
+            <div class="container" style="padding: 20px;">
+                <p style="font-size:0.8rem; color:var(--neon); font-weight:600; margin-bottom:15px; text-transform:uppercase;">1. Selecciona Atletas de CrossFit:</p>
+                <div id="selectorAtletasCF" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"></div>
+                <button class="btn btn-approve" onclick="crearHeatManual()">Crear Heat con Seleccionados</button>
             </div>
             <div id="listaHeatsManuales"></div>
         </div>
@@ -276,11 +231,11 @@
         const cont = document.getElementById('containerHeatsRace');
         cont.innerHTML = "";
         let raceAtletas = todosLosAtletas
-            .filter(a => a.modalidad.toLowerCase().includes('race') && a.estatus === 'Aprobado')
+            .filter(a => a.modalidad && a.modalidad.toLowerCase().includes('race') && a.estatus === 'Aprobado')
             .sort((a, b) => a.edad - b.edad);
 
         if (raceAtletas.length === 0) {
-            cont.innerHTML = "<p style='text-align:center; padding:20px;'>No hay atletas.</p>";
+            cont.innerHTML = "<p style='text-align:center; padding:20px;'>No hay atletas aprobados en Ruta Race.</p>";
             return;
         }
 
@@ -291,19 +246,19 @@
             div.className = "container";
             div.innerHTML = `
                 <div class="heat-header">
-                    <span>HEAT ${heatNum}</span>
-                    <span style="font-size:0.6rem;">Edades: ${grupo[0].edad}-${grupo[grupo.length-1].edad}</span>
+                    <span>HEAT ${heatNum} (RUTA RACE)</span>
+                    <span style="font-size:0.65rem; font-weight:300;">Edades: ${grupo[0].edad} - ${grupo[grupo.length-1].edad} años</span>
                 </div>
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Foto</th><th>Atleta</th><th>#</th><th>Edad</th></tr></thead>
+                        <thead><tr><th>Foto</th><th>Atleta</th><th>Dorsal</th><th>Edad</th></tr></thead>
                         <tbody>
                             ${grupo.map(a => `
                                 <tr>
-                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid var(--neon);"></td>
-                                    <td><strong>${a.nombre}</strong></td>
+                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid var(--neon);"></td>
+                                    <td><strong>${a.nombre} ${a.apellido}</strong></td>
                                     <td><span class="badge status-aprobado">#${a.dorsal}</span></td>
-                                    <td>${a.edad}</td>
+                                    <td>${a.edad} años</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -317,11 +272,11 @@
         const sel = document.getElementById('selectorAtletasCF');
         sel.innerHTML = "";
         let ocupados = heatsCrossfitCreados.flatMap(h => h.atletas.map(at => at.fila));
-        let cfAtletas = todosLosAtletas.filter(a => a.modalidad.toLowerCase().includes('crossfit') && a.estatus === 'Aprobado' && !ocupados.includes(a.fila));
+        let cfAtletas = todosLosAtletas.filter(a => a.modalidad && a.modalidad.toLowerCase().includes('crossfit') && a.estatus === 'Aprobado' && !ocupados.includes(a.fila));
         cfAtletas.forEach(a => {
             let chip = document.createElement('div');
             chip.className = "atleta-chip" + (seleccionadosCF.includes(a.fila) ? " selected" : "");
-            chip.innerText = `${a.nombre}`;
+            chip.innerText = `${a.nombre} (${a.categoria})`;
             chip.onclick = () => {
                 chip.classList.toggle('selected');
                 if(seleccionadosCF.includes(a.fila)) seleccionadosCF = seleccionadosCF.filter(f => f !== a.fila);
@@ -332,7 +287,7 @@
     }
 
     function crearHeatManual() {
-        if (seleccionadosCF.length === 0) return alert("Selecciona atletas.");
+        if (seleccionadosCF.length === 0) return alert("Selecciona atletas primero.");
         let nuevosAtletas = todosLosAtletas.filter(a => seleccionadosCF.includes(a.fila));
         heatsCrossfitCreados.push({ id: Date.now(), atletas: nuevosAtletas });
         seleccionadosCF = [];
@@ -340,7 +295,7 @@
     }
 
     function borrarHeatCF(id) {
-        if(!confirm("¿Borrar Heat?")) return;
+        if(!confirm("¿Borrar este Heat completo?")) return;
         heatsCrossfitCreados = heatsCrossfitCreados.filter(h => h.id !== id);
         actualizarVistaHeatsCF();
     }
@@ -360,19 +315,19 @@
             div.className = "container";
             div.innerHTML = `
                 <div class="heat-header" style="background:#fff;">
-                    <span>HEAT ${idx + 1} (CF)</span>
-                    <button class="btn-delete" onclick="borrarHeatCF(${heat.id})" style="background:none; border:none; color:red; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                    <span>HEAT ${idx + 1} (CROSSFIT)</span>
+                    <button class="btn-delete" onclick="borrarHeatCF(${heat.id})" style="background:white; border:none; padding:5px 10px; cursor:pointer;"><i class="fas fa-trash"></i> ELIMINAR HEAT</button>
                 </div>
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Foto</th><th>Atleta</th><th>Cat.</th><th>X</th></tr></thead>
+                        <thead><tr><th>Foto</th><th>Atleta</th><th>Categoría</th><th>Acción</th></tr></thead>
                         <tbody>
                             ${heat.atletas.map(a => `
                                 <tr>
-                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid #333;"></td>
-                                    <td><strong>${a.nombre}</strong></td>
+                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid #333;"></td>
+                                    <td><strong>${a.nombre} ${a.apellido}</strong></td>
                                     <td>${a.categoria}</td>
-                                    <td><button class="btn-delete" onclick="quitarAtletaDeHeatCF(${heat.id}, ${a.fila})"><i class="fas fa-times"></i></button></td>
+                                    <td><button class="btn-delete" onclick="quitarAtletaDeHeatCF(${heat.id}, ${a.fila})" style="padding:4px 8px;">Quitar</button></td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -394,7 +349,7 @@
     function aplicarFiltros() {
         const busqueda = document.getElementById('searchInput').value.toLowerCase();
         atletasFiltrados = todosLosAtletas.filter(atleta => {
-            const cumpleMod = (modalidadActual === 'todos' || atleta.modalidad.toLowerCase().includes(modalidadActual));
+            const cumpleMod = (modalidadActual === 'todos' || (atleta.modalidad && atleta.modalidad.toLowerCase().includes(modalidadActual)));
             const dataStr = [atleta.nombre, atleta.apellido, atleta.cedula, atleta.referencia, atleta.dorsal].join(' ').toLowerCase();
             return cumpleMod && dataStr.includes(busqueda);
         });
@@ -409,17 +364,19 @@
         atletasPagina.forEach((atleta, index) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal || '??'}</span></td>
-                <td data-label="Atleta"><strong>${atleta.nombre}</strong><br><small style="color:var(--neon)">${atleta.talla || 'S/N'}</small></td>
-                <td data-label="Modalidad"><small>${atleta.modalidad.substring(0,2).toUpperCase()}</small></td>
-                <td data-label="Pago"><small>${atleta.referencia.substring(0,4)}</small></td>
+                <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal || 'PEND'}</span></td>
+                <td data-label="Atleta"><strong>${atleta.nombre} ${atleta.apellido || ''}</strong><br><small style="color:var(--neon); font-weight:600">Talla: ${atleta.talla || 'S/N'}</small></td>
+                <td data-label="Modalidad">${atleta.modalidad}</td>
+                <td data-label="Pago Info"><strong>${atleta.metodo || 'S/M'}</strong><br><small style="color:#777">Ref: ${atleta.referencia}</small></td>
                 <td data-label="Multimedia">
-                    <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-image"></i></a>
+                    <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i> FOTO</a>
+                    <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i> PAGO</a>
                 </td>
-                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp || atleta.telefono).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
+                <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp || atleta.telefono).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> CHAT</a></td>
                 <td data-label="Acción">
                     <button class="btn btn-view" onclick='prepararEdicion(${inicio + index})'><i class="fas fa-edit"></i></button>
-                    ${atleta.estatus === 'Pendiente' ? `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila},'${atleta.correo}','${atleta.nombre}')"><i class="fas fa-check"></i></button>` : ''}
+                    <button class="btn btn-delete" onclick="eliminarAtleta(${atleta.fila}, '${atleta.nombre}')"><i class="fas fa-trash"></i></button>
+                    ${atleta.estatus === 'Pendiente' ? `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila},'${atleta.correo}','${atleta.nombre}')">APROBAR</button>` : ''}
                 </td>`;
             tabla.appendChild(tr);
         });
@@ -467,7 +424,7 @@
 
     function actualizarControlesPagina(t) {
         const totalPaginas = Math.ceil(t / registrosPorPagina);
-        document.getElementById('pageInfo').innerText = `Pág ${paginaActual} / ${totalPaginas || 1}`;
+        document.getElementById('pageInfo').innerText = `Página ${paginaActual} de ${totalPaginas || 1}`;
         document.getElementById('prevPage').disabled = paginaActual === 1;
         document.getElementById('nextPage').disabled = paginaActual >= totalPaginas;
     }

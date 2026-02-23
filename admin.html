@@ -78,7 +78,6 @@
         table { width: 100%; border-collapse: collapse; }
         th { background: rgba(216, 255, 94, 0.05); color: var(--neon); text-align: left; padding: 12px 15px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid var(--neon); }
         
-        /* CELDAS MÁS DELGADAS */
         td { padding: 8px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; font-weight: 300; }
 
         .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; padding: 25px; }
@@ -98,12 +97,37 @@
         .atleta-chip { cursor: pointer; padding: 6px 12px; border: 1px solid #333; border-radius: 30px; font-size: 0.7rem; transition: 0.3s; background: rgba(255,255,255,0.05); }
         .atleta-chip.selected { border-color: var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.1); }
 
+        /* NUEVA VERSIÓN MÓVIL ULTRA COMPACTA */
         @media (max-width: 800px) {
-            table thead { display: none; }
-            table tr { display: block; background: rgba(0,0,0,0.3); margin-bottom: 15px; border: 1px solid #222; padding: 15px; border-radius: 12px; }
-            table td { display: flex; justify-content: flex-end; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 8px; flex-wrap: wrap; }
-            table td::before { content: attr(data-label); font-weight: 900; color: #666; text-transform: uppercase; font-size: 0.6rem; margin-right: auto; }
-            .btn { width: 100%; justify-content: center; }
+            .header-admin img { width: 80px; }
+            h1 { font-size: 1.1rem; }
+            .btn-filter { padding: 10px; font-size: 0.6rem; }
+            
+            /* Forzar que se mantenga como tabla y no como bloques */
+            table thead { display: table-header-group; } /* Volver a mostrar cabeceras */
+            table th { padding: 8px 5px; font-size: 0.55rem; }
+            table td { 
+                display: table-cell; /* Volver a comportamiento de celda */
+                padding: 5px; 
+                font-size: 0.7rem; 
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                vertical-align: middle;
+            }
+            table tr { display: table-row; background: none; margin-bottom: 0; border: none; }
+            
+            /* Ocultar etiquetas repetitivas del móvil anterior */
+            table td::before { display: none; }
+            
+            /* Ajustar botones para que quepan en línea */
+            .btn { padding: 5px; font-size: 0.6rem; min-width: auto; }
+            .btn i { margin: 0; }
+            .badge { font-size: 0.55rem; padding: 2px 4px; }
+            
+            /* Específico para multimedia y acciones para que no se rompan */
+            td[data-label="Multimedia"], td[data-label="Acción"], td[data-label="WhatsApp"] {
+                white-space: nowrap;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -135,12 +159,12 @@
     <div id="viewGeneral">
         <div class="controls">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Buscar por nombre, cédula o dorsal..." oninput="resetearYPaginacion()">
+                <input type="text" id="searchInput" placeholder="Busca..." oninput="resetearYPaginacion()">
             </div>
             <div class="filter-buttons">
                 <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('todos')">Todos</button>
                 <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">Race</button>
-                <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">Crossfit</button>
+                <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">CF</button>
             </div>
         </div>
         <div class="container">
@@ -148,22 +172,22 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Dorsal</th>
-                            <th>Atleta / Talla</th>
-                            <th>Modalidad</th>
-                            <th>Pago Info</th>
-                            <th>Multimedia</th>
-                            <th>WhatsApp</th>
-                            <th>Acción</th>
+                            <th>#</th>
+                            <th>Atleta</th>
+                            <th>Mod.</th>
+                            <th>Pago</th>
+                            <th>Docs</th>
+                            <th>WA</th>
+                            <th>Acc.</th>
                         </tr>
                     </thead>
                     <tbody id="tablaAtletas"></tbody>
                 </table>
             </div>
             <div class="pagination">
-                <button class="btn-pag" id="prevPage" onclick="cambiarPagina(-1)" disabled>Anterior</button>
-                <span id="pageInfo" style="font-weight: 600; font-size: 0.8rem;">Página 1</span>
-                <button class="btn-pag" id="nextPage" onclick="cambiarPagina(1)" disabled>Siguiente</button>
+                <button class="btn-pag" id="prevPage" onclick="cambiarPagina(-1)" disabled><i class="fas fa-chevron-left"></i></button>
+                <span id="pageInfo" style="font-weight: 600; font-size: 0.7rem;">Pág 1</span>
+                <button class="btn-pag" id="nextPage" onclick="cambiarPagina(1)" disabled><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
     </div>
@@ -171,16 +195,16 @@
     <div id="viewLogistica" style="display:none;">
         <div class="controls">
             <div class="filter-buttons">
-                <button class="btn-filter active" id="btnHeatRace" onclick="switchHeatType('race')">Ruta Race (Auto)</button>
-                <button class="btn-filter" id="btnHeatCF" onclick="switchHeatType('cf')">CrossFit (Manual)</button>
+                <button class="btn-filter active" id="btnHeatRace" onclick="switchHeatType('race')">Race (Auto)</button>
+                <button class="btn-filter" id="btnHeatCF" onclick="switchHeatType('cf')">CF (Manual)</button>
             </div>
         </div>
         <div id="containerHeatsRace"></div>
         <div id="containerHeatsCF" style="display:none;">
-            <div class="container" style="padding: 20px;">
-                <p style="font-size:0.8rem; color:var(--neon); font-weight:600; margin-bottom:15px; text-transform:uppercase;">1. Selecciona Atletas de CrossFit:</p>
-                <div id="selectorAtletasCF" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"></div>
-                <button class="btn btn-approve" onclick="crearHeatManual()">Crear Heat con Seleccionados</button>
+            <div class="container" style="padding: 15px;">
+                <p style="font-size:0.7rem; color:var(--neon); font-weight:600; margin-bottom:10px; text-transform:uppercase;">Selecciona Atletas CF:</p>
+                <div id="selectorAtletasCF" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:15px;"></div>
+                <button class="btn btn-approve" onclick="crearHeatManual()">Crear Heat</button>
             </div>
             <div id="listaHeatsManuales"></div>
         </div>
@@ -209,7 +233,6 @@
         }
     })();
 
-    // LÓGICA DE FOTOS QUE FUNCIONABA
     function formatImgUrl(url) {
         if (!url || url === "") return "https://via.placeholder.com/150?text=No+Foto";
         let id = "";
@@ -257,7 +280,7 @@
             .sort((a, b) => a.edad - b.edad);
 
         if (raceAtletas.length === 0) {
-            cont.innerHTML = "<p style='text-align:center; padding:20px;'>No hay atletas aprobados en Ruta Race.</p>";
+            cont.innerHTML = "<p style='text-align:center; padding:20px;'>No hay atletas.</p>";
             return;
         }
 
@@ -268,22 +291,19 @@
             div.className = "container";
             div.innerHTML = `
                 <div class="heat-header">
-                    <span>HEAT ${heatNum} (RUTA RACE)</span>
-                    <span style="font-size:0.65rem; font-weight:300;">Edades: ${grupo[0].edad} - ${grupo[grupo.length-1].edad} años</span>
+                    <span>HEAT ${heatNum}</span>
+                    <span style="font-size:0.6rem;">Edades: ${grupo[0].edad}-${grupo[grupo.length-1].edad}</span>
                 </div>
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Foto</th><th>Atleta</th><th>Dorsal</th><th>Edad</th></tr></thead>
+                        <thead><tr><th>Foto</th><th>Atleta</th><th>#</th><th>Edad</th></tr></thead>
                         <tbody>
                             ${grupo.map(a => `
                                 <tr>
-                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" 
-                                         style="width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid var(--neon);" 
-                                         referrerpolicy="no-referrer"
-                                         onerror="this.src='https://via.placeholder.com/150?text=Error'"></td>
-                                    <td><strong>${a.nombre} ${a.apellido}</strong></td>
+                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid var(--neon);"></td>
+                                    <td><strong>${a.nombre}</strong></td>
                                     <td><span class="badge status-aprobado">#${a.dorsal}</span></td>
-                                    <td>${a.edad} años</td>
+                                    <td>${a.edad}</td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -301,7 +321,7 @@
         cfAtletas.forEach(a => {
             let chip = document.createElement('div');
             chip.className = "atleta-chip" + (seleccionadosCF.includes(a.fila) ? " selected" : "");
-            chip.innerText = `${a.nombre} (${a.categoria})`;
+            chip.innerText = `${a.nombre}`;
             chip.onclick = () => {
                 chip.classList.toggle('selected');
                 if(seleccionadosCF.includes(a.fila)) seleccionadosCF = seleccionadosCF.filter(f => f !== a.fila);
@@ -312,7 +332,7 @@
     }
 
     function crearHeatManual() {
-        if (seleccionadosCF.length === 0) return alert("Selecciona atletas primero.");
+        if (seleccionadosCF.length === 0) return alert("Selecciona atletas.");
         let nuevosAtletas = todosLosAtletas.filter(a => seleccionadosCF.includes(a.fila));
         heatsCrossfitCreados.push({ id: Date.now(), atletas: nuevosAtletas });
         seleccionadosCF = [];
@@ -320,7 +340,7 @@
     }
 
     function borrarHeatCF(id) {
-        if(!confirm("¿Borrar este Heat completo?")) return;
+        if(!confirm("¿Borrar Heat?")) return;
         heatsCrossfitCreados = heatsCrossfitCreados.filter(h => h.id !== id);
         actualizarVistaHeatsCF();
     }
@@ -340,22 +360,19 @@
             div.className = "container";
             div.innerHTML = `
                 <div class="heat-header" style="background:#fff;">
-                    <span>HEAT ${idx + 1} (CROSSFIT)</span>
-                    <button class="btn-delete" onclick="borrarHeatCF(${heat.id})" style="background:white; border:none; padding:5px 10px; cursor:pointer;"><i class="fas fa-trash"></i> ELIMINAR HEAT</button>
+                    <span>HEAT ${idx + 1} (CF)</span>
+                    <button class="btn-delete" onclick="borrarHeatCF(${heat.id})" style="background:none; border:none; color:red; cursor:pointer;"><i class="fas fa-trash"></i></button>
                 </div>
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Foto</th><th>Atleta</th><th>Categoría</th><th>Acción</th></tr></thead>
+                        <thead><tr><th>Foto</th><th>Atleta</th><th>Cat.</th><th>X</th></tr></thead>
                         <tbody>
                             ${heat.atletas.map(a => `
                                 <tr>
-                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" 
-                                         style="width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid #333;" 
-                                         referrerpolicy="no-referrer"
-                                         onerror="this.src='https://via.placeholder.com/150?text=Error'"></td>
-                                    <td><strong>${a.nombre} ${a.apellido}</strong></td>
+                                    <td><img src="${formatImgUrl(a.fotoCarnet)}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid #333;"></td>
+                                    <td><strong>${a.nombre}</strong></td>
                                     <td>${a.categoria}</td>
-                                    <td><button class="btn-delete" onclick="quitarAtletaDeHeatCF(${heat.id}, ${a.fila})" style="padding:4px 8px;">Quitar</button></td>
+                                    <td><button class="btn-delete" onclick="quitarAtletaDeHeatCF(${heat.id}, ${a.fila})"><i class="fas fa-times"></i></button></td>
                                 </tr>
                             `).join('')}
                         </tbody>
@@ -392,19 +409,17 @@
         atletasPagina.forEach((atleta, index) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal || 'PEND'}</span></td>
-                <td data-label="Atleta"><strong>${atleta.nombre} ${atleta.apellido || ''}</strong><br><small style="color:var(--neon); font-weight:600">Talla: ${atleta.talla || 'S/N'}</small></td>
-                <td data-label="Modalidad"><small>${atleta.modalidad}</small></td>
-                <td data-label="Pago"><small><strong>${atleta.metodo || 'S/M'}</strong></small><br><small style="color:#777">Ref: ${atleta.referencia}</small></td>
+                <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal || '??'}</span></td>
+                <td data-label="Atleta"><strong>${atleta.nombre}</strong><br><small style="color:var(--neon)">${atleta.talla || 'S/N'}</small></td>
+                <td data-label="Modalidad"><small>${atleta.modalidad.substring(0,2).toUpperCase()}</small></td>
+                <td data-label="Pago"><small>${atleta.referencia.substring(0,4)}</small></td>
                 <td data-label="Multimedia">
-                    <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i></a>
-                    <a href="${atleta.fotoPago}" target="_blank" class="btn btn-view"><i class="fas fa-receipt"></i></a>
+                    <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-image"></i></a>
                 </td>
                 <td data-label="WhatsApp"><a href="https://wa.me/${String(atleta.whatsapp || atleta.telefono).replace(/\D/g,'')}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i></a></td>
                 <td data-label="Acción">
                     <button class="btn btn-view" onclick='prepararEdicion(${inicio + index})'><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-delete" onclick="eliminarAtleta(${atleta.fila}, '${atleta.nombre}')"><i class="fas fa-trash"></i></button>
-                    ${atleta.estatus === 'Pendiente' ? `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila},'${atleta.correo}','${atleta.nombre}')">APROBAR</button>` : ''}
+                    ${atleta.estatus === 'Pendiente' ? `<button class="btn btn-approve" onclick="procesarAprobacion(${atleta.fila},'${atleta.correo}','${atleta.nombre}')"><i class="fas fa-check"></i></button>` : ''}
                 </td>`;
             tabla.appendChild(tr);
         });
@@ -452,7 +467,7 @@
 
     function actualizarControlesPagina(t) {
         const totalPaginas = Math.ceil(t / registrosPorPagina);
-        document.getElementById('pageInfo').innerText = `Página ${paginaActual} de ${totalPaginas || 1}`;
+        document.getElementById('pageInfo').innerText = `Pág ${paginaActual} / ${totalPaginas || 1}`;
         document.getElementById('prevPage').disabled = paginaActual === 1;
         document.getElementById('nextPage').disabled = paginaActual >= totalPaginas;
     }

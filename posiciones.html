@@ -3,105 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard Pro | La Ruta Garage</title>
+    <title>Leaderboard | La Ruta Garage</title>
+    <link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FFavicon.png?alt=media&token=0e2d4383-2c9b-4005-9b46-943b40c0637d">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --neon: #d8ff5e; --bg: #050505; --glass: rgba(20, 20, 20, 0.8); }
-        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0; overflow-x: hidden; }
+        :root { --neon: #d8ff5e; --bg: #050505; --gold: #ffd700; --silver: #c0c0c0; --bronze: #cd7f32; }
+        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0; }
         
-        /* HEADER COMPACTO */
-        .header { text-align: center; padding: 20px 10px; background: linear-gradient(180deg, rgba(216, 255, 94, 0.1) 0%, transparent 100%); }
-        .logo { width: 80px; margin-bottom: 5px; }
-        
-        .container { max-width: 600px; margin: auto; padding: 10px; }
+        .header { text-align: center; padding: 25px 10px; background: linear-gradient(180deg, rgba(216, 255, 94, 0.1) 0%, transparent 100%); }
+        .logo { width: 90px; }
 
-        /* FILTROS COMPACTOS */
-        .filters { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
-        .filters::-webkit-scrollbar { display: none; }
-        .filter-btn { background: #111; border: 1px solid #333; color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.7rem; white-space: nowrap; cursor: pointer; font-weight: 700; }
-        .filter-btn.active { background: var(--neon); color: black; border-color: var(--neon); }
+        .container { max-width: 600px; margin: auto; padding: 15px; }
 
-        /* PODIO RESALTADO */
-        .podium-box { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 30px 0; }
-        .podium-item { background: var(--glass); border-radius: 15px; padding: 15px 10px; text-align: center; flex: 1; border: 1px solid #333; position: relative; }
-        
-        /* PRIMER LUGAR CON BRILLO */
-        .p-1 { 
-            order: 2; transform: scale(1.15); border-color: var(--neon); z-index: 10;
-            box-shadow: 0 0 20px rgba(216, 255, 94, 0.3);
-            background: linear-gradient(145deg, rgba(216, 255, 94, 0.1), rgba(0,0,0,0.8));
+        /* BOTONES GRANDES DE MODALIDAD */
+        .modality-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-mod { 
+            flex: 1; padding: 18px; border: 1px solid #333; background: #111; color: white; 
+            font-weight: 900; border-radius: 12px; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.8rem;
         }
-        .p-1::after {
-            content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
-            border-radius: 15px; background: linear-gradient(45deg, transparent, var(--neon), transparent);
-            z-index: -1; animation: rotate 3s linear infinite; opacity: 0.5;
+        .btn-mod.active { background: var(--neon); color: black; border-color: var(--neon); box-shadow: 0 0 20px rgba(216, 255, 94, 0.2); }
+
+        /* FILTROS DINÁMICOS */
+        .sub-filters { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .sub-filters::-webkit-scrollbar { display: none; }
+        .f-pill { 
+            background: rgba(255,255,255,0.05); border: 1px solid #333; color: #aaa; padding: 8px 15px; 
+            border-radius: 20px; font-size: 0.7rem; white-space: nowrap; cursor: pointer; font-weight: 700;
         }
-        @keyframes rotate { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+        .f-pill.active { border-color: var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.05); }
 
-        .p-2 { order: 1; } .p-3 { order: 3; }
-        .podium-photo { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #555; margin-bottom: 8px; }
-        .p-1 .podium-photo { width: 70px; height: 70px; border-color: var(--neon); }
-        .podium-rank { font-weight: 900; font-size: 1.2rem; display: block; }
+        /* PODIO */
+        .podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 40px 0; height: 180px; }
+        .podium-item { background: rgba(20,20,20,0.8); border-radius: 15px; padding: 15px 5px; text-align: center; flex: 1; border: 1px solid #333; position: relative; }
+        
+        .p-1 { height: 100%; border-color: var(--gold); order: 2; transform: scale(1.1); box-shadow: 0 0 25px rgba(255, 215, 0, 0.2); }
+        .p-2 { height: 85%; border-color: var(--silver); order: 1; }
+        .p-3 { height: 75%; border-color: var(--bronze); order: 3; }
 
+        .crown { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; color: var(--gold); filter: drop-shadow(0 0 5px var(--gold)); }
+        .p-2 .medal-icon { color: var(--silver); }
+        .p-3 .medal-icon { color: var(--bronze); }
+
+        .podium-photo { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #444; }
+        .p-1 .podium-photo { width: 75px; height: 75px; border-color: var(--gold); }
+        
         /* TABLA COMPACTA */
-        .lb-row { 
-            display: flex; align-items: center; background: rgba(255,255,255,0.03); 
-            margin-bottom: 4px; padding: 8px 12px; border-radius: 8px; gap: 12px;
-        }
-        .rank-num { width: 25px; font-weight: 900; color: #555; font-size: 0.8rem; }
-        .atleta-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid #333; }
-        .atleta-info { flex-grow: 1; }
+        .lb-row { display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 5px; padding: 10px; border-radius: 10px; gap: 12px; }
+        .rank-n { width: 25px; font-weight: 900; color: #555; }
+        .atleta-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #333; }
+        .atleta-info { flex: 1; }
         .atleta-info strong { font-size: 0.8rem; text-transform: uppercase; display: block; }
-        .atleta-info small { font-size: 0.6rem; color: #666; font-weight: 700; }
+        .atleta-info span { font-size: 0.65rem; color: #666; font-weight: 700; }
         .result-val { font-weight: 900; color: var(--neon); font-size: 0.9rem; }
 
-        /* BOTÓN COMPARTIR INNOVADOR */
-        .btn-share { 
-            background: #fff; color: #000; border: none; padding: 10px 20px; border-radius: 30px;
-            font-weight: 800; font-size: 0.7rem; margin: 20px auto; display: flex; align-items: center; gap: 8px;
-            cursor: pointer; transition: 0.3s;
-        }
-        .btn-share:hover { transform: scale(1.05); }
-
-        .loading { text-align: center; color: var(--neon); font-size: 0.7rem; letter-spacing: 2px; padding: 50px; }
+        .loading { text-align: center; color: var(--neon); padding: 50px; font-size: 0.7rem; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" class="logo">
-    <h1>LEADERBOARD LIVE</h1>
+    <h1>Leaderboard 2026</h1>
 </div>
 
 <div class="container">
-    <div class="filters">
-        <button class="filter-btn active" onclick="setEvent('race', this)">RUTA RACE</button>
-        <button class="filter-btn" onclick="setEvent('crossfit', this)">CROSSFIT</button>
-        <button class="filter-btn" onclick="setSexo('Masculino', this)">HOMBRES</button>
-        <button class="filter-btn" onclick="setSexo('Femenino', this)">MUJERES</button>
+    <div class="modality-selector">
+        <button class="btn-mod active" onclick="changeMod('ruta race', this)">Ruta Race</button>
+        <button class="btn-mod" onclick="changeMod('ruta crossfit', this)">CrossFit</button>
     </div>
 
-    <div id="podiumArea" class="podium-box"></div>
+    <div id="filterArea" class="sub-filters"></div>
 
-    <div id="loader" class="loading">SINCRONIZANDO RESULTADOS...</div>
-
+    <div id="podiumArea" class="podium"></div>
+    <div id="loader" class="loading">SINCRONIZANDO...</div>
     <div id="lb-list"></div>
-
-    <button class="btn-share" onclick="compartirLeaderboard()">
-        <i class="fas fa-share-nodes"></i> COMPARTIR POSICIONES
-    </button>
 </div>
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
     let allData = [];
-    let currentEvent = 'race';
-    let currentSexo = 'todos';
+    let curMod = 'ruta race';
+    let curSexo = 'todos';
+    let curCat = 'todos';
 
-    // Función de formato de imagen (la que ya te funciona)
+    // Limpieza de formato de tiempo de Google (Evita el 1899-12-30)
+    function cleanTime(t) {
+        if (!t) return "--:--:--";
+        if (typeof t === 'string' && t.includes('T')) {
+            return t.split('T')[1].split('.')[0]; 
+        }
+        return t;
+    }
+
     function formatImgUrl(url) {
-        if (!url || url === "") return "https://via.placeholder.com/150?text=Atleta";
+        if (!url) return "https://via.placeholder.com/150?text=Atleta";
         let id = "";
         if (url.includes("id=")) id = url.split("id=")[1].split("&")[0];
         else if (url.includes("file/d/")) id = url.split("file/d/")[1].split("/")[0];
@@ -110,91 +106,100 @@
 
     async function cargar() {
         try {
-            // Cacheamos los datos localmente para que los filtros sean instantáneos
             const res = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
             allData = await res.json();
             document.getElementById('loader').style.display = 'none';
-            renderizar();
+            renderFilters();
+            render();
         } catch (e) { console.error(e); }
     }
 
-    function setEvent(ev, btn) {
-        currentEvent = ev;
-        actualizarActivo(btn, 0, 1);
-        renderizar();
+    function changeMod(mod, btn) {
+        curMod = mod;
+        curSexo = 'todos';
+        curCat = 'todos';
+        document.querySelectorAll('.btn-mod').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderFilters();
+        render();
     }
 
-    function setSexo(sex, btn) {
-        currentSexo = (currentSexo === sex) ? 'todos' : sex;
-        btn.classList.toggle('active');
-        renderizar();
+    function renderFilters() {
+        const area = document.getElementById('filterArea');
+        area.innerHTML = "";
+        
+        // Botones de Sexo (Para ambos)
+        area.innerHTML += `<button class="f-pill ${curSexo==='todos'?'active':''}" onclick="curSexo='todos';render();updatePill(this)">Todos</button>`;
+        area.innerHTML += `<button class="f-pill ${curSexo==='Masculino'?'active':''}" onclick="curSexo='Masculino';render();updatePill(this)">Hombres</button>`;
+        area.innerHTML += `<button class="f-pill ${curSexo==='Femenino'?'active':''}" onclick="curSexo='Femenino';render();updatePill(this)">Mujeres</button>`;
+
+        if(curMod.includes('crossfit')) {
+            area.innerHTML += `<div style="width:1px; background:#333; margin:0 5px;"></div>`;
+            area.innerHTML += `<button class="f-pill ${curCat==='Escalado'?'active':''}" onclick="curCat='Escalado';render();updatePill(this)">Escalado</button>`;
+            area.innerHTML += `<button class="f-pill ${curCat==='Avanzado'?'active':''}" onclick="curCat='Avanzado';render();updatePill(this)">Avanzado</button>`;
+        }
     }
 
-    function actualizarActivo(btn, start, end) {
-        const btns = document.querySelectorAll('.filter-btn');
-        for(let i=start; i<=end; i++) btns[i].classList.remove('active');
+    function updatePill(btn) {
+        btn.parentElement.querySelectorAll('.f-pill').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
     }
 
-    function renderizar() {
+    function render() {
         const listCont = document.getElementById('lb-list');
         const podiumCont = document.getElementById('podiumArea');
         
         let filtrados = allData.filter(a => {
-            const mEv = a.modalidad && a.modalidad.toLowerCase().includes(currentEvent);
-            const mSx = currentSexo === 'todos' || a.sexo === currentSexo;
-            const tieneRes = a.resultado && a.resultado !== "";
-            return mEv && mSx && tieneRes && a.estatus === "Aprobado";
+            const mEv = a.modalidad && a.modalidad.toLowerCase().includes(curMod);
+            const mSx = curSexo === 'todos' || a.sexo === curSexo;
+            const mCt = curCat === 'todos' || (a.categoria && a.categoria.includes(curCat));
+            return mEv && mSx && mCt && a.resultado && a.estatus === "Aprobado";
         });
 
-        // Ordenar
-        if(currentEvent === 'race') {
-            filtrados.sort((a, b) => String(a.resultado).localeCompare(String(b.resultado)));
+        if(curMod.includes('race')) {
+            filtrados.sort((a, b) => cleanTime(a.resultado).localeCompare(cleanTime(b.resultado)));
         } else {
             filtrados.sort((a, b) => parseFloat(b.resultado) - parseFloat(a.resultado));
         }
 
-        // Render Podio
+        // PODIO
         podiumCont.innerHTML = "";
         const top3 = filtrados.slice(0, 3);
         top3.forEach((a, i) => {
+            const pos = i + 1;
             const div = document.createElement('div');
-            div.className = `podium-item p-${i+1}`;
+            div.className = `podium-item p-${pos}`;
             div.innerHTML = `
-                <span class="podium-rank">${i+1}°</span>
+                ${pos === 1 ? '<i class="fas fa-crown crown"></i>' : ''}
                 <img src="${formatImgUrl(a.fotoCarnet)}" class="podium-photo">
-                <strong style="font-size:0.6rem; display:block;">${a.nombre}</strong>
-                <span style="color:var(--neon); font-weight:900; font-size:0.7rem;">${a.resultado}</span>
+                <strong style="font-size:0.6rem; display:block; text-transform:uppercase;">${a.nombre}</strong>
+                <span style="color:var(--neon); font-weight:900; font-size:0.8rem;">${cleanTime(a.resultado)}</span>
             `;
             podiumCont.appendChild(div);
         });
 
-        // Render Lista
+        // LISTA
         listCont.innerHTML = "";
         filtrados.slice(3).forEach((a, i) => {
             const row = document.createElement('div');
             row.className = "lb-row";
             row.innerHTML = `
-                <div class="rank-num">${i + 4}</div>
+                <div class="rank-n">${i + 4}</div>
                 <img src="${formatImgUrl(a.fotoCarnet)}" class="atleta-img">
                 <div class="atleta-info">
                     <strong>${a.nombre} ${a.apellido}</strong>
-                    <small>#${a.dorsal} | ${a.box || 'IND.'}</small>
+                    <span>#${a.dorsal} | ${a.box || 'IND.'}</span>
                 </div>
-                <div class="result-val">${a.resultado}</div>
+                <div class="result-val">${cleanTime(a.resultado)}</div>
             `;
             listCont.appendChild(row);
         });
     }
 
-    // INNOVACIÓN: COMPARTIR
-    function compartirLeaderboard() {
-        const text = `🔥 ¡Mira el Leaderboard de La Ruta Garage! La competencia está que arde. 🏆 Consulta tu posición aquí: ${window.location.href}`;
-        if (navigator.share) {
-            navigator.share({ title: 'Leaderboard La Ruta Garage', text: text, url: window.location.href });
-        } else {
-            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
-        }
+    function updatePill(btn) {
+        // Lógica simple para resaltar el botón seleccionado en su grupo
+        btn.parentElement.querySelectorAll('.f-pill').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
     }
 
     window.onload = cargar;

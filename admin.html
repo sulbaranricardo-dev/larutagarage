@@ -68,7 +68,7 @@
 
         /* Filtros Logística */
         .logistica-filters { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .logistica-filters select { background: #111; color: white; border: 1px solid #333; padding: 8px; border-radius: 8px; font-family: 'Montserrat'; font-size: 0.75rem; }
+        .logistica-filters select { background: #111; color: white; border: 1px solid #333; padding: 8px; border-radius: 8px; font-family: 'Montserrat'; font-size: 0.75rem; cursor: pointer; }
 
         @media (max-width: 800px) {
             #viewGeneral table thead { display: none; }
@@ -123,8 +123,8 @@
                     <thead>
                         <tr>
                             <th>Dorsal</th>
-                            <th>Atleta / Info</th>
-                            <th>Modalidad</th>
+                            <th>Atleta / Talla / Sexo</th>
+                            <th>Modalidad / Cat</th>
                             <th>Pago Info</th>
                             <th>Multimedia</th>
                             <th>WhatsApp</th>
@@ -163,7 +163,6 @@
                         <option value="todos">Todas las Categorías</option>
                         <option value="Escalado">Escalado</option>
                         <option value="Avanzado">Avanzado</option>
-                        <option value="Master">Master</option>
                     </select>
                 </div>
                 <div id="selectorAtletasCF" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"></div>
@@ -394,9 +393,9 @@
                 <td data-label="Atleta">
                     <strong>${atleta.nombre} ${atleta.apellido || ''}</strong><br>
                     <small style="color:var(--neon); font-weight:600">Talla: ${atleta.talla || 'S/N'}</small><br>
-                    <small style="color:#aaa;">${atleta.sexo || 'S/S'} | ${atleta.categoria || 'S/C'}</small>
+                    <small style="color:#aaa;">Sexo: ${atleta.sexo || 'S/D'}</small>
                 </td>
-                <td data-label="Modalidad">${atleta.modalidad}</td>
+                <td data-label="Modalidad">${atleta.modalidad}<br><small style="color:#aaa;">Cat: ${atleta.categoria || 'S/C'}</small></td>
                 <td data-label="Pago Info"><strong>${atleta.metodo || 'S/M'}</strong><br><small style="color:#777">Ref: ${atleta.referencia}</small></td>
                 <td data-label="Multimedia">
                     <a href="${atleta.fotoCarnet}" target="_blank" class="btn btn-view"><i class="fas fa-id-card"></i> FOTO</a>

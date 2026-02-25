@@ -4,63 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logística Race | La Ruta Garage</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --neon: #d8ff5e; --bg: #050505; --glass: rgba(20, 20, 20, 0.7); }
-        body { 
-            background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 15px; margin: 0;
-        }
-        .header { text-align: center; padding: 20px; border-bottom: 1px solid #222; }
-        .header h1 { color: var(--neon); font-size: 1.2rem; text-transform: uppercase; margin: 0; }
+        :root { --neon: #d8ff5e; --bg: #050505; }
+        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 10px; margin: 0; }
+        .header { text-align: center; padding: 10px; }
+        .header h1 { color: var(--neon); font-size: 1rem; text-transform: uppercase; margin: 0; }
         
-        .search-container { margin: 20px 0; }
-        input[type="text"], input[type="time"] { 
-            width: 100%; padding: 15px; background: #111; border: 1px solid #333; 
-            color: white; border-radius: 10px; box-sizing: border-box; font-family: 'Montserrat';
+        .search-box { margin: 10px 0; position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 5px 0; }
+        input#buscador { 
+            width: 100%; padding: 12px; background: #111; border: 1px solid #333; 
+            color: white; border-radius: 8px; font-family: 'Montserrat'; font-size: 0.9rem;
         }
-        
-        .atleta-card { 
-            background: var(--glass); border: 1px solid #222; border-radius: 15px; 
-            padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+
+        .atleta-row { 
+            background: #111; border: 1px solid #222; border-radius: 8px; 
+            padding: 8px 12px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px;
         }
-        .info b { color: var(--neon); font-size: 0.9rem; }
-        .info p { margin: 5px 0 0; font-size: 0.75rem; color: #aaa; }
-        
-        .timer-input { display: flex; gap: 8px; align-items: center; }
-        .btn-save { 
-            background: var(--neon); color: black; border: none; padding: 12px; 
-            border-radius: 8px; font-weight: 900; cursor: pointer;
+        .dorsal-tag { background: var(--neon); color: black; font-weight: 900; padding: 5px 10px; border-radius: 5px; min-width: 35px; text-align: center; }
+        .info { flex-grow: 1; }
+        .info strong { font-size: 0.85rem; display: block; text-transform: uppercase; }
+        .info span { font-size: 0.65rem; color: #777; font-weight: 700; }
+
+        .time-input-group { display: flex; align-items: center; gap: 5px; }
+        .input-t { 
+            width: 85px; background: #000; border: 1px solid #444; color: var(--neon); 
+            text-align: center; padding: 8px 5px; border-radius: 5px; font-family: 'monospace'; font-size: 0.9rem;
         }
-        .loading { text-align: center; color: var(--neon); padding: 20px; }
+        .btn-ok { background: var(--neon); color: black; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: 900; }
+        .btn-ok:disabled { background: #333; color: #666; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>Cronometraje en Vivo (Race)</h1>
+    <h1>CONTROL DE TIEMPOS RACE</h1>
 </div>
 
-<div class="search-container">
-    <input type="text" id="buscador" placeholder="Buscar por Nombre, Cédula o Dorsal..." oninput="filtrarAtletas()">
+<div class="search-box">
+    <input type="text" id="buscador" placeholder="N° Dorsal o Nombre..." oninput="filtrarAtletas()">
 </div>
 
-<div id="listaAtletas">
-    <p class="loading">Cargando atletas aprobados...</p>
-</div>
+<div id="listaAtletas"></div>
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
     let atletasRace = [];
 
     async function cargar() {
+        const lista = document.getElementById('listaAtletas');
+        lista.innerHTML = "<p style='text-align:center; font-size:0.7rem;'>Sincronizando...</p>";
         try {
             const res = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
             const datos = await res.json();
-            // Solo atletas de Race aprobados
             atletasRace = datos.filter(a => a.modalidad && a.modalidad.toLowerCase().includes('race') && a.estatus === 'Aprobado');
             filtrarAtletas();
-        } catch (e) { alert("Error al cargar datos"); }
+        } catch (e) { lista.innerHTML = "Error de carga."; }
     }
 
     function filtrarAtletas() {
@@ -68,44 +68,56 @@
         const lista = document.getElementById('listaAtletas');
         lista.innerHTML = "";
 
-        const filtrados = atletasRace.filter(a => 
-            a.nombre.toLowerCase().includes(query) || 
-            a.apellido.toLowerCase().includes(query) || 
-            String(a.cedula).includes(query) || 
-            String(a.dorsal).includes(query)
-        );
+        const filtrados = atletasRace.filter(a => {
+            // Busqueda exacta por dorsal si es número, sino por nombre
+            const matchDorsal = a.dorsal && String(a.dorsal) === query;
+            const matchNombre = (a.nombre + " " + a.apellido).toLowerCase().includes(query);
+            return query === "" ? true : (matchDorsal || matchNombre);
+        });
 
         filtrados.forEach(a => {
-            const card = document.createElement('div');
-            card.className = "atleta-card";
-            card.innerHTML = `
+            const row = document.createElement('div');
+            row.className = "atleta-row";
+            row.innerHTML = `
+                <div class="dorsal-tag">${a.dorsal || '0'}</div>
                 <div class="info">
-                    <b>#${a.dorsal || '??'} - ${a.nombre} ${a.apellido}</b>
-                    <p>${a.categoria} | CI: ${a.cedula}</p>
-                    ${a.resultado ? `<small style="color:var(--neon)">Tiempo actual: ${a.resultado}</small>` : ''}
+                    <strong>${a.nombre} ${a.apellido}</strong>
+                    <span>${a.categoria}</span>
                 </div>
-                <div class="timer-input">
-                    <input type="text" id="time_${a.fila}" placeholder="00:00:00" style="width:100px; padding:8px; font-size:0.8rem;" value="${a.resultado || ''}">
-                    <button class="btn-save" onclick="guardarTiempo(${a.fila})"><i class="fas fa-save"></i></button>
+                <div class="time-input-group">
+                    <input type="text" class="input-t" id="time_${a.fila}" 
+                        placeholder="00:00:00" 
+                        maxlength="8" 
+                        oninput="mascaraTiempo(this)" 
+                        value="${a.resultado || ''}">
+                    <button class="btn-ok" onclick="guardarTiempo(this, ${a.fila})"><i class="fas fa-check"></i></button>
                 </div>
             `;
-            lista.appendChild(card);
+            lista.appendChild(row);
         });
     }
 
-    async function guardarTiempo(fila) {
+    // Máscara automática: Convierte 012530 en 01:25:30
+    function mascaraTiempo(input) {
+        let v = input.value.replace(/\D/g, ''); // Quita todo lo que no sea número
+        if (v.length > 6) v = v.slice(0, 6); // Max 6 dígitos
+        
+        if (v.length >= 5) {
+            v = v.replace(/(\d{2})(\d{2})(\d{2})/, "$1:$2:$3");
+        } else if (v.length >= 3) {
+            v = v.replace(/(\d{2})(\d{2})/, "$1:$2");
+        }
+        input.value = v;
+    }
+
+    async function guardarTiempo(btn, fila) {
         const tiempo = document.getElementById('time_' + fila).value;
-        if(!tiempo) return alert("Ingresa un tiempo");
+        if(tiempo.length < 8) return alert("Formato incompleto (00:00:00)");
 
-        const btn = event.currentTarget;
         btn.disabled = true;
-        btn.style.opacity = "0.5";
+        btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i>";
 
-        const payload = {
-            accion: "editar",
-            fila: fila,
-            resultado: tiempo // Esto irá a la columna U
-        };
+        const payload = { accion: "editar", fila: fila, resultado: tiempo };
 
         try {
             await fetch(WEB_APP_URL, {
@@ -113,11 +125,15 @@
                 mode: 'no-cors',
                 body: JSON.stringify(payload)
             });
-            alert("Tiempo registrado correctamente");
-            cargar(); // Recargar para actualizar lista
+            btn.innerHTML = "<i class='fas fa-check-double'></i>";
+            btn.style.background = "#25D366";
+            // Actualizamos el dato local para no perderlo al filtrar
+            const atl = atletasRace.find(x => x.fila === fila);
+            if(atl) atl.resultado = tiempo;
         } catch (e) {
-            alert("Error al guardar");
+            alert("Error");
             btn.disabled = false;
+            btn.innerHTML = "<i class='fas fa-check'></i>";
         }
     }
 

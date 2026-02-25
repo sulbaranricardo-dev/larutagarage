@@ -112,12 +112,19 @@
 
     // LIMPIEZA TOTAL DEL TIEMPO: Convierte cualquier formato a HH:MM:SS
     function formatTime(val) {
-        if (!val) return "--:--:--";
-        if (typeof val === 'string' && val.includes('T')) {
-            return val.split('T')[1].split('.')[0]; 
-        }
-        return val;
+    if (!val || val === "" || val === "undefined") return "--:--:--";
+    
+    // Si Google envía el formato ISO (1899-12-30T19:54:09.000Z)
+    if (typeof val === 'string' && val.includes('T')) {
+        let parteTiempo = val.split('T')[1].split('.')[0];
+        // Aquí hay un truco: a veces Google Sheets desfasa la hora por la zona horaria (GMT)
+        // Si el tiempo que ves es 00:21 y debería ser 19:54, es que JS está restando horas.
+        return parteTiempo;
     }
+    
+    // Si ya viene como texto limpio desde el GS corregido
+    return val;
+}
 
     function formatImg(url) {
         if (!url) return "https://via.placeholder.com/150?text=Atleta";

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard Oficial | La Ruta Garage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --neon: #d8ff5e; --bg: #050505; --glass: rgba(20, 20, 20, 0.8); }
+        
+        body { 
+            background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0;
+            background-image: radial-gradient(circle at 50% -20%, #1a1a1a, #050505);
+            min-height: 100vh;
+        }
+
+        .header-lb { text-align: center; padding: 40px 20px; background: linear-gradient(to bottom, rgba(216, 255, 94, 0.1), transparent); }
+        .logo-lb { width: 100px; margin-bottom: 10px; }
+        h1 { font-weight: 900; text-transform: uppercase; letter-spacing: 4px; color: var(--neon); margin: 0; }
+        
+        .podium-container { 
+            display: flex; justify-content: center; align-items: flex-end; gap: 15px; margin: 40px auto; max-width: 800px; padding: 0 10px;
+        }
+
+        /* Estilo para los Top 3 */
+        .podium-card {
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;
+            padding: 20px; text-align: center; flex: 1; position: relative; transition: 0.3s;
+        }
+        .podium-card.first { border-color: var(--neon); transform: scale(1.1); z-index: 2; box-shadow: 0 0 30px rgba(216, 255, 94, 0.2); }
+        .podium-card.first .rank { background: var(--neon); color: black; }
+        .rank { 
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 35px; height: 35px; border-radius: 50%; background: #333; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .lb-container { max-width: 900px; margin: auto; padding: 20px; }
+        
+        /* Filtros */
+        .lb-filters { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center; }
+        .filter-select { 
+            background: #111; color: white; border: 1px solid #333; padding: 12px 20px; 
+            border-radius: 30px; font-family: 'Montserrat'; font-weight: 600; cursor: pointer;
+        }
+        .filter-select:focus { border-color: var(--neon); outline: none; }
+
+        /* Tabla Estilizada */
+        .lb-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        .lb-row { background: rgba(255,255,255,0.03); transition: 0.2s; }
+        .lb-row:hover { background: rgba(216, 255, 94, 0.05); }
+        .lb-row td { padding: 15px; border: none; }
+        .lb-row td:first-child { border-radius: 10px 0 0 10px; font-weight: 900; color: var(--neon); text-align: center; width: 50px; }
+        .lb-row td:last-child { border-radius: 0 10px 10px 0; text-align: right; font-weight: 900; font-size: 1.1rem; }
+
+        .time-badge { background: rgba(216, 255, 94, 0.1); color: var(--neon); padding: 5px 12px; border-radius: 5px; border: 1px solid var(--neon); }
+
+        @media (max-width: 600px) {
+            .podium-container { flex-direction: column; align-items: center; }
+            .podium-card { width: 90%; margin-bottom: 20px; }
+            .podium-card.first { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-lb">
+        <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" class="logo-lb" alt="Logo">
+        <h1>Leaderboard 2026</h1>
+    </div>
+
+    <div class="lb-container">
+        <div class="lb-filters">
+            <select class="filter-select" id="eventSelect" onchange="actualizarTabla()">
+                <option value="race">Ruta Race (Tiempo)</option>
+                <option value="cf">CrossFit (Puntos)</option>
+            </select>
+            <select class="filter-select" id="sexoSelect" onchange="actualizarTabla()">
+                <option value="todos">Todos</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+            </select>
+            <select class="filter-select" id="catSelect" onchange="actualizarTabla()">
+                <option value="todos">Categorías</option>
+                <option value="Escalado">Escalado</option>
+                <option value="Avanzado">Avanzado</option>
+            </select>
+        </div>
+
+        <div id="podium" class="podium-container">
+            </div>
+
+        <table class="lb-table">
+            <tbody id="lb-body">
+                </tbody>
+        </table>
+    </div>
+
+<script>
+    const DATA_URL = "TU_URL_DE_APPS_SCRIPT_AQUI"; // Usaremos el mismo script que ya tienes
+
+    let resultados = [];
+
+    async function cargarResultados() {
+        // Aquí pediremos los datos de la hoja de Google Sheets
+        // Para este ejemplo, simulamos datos que vendrán de tu Columna L, M, F y una nueva columna de Tiempos/Puntos
+        const response = await fetch(DATA_URL + "?getRankings=true");
+        resultados = await response.json();
+        actualizarTabla();
+    }
+
+    function actualizarTabla() {
+        const event = document.getElementById('eventSelect').value;
+        const sexo = document.getElementById('sexoSelect').value;
+        const cat = document.getElementById('catSelect').value;
+        const body = document.getElementById('lb-body');
+        const podium = document.getElementById('podium');
+
+        // Filtrar y Ordenar
+        let filtrados = resultados.filter(a => {
+            const matchEvento = event === 'race' ? a.modalidad.toLowerCase().includes('race') : a.modalidad.toLowerCase().includes('crossfit');
+            const matchSexo = sexo === 'todos' || a.sexo === sexo;
+            const matchCat = cat === 'todos' || a.categoria.includes(cat);
+            return matchEvento && matchSexo && matchCat;
+        });
+
+        // Ordenar: Race (Menor tiempo primero) / CF (Mayor puntaje primero)
+        if(event === 'race') {
+            filtrados.sort((a, b) => a.resultado.localeCompare(b.resultado));
+        } else {
+            filtrados.sort((a, b) => b.resultado - a.resultado);
+        }
+
+        // Renderizar Podio (Top 3)
+        podium.innerHTML = "";
+        const top3 = filtrados.slice(0, 3);
+        
+        // Renderizar Tabla General
+        body.innerHTML = "";
+        filtrados.forEach((a, index) => {
+            const row = document.createElement('tr');
+            row.className = "lb-row";
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                    <strong>${a.nombre} ${a.apellido}</strong><br>
+                    <small style="color:#666;">#${a.dorsal} | ${a.box || 'Independiente'}</small>
+                </td>
+                <td>
+                    <span class="time-badge">${a.resultado} ${event === 'race' ? '' : 'pts'}</span>
+                </td>
+            `;
+            body.appendChild(row);
+        });
+    }
+
+    // Ejecutar al cargar
+    // cargarResultados(); 
+</script>
+</body>
+</html>

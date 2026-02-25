@@ -9,41 +9,62 @@
     <style>
         :root { --neon: #d8ff5e; --bg: #050505; }
         body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; padding: 10px; margin: 0; }
-        .header { text-align: center; padding: 10px; }
-        .header h1 { color: var(--neon); font-size: 1rem; text-transform: uppercase; margin: 0; }
         
-        .search-box { margin: 10px 0; position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 5px 0; }
+        .header { text-align: center; padding: 10px; border-bottom: 1px solid #222; margin-bottom: 10px; }
+        .header h1 { color: var(--neon); font-size: 0.9rem; text-transform: uppercase; margin: 0; letter-spacing: 1px; }
+
+        .search-box { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 10px 0; }
         input#buscador { 
-            width: 100%; padding: 12px; background: #111; border: 1px solid #333; 
-            color: white; border-radius: 8px; font-family: 'Montserrat'; font-size: 0.9rem;
+            width: 100%; padding: 14px; background: #111; border: 1px solid #333; 
+            color: white; border-radius: 12px; font-family: 'Montserrat'; font-size: 1rem;
+            outline: none; transition: 0.3s;
         }
+        input#buscador:focus { border-color: var(--neon); box-shadow: 0 0 10px rgba(216, 255, 94, 0.1); }
+
+        #listaAtletas { margin-top: 5px; }
 
         .atleta-row { 
-            background: #111; border: 1px solid #222; border-radius: 8px; 
-            padding: 8px 12px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px;
+            background: #111; border: 1px solid #222; border-radius: 10px; 
+            padding: 10px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px;
+            animation: fadeIn 0.3s ease;
         }
-        .dorsal-tag { background: var(--neon); color: black; font-weight: 900; padding: 5px 10px; border-radius: 5px; min-width: 35px; text-align: center; }
-        .info { flex-grow: 1; }
-        .info strong { font-size: 0.85rem; display: block; text-transform: uppercase; }
-        .info span { font-size: 0.65rem; color: #777; font-weight: 700; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .time-input-group { display: flex; align-items: center; gap: 5px; }
-        .input-t { 
-            width: 85px; background: #000; border: 1px solid #444; color: var(--neon); 
-            text-align: center; padding: 8px 5px; border-radius: 5px; font-family: 'monospace'; font-size: 0.9rem;
+        .dorsal-tag { 
+            background: var(--neon); color: black; font-weight: 900; 
+            padding: 8px; border-radius: 6px; min-width: 40px; text-align: center; font-size: 1rem;
         }
-        .btn-ok { background: var(--neon); color: black; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: 900; }
-        .btn-ok:disabled { background: #333; color: #666; }
+
+        .info { flex-grow: 1; min-width: 0; }
+        .info strong { font-size: 0.85rem; display: block; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .info span { font-size: 0.65rem; color: #666; font-weight: 700; text-transform: uppercase; }
+
+        .time-input-group { display: flex; align-items: center; gap: 6px; }
+        .input-t { 
+            width: 90px; background: #000; border: 1px solid #444; color: var(--neon); 
+            text-align: center; padding: 10px 5px; border-radius: 8px; 
+            font-family: 'Courier New', monospace; font-size: 1rem; font-weight: 900;
+        }
+
+        .btn-ok { 
+            background: #222; color: #555; border: none; padding: 12px; 
+            border-radius: 8px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-ok.active { background: var(--neon); color: black; }
+        
+        /* Estado Guardando */
+        .saving { background: #ffa500 !important; color: white !important; }
+        .success { background: #25D366 !important; color: white !important; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>CONTROL DE TIEMPOS RACE</h1>
+    <h1>LOGÍSTICA - REGISTRO DE TIEMPOS</h1>
 </div>
 
 <div class="search-box">
-    <input type="text" id="buscador" placeholder="N° Dorsal o Nombre..." oninput="filtrarAtletas()">
+    <input type="text" id="buscador" placeholder="N° DORSAL O NOMBRE..." oninput="filtrarAtletas()" autocomplete="off">
 </div>
 
 <div id="listaAtletas"></div>
@@ -54,13 +75,14 @@
 
     async function cargar() {
         const lista = document.getElementById('listaAtletas');
-        lista.innerHTML = "<p style='text-align:center; font-size:0.7rem;'>Sincronizando...</p>";
+        lista.innerHTML = "<p style='text-align:center; font-size:0.7rem; color:var(--neon);'>SINCRONIZANDO BASE DE DATOS...</p>";
         try {
             const res = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
             const datos = await res.json();
+            // Filtrar solo RACE aprobados
             atletasRace = datos.filter(a => a.modalidad && a.modalidad.toLowerCase().includes('race') && a.estatus === 'Aprobado');
             filtrarAtletas();
-        } catch (e) { lista.innerHTML = "Error de carga."; }
+        } catch (e) { lista.innerHTML = "<p style='color:red;'>Error de conexión.</p>"; }
     }
 
     function filtrarAtletas() {
@@ -69,10 +91,10 @@
         lista.innerHTML = "";
 
         const filtrados = atletasRace.filter(a => {
-            // Busqueda exacta por dorsal si es número, sino por nombre
+            if (query === "") return true;
             const matchDorsal = a.dorsal && String(a.dorsal) === query;
             const matchNombre = (a.nombre + " " + a.apellido).toLowerCase().includes(query);
-            return query === "" ? true : (matchDorsal || matchNombre);
+            return matchDorsal || matchNombre;
         });
 
         filtrados.forEach(a => {
@@ -85,22 +107,23 @@
                     <span>${a.categoria}</span>
                 </div>
                 <div class="time-input-group">
-                    <input type="text" class="input-t" id="time_${a.fila}" 
+                    <input type="tel" class="input-t" id="time_${a.fila}" 
                         placeholder="00:00:00" 
                         maxlength="8" 
                         oninput="mascaraTiempo(this)" 
                         value="${a.resultado || ''}">
-                    <button class="btn-ok" onclick="guardarTiempo(this, ${a.fila})"><i class="fas fa-check"></i></button>
+                    <button class="btn-ok ${a.resultado ? 'success' : ''}" onclick="guardarTiempo(this, ${a.fila})">
+                        <i class="fas ${a.resultado ? 'fa-check-double' : 'fa-check'}"></i>
+                    </button>
                 </div>
             `;
             lista.appendChild(row);
         });
     }
 
-    // Máscara automática: Convierte 012530 en 01:25:30
     function mascaraTiempo(input) {
-        let v = input.value.replace(/\D/g, ''); // Quita todo lo que no sea número
-        if (v.length > 6) v = v.slice(0, 6); // Max 6 dígitos
+        let v = input.value.replace(/\D/g, ''); 
+        if (v.length > 6) v = v.slice(0, 6);
         
         if (v.length >= 5) {
             v = v.replace(/(\d{2})(\d{2})(\d{2})/, "$1:$2:$3");
@@ -108,33 +131,45 @@
             v = v.replace(/(\d{2})(\d{2})/, "$1:$2");
         }
         input.value = v;
+        
+        // Activar botón visualmente si el formato está completo
+        const btn = input.nextElementSibling;
+        if(v.length === 8) btn.classList.add('active');
+        else btn.classList.remove('active');
     }
 
     async function guardarTiempo(btn, fila) {
-        const tiempo = document.getElementById('time_' + fila).value;
-        if(tiempo.length < 8) return alert("Formato incompleto (00:00:00)");
+        const input = document.getElementById('time_' + fila);
+        const tiempo = input.value;
 
-        btn.disabled = true;
+        if(tiempo.length < 8) return; // No hace nada si no está completo
+
+        // --- OPTIMISMO: Cambio visual instantáneo ---
+        btn.classList.remove('active');
+        btn.classList.add('saving');
         btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i>";
 
         const payload = { accion: "editar", fila: fila, resultado: tiempo };
 
-        try {
-            await fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(payload)
-            });
+        // fetch con mode: no-cors es mucho más rápido porque no espera la respuesta completa del servidor
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(payload)
+        }).then(() => {
+            // Éxito visual
+            btn.classList.remove('saving');
+            btn.classList.add('success');
             btn.innerHTML = "<i class='fas fa-check-double'></i>";
-            btn.style.background = "#25D366";
-            // Actualizamos el dato local para no perderlo al filtrar
+            
+            // Actualizar dato en memoria local
             const atl = atletasRace.find(x => x.fila === fila);
             if(atl) atl.resultado = tiempo;
-        } catch (e) {
-            alert("Error");
-            btn.disabled = false;
-            btn.innerHTML = "<i class='fas fa-check'></i>";
-        }
+        }).catch(() => {
+            btn.classList.remove('saving');
+            btn.innerHTML = "<i class='fas fa-times'></i>";
+            btn.style.background = "red";
+        });
     }
 
     window.onload = cargar;

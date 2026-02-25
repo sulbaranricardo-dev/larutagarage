@@ -42,17 +42,36 @@
             gap: 10px; margin: 60px 0 40px; height: 180px; position: relative;
         }
         .podium-slot {
-            flex: 1; background: linear-gradient(180deg, #111, #000); border-radius: 15px 15px 0 0;
+            flex: 1; border-radius: 15px 15px 0 0;
             position: relative; display: flex; flex-direction: column; align-items: center;
-            border: 1px solid #222; padding-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;
+            transition: 0.3s;
         }
         
-        /* Alturas del podio */
-        .rank-1 { height: 100%; z-index: 3; border-color: var(--gold); order: 2; box-shadow: 0 0 30px rgba(255, 215, 0, 0.15); }
-        .rank-2 { height: 80%; border-color: var(--silver); order: 1; }
-        .rank-3 { height: 65%; border-color: var(--bronze); order: 3; }
+        /* Colores y Brillos de Rango */
+        .rank-1 { 
+            height: 100%; z-index: 3; order: 2; 
+            background: linear-gradient(180deg, rgba(255, 215, 0, 0.3), #000);
+            border-color: var(--gold); box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+        }
+        .rank-2 { 
+            height: 80%; order: 1; 
+            background: linear-gradient(180deg, rgba(224, 224, 224, 0.2), #000);
+            border-color: var(--silver);
+        }
+        .rank-3 { 
+            height: 65%; order: 3; 
+            background: linear-gradient(180deg, rgba(205, 127, 50, 0.2), #000);
+            border-color: var(--bronze);
+        }
 
-        /* Iconos y Coronas */
+        .pos-badge {
+            position: absolute; bottom: -10px; background: white; color: black;
+            font-weight: 900; width: 25px; height: 25px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+        }
+        .rank-1 .pos-badge { background: var(--gold); }
+
         .crown-icon { position: absolute; top: -45px; font-size: 2.2rem; color: var(--gold); filter: drop-shadow(0 0 8px var(--gold)); animation: float 2s infinite ease-in-out; }
         @keyframes float { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
 
@@ -64,20 +83,35 @@
         .rank-1 .photo-wrap img, .rank-2 img, .rank-3 img { width: 100%; height: 100%; object-fit: cover; }
 
         .podium-info { text-align: center; margin-top: 10px; width: 100%; }
-        .podium-info strong { font-size: 0.7rem; display: block; text-transform: uppercase; color: #fff; margin-bottom: 4px; }
-        .podium-info .time-val { color: var(--neon); font-weight: 900; font-size: 0.85rem; }
+        .podium-info strong { font-size: 0.65rem; display: block; text-transform: uppercase; color: #fff; margin-bottom: 4px; padding: 0 5px; }
+        .podium-info .time-val { color: var(--neon); font-weight: 900; font-size: 0.8rem; }
 
         /* TABLA COMPACTA */
         .atleta-row { 
             display: flex; align-items: center; background: rgba(255,255,255,0.03); 
             margin-bottom: 6px; padding: 10px 15px; border-radius: 12px; gap: 12px; border: 1px solid rgba(255,255,255,0.02);
+            cursor: pointer; transition: 0.2s;
         }
+        .atleta-row:hover { background: rgba(216, 255, 94, 0.05); }
         .pos-num { width: 20px; font-weight: 900; color: #444; font-size: 0.75rem; }
         .atleta-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #222; }
         .data { flex: 1; }
         .data b { font-size: 0.85rem; text-transform: uppercase; display: block; }
         .data span { font-size: 0.65rem; color: #666; font-weight: 700; }
         .time-res { font-weight: 900; color: var(--neon); font-size: 0.9rem; font-family: 'Courier New', monospace; }
+
+        /* MODAL DIPLOMA */
+        #modalDiploma {
+            display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+            background:rgba(0,0,0,0.9); z-index:5000; flex-direction:column; 
+            align-items:center; justify-content:center; padding:20px; box-sizing:border-box;
+        }
+        .modal-content { max-width:400px; width:100%; text-align:center; }
+        canvas { width: 100%; border-radius: 10px; box-shadow: 0 0 20px rgba(216, 255, 94, 0.2); }
+        .btn-action {
+            margin-top: 15px; padding: 15px; width: 100%; border-radius: 10px; 
+            border: none; font-weight: 900; font-family: 'Montserrat'; cursor: pointer;
+        }
 
         .loading { text-align: center; color: var(--neon); font-size: 0.7rem; letter-spacing: 3px; padding: 100px 0; }
     </style>
@@ -94,13 +128,18 @@
         <button class="btn-m active" id="btn-race" onclick="setMod('ruta race')">RUTA RACE</button>
         <button class="btn-m" id="btn-cf" onclick="setMod('ruta crossfit')">CROSSFIT</button>
     </div>
-
     <div id="subFilters" class="sub-nav"></div>
-
     <div id="podiumArea" class="podium-container"></div>
-
     <div id="loader" class="loading">SINCRONIZANDO LIVE...</div>
     <div id="leaderboardList"></div>
+</div>
+
+<div id="modalDiploma">
+    <div class="modal-content">
+        <canvas id="canvasDiploma"></canvas>
+        <button class="btn-action" style="background:var(--neon); color:black;" onclick="descargarDiploma()">DESCARGAR IMAGEN</button>
+        <button class="btn-action" style="background:#333; color:white;" onclick="cerrarModal()">CERRAR</button>
+    </div>
 </div>
 
 <script>
@@ -110,18 +149,11 @@
     let filterSex = 'todos';
     let filterCat = 'todos';
 
-    // LIMPIEZA TOTAL DEL TIEMPO: Convierte cualquier formato a HH:MM:SS
     function formatTime(val) {
-    if (!val || val === "" || val === "undefined" || val === "null") return "--:--:--";
-    
-    // Si por alguna razón el texto trae la zona horaria (GMT), la removemos
-    if (typeof val === 'string' && val.includes('GMT')) {
-        return val.split(' ')[0]; 
+        if (!val || val === "" || val === "undefined" || val === "null") return "--:--:--";
+        if (typeof val === 'string' && val.includes('GMT')) return val.split(' ')[0]; 
+        return val;
     }
-    
-    // Retornamos el valor tal cual viene de getDisplayValues()
-    return val;
-}
 
     function formatImg(url) {
         if (!url) return "https://via.placeholder.com/150?text=Atleta";
@@ -179,20 +211,18 @@
             return mMod && mSex && mCat && a.resultado && a.estatus === "Aprobado";
         });
 
-        // ORDENAMIENTO CRÍTICO
         if(filterMod.includes('race')) {
-            // Menor tiempo primero
             filtered.sort((a, b) => formatTime(a.resultado).localeCompare(formatTime(b.resultado)));
         } else {
-            // Mayor puntaje primero
             filtered.sort((a, b) => parseFloat(b.resultado) - parseFloat(a.resultado));
         }
 
-        // RENDER PODIUM
         podium.innerHTML = "";
         filtered.slice(0, 3).forEach((a, i) => {
             const slot = document.createElement('div');
             slot.className = `podium-slot rank-${i+1}`;
+            slot.onclick = () => prepararDiploma(a, i + 1);
+            slot.style.cursor = "pointer";
             slot.innerHTML = `
                 ${i===0 ? '<i class="fas fa-crown crown-icon" style="left:50%"></i>' : ''}
                 <div class="photo-wrap"><img src="${formatImg(a.fotoCarnet)}"></div>
@@ -200,27 +230,86 @@
                     <strong>${a.nombre}</strong>
                     <div class="time-val">${formatTime(a.resultado)}</div>
                 </div>
+                <div class="pos-badge">${i+1}</div>
             `;
             podium.appendChild(slot);
         });
 
-        // RENDER LIST
         list.innerHTML = "";
         filtered.slice(3).forEach((a, i) => {
             const row = document.createElement('div');
             row.className = "atleta-row";
+            row.onclick = () => prepararDiploma(a, i + 4);
             row.innerHTML = `
                 <div class="pos-num">${i + 4}</div>
                 <img src="${formatImg(a.fotoCarnet)}" class="atleta-img">
                 <div class="data">
-                    <b>${a.nombre} ${a.apellido}</b>
+                    <b>${a.nombre} ${a.apellido} <i class="fas fa-medal" style="color:var(--neon); font-size:0.6rem;"></i></b>
                     <span>#${a.dorsal} | ${a.box || 'IND.'}</span>
                 </div>
                 <div class="time-res">${formatTime(a.resultado)}</div>
             `;
             list.appendChild(row);
         });
-        if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; color:#444; margin-top:50px;'>No hay resultados registrados.</p>";
+        if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; color:#444; margin-top:50px;'>No hay resultados.</p>";
+    }
+
+    // --- LÓGICA DEL DIPLOMA ---
+    function cerrarModal() { document.getElementById('modalDiploma').style.display = 'none'; }
+
+    function prepararDiploma(atleta, pos) {
+        const canvas = document.getElementById('canvasDiploma');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 1000;
+
+        // Fondo Negro
+        ctx.fillStyle = "#050505";
+        ctx.fillRect(0, 0, 800, 1000);
+
+        // Borde Neón
+        ctx.strokeStyle = "#d8ff5e";
+        ctx.lineWidth = 15;
+        ctx.strokeRect(30, 30, 740, 940);
+
+        // Textos
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#d8ff5e";
+        ctx.font = "900 40px Montserrat";
+        ctx.fillText("CERTIFICADO DE FINALISTA", 400, 150);
+
+        ctx.fillStyle = "white";
+        ctx.font = "300 25px Montserrat";
+        ctx.fillText("LA RUTA GARAGE 2026", 400, 200);
+
+        ctx.font = "900 60px Montserrat";
+        ctx.fillText(atleta.nombre.toUpperCase() + " " + atleta.apellido.toUpperCase(), 400, 450);
+
+        ctx.fillStyle = "#d8ff5e";
+        ctx.font = "700 30px Montserrat";
+        ctx.fillText("DORSAL #" + atleta.dorsal, 400, 520);
+
+        ctx.fillStyle = "white";
+        ctx.font = "400 30px Montserrat";
+        ctx.fillText(atleta.modalidad.toUpperCase() + " - " + atleta.categoria.toUpperCase(), 400, 650);
+
+        ctx.fillStyle = "#d8ff5e";
+        ctx.font = "900 80px Montserrat";
+        ctx.fillText(formatTime(atleta.resultado), 400, 800);
+
+        ctx.fillStyle = "white";
+        ctx.font = "700 40px Montserrat";
+        ctx.fillText("POSICIÓN: " + pos + "°", 400, 900);
+
+        document.getElementById('modalDiploma').style.display = "flex";
+    }
+
+    function descargarDiploma() {
+        const canvas = document.getElementById('canvasDiploma');
+        const link = document.createElement('a');
+        link.download = 'LaRutaGarage_Diploma.png';
+        link.href = canvas.toDataURL();
+        link.click();
     }
 
     window.onload = init;

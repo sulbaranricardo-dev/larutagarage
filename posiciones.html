@@ -3,126 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resultados Oficiales | La Ruta Garage</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <title>Leaderboard | La Ruta Garage</title>
+    <link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FFavicon.png?alt=media&token=0e2d4383-2c9b-4005-9b46-943b40c0637d">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --neon: #d8ff5e; --bg: #050505; --glass: rgba(20, 20, 20, 0.8); }
-        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0; min-height: 100vh; }
-        .header-lb { text-align: center; padding: 30px 20px; background: linear-gradient(to bottom, rgba(216, 255, 94, 0.1), transparent); }
-        .logo-lb { width: 100px; margin-bottom: 10px; }
-        h1 { font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: var(--neon); margin: 0; font-size: 1.5rem; }
+        :root { --neon: #d8ff5e; --bg: #0a0a0a; --card: rgba(20, 20, 20, 0.7); }
         
-        .lb-container { max-width: 800px; margin: auto; padding: 15px; }
-        
-        /* Filtros */
-        .lb-filters { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+        body { 
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                        url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FbglarutawebsiteBlack.jpg?alt=media&token=8e8d0ddb-b8a4-43f0-8199-98d31beaf078'); 
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: white; font-family: 'Montserrat', sans-serif; margin: 0; min-height: 100vh;
+        }
+
+        .header-lb { text-align: center; padding: 40px 20px; }
+        .header-lb img { width: 150px; filter: drop-shadow(0 0 10px rgba(216, 255, 94, 0.2)); }
+        h1 { font-weight: 800; text-transform: uppercase; color: var(--neon); margin: 15px 0 0; letter-spacing: 2px; font-size: 1.5rem; }
+
+        .lb-container { max-width: 800px; margin: auto; padding: 20px; }
+
+        .filter-box { 
+            background: var(--card); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(216, 255, 94, 0.15); border-radius: 15px;
+            padding: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 30px;
+        }
         .filter-select { 
-            background: #111; color: white; border: 1px solid #333; padding: 10px 15px; 
-            border-radius: 10px; font-family: 'Montserrat'; font-size: 0.8rem; outline: none;
+            background: rgba(0,0,0,0.5); color: white; border: 1px solid #333; padding: 10px 15px; 
+            border-radius: 8px; font-family: 'Montserrat'; font-size: 0.8rem; outline: none; transition: 0.3s;
         }
         .filter-select:focus { border-color: var(--neon); }
 
-        /* Estilo Leaderboard */
-        .lb-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
-        .lb-row { background: rgba(255,255,255,0.03); border-radius: 10px; }
-        .lb-row td { padding: 12px; }
-        .lb-row td:first-child { 
-            border-radius: 10px 0 0 10px; font-weight: 900; color: var(--neon); 
-            text-align: center; width: 40px; font-size: 1.1rem;
-        }
-        /* Top 3 Colores */
-        .lb-row.top-1 td:first-child { color: #ffd700; font-size: 1.5rem; }
-        .lb-row.top-2 td:first-child { color: #c0c0c0; }
-        .lb-row.top-3 td:first-child { color: #cd7f32; }
-
-        .lb-row td:last-child { border-radius: 0 10px 10px 0; text-align: right; }
-        .res-badge { background: var(--neon); color: black; padding: 4px 10px; border-radius: 5px; font-weight: 900; font-size: 0.9rem; }
+        .lb-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        .lb-row { background: rgba(20, 20, 20, 0.6); backdrop-filter: blur(5px); transition: 0.3s; }
+        .lb-row:hover { background: rgba(216, 255, 94, 0.05); transform: scale(1.01); }
+        .lb-row td { padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
         
-        .loading { text-align: center; padding: 50px; color: var(--neon); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+        .pos-col { 
+            width: 50px; text-align: center; font-weight: 800; font-size: 1.2rem; color: var(--neon);
+            border-left: 1px solid rgba(216, 255, 94, 0.15); border-radius: 10px 0 0 10px;
+        }
+        .res-col { 
+            text-align: right; border-right: 1px solid rgba(216, 255, 94, 0.15); border-radius: 0 10px 10px 0;
+        }
+        .res-badge { 
+            background: var(--neon); color: black; padding: 5px 15px; border-radius: 5px; 
+            font-weight: 800; font-size: 1rem; box-shadow: 0 0 15px rgba(216, 255, 94, 0.2);
+        }
+
+        .top-1 { color: #ffd700 !important; }
+        .top-2 { color: #c0c0c0 !important; }
+        .top-3 { color: #cd7f32 !important; }
+
+        .loading { text-align: center; padding: 100px; color: var(--neon); font-weight: 600; text-transform: uppercase; letter-spacing: 3px; }
     </style>
 </head>
 <body>
 
-    <div class="header-lb">
-        <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" class="logo-lb">
-        <h1>Leaderboard Live</h1>
+<div class="header-lb">
+    <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8">
+    <h1>Resultados Oficiales</h1>
+</div>
+
+<div class="lb-container">
+    <div class="filter-box">
+        <select class="filter-select" id="eventSelect" onchange="renderizar()">
+            <option value="ruta race">Ruta Race</option>
+            <option value="ruta crossfit">Ruta CrossFit</option>
+        </select>
+        <select class="filter-select" id="sexoSelect" onchange="renderizar()">
+            <option value="todos">Todos los Sexos</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+        </select>
+        <select class="filter-select" id="catSelect" onchange="renderizar()">
+            <option value="todos">Todas las Categorías</option>
+            <option value="General">General</option>
+            <option value="Escalado">Escalado</option>
+            <option value="Avanzado">Avanzado</option>
+        </select>
     </div>
 
-    <div class="lb-container">
-        <div class="lb-filters">
-            <select class="filter-select" id="eventSelect" onchange="renderizar()">
-                <option value="race">Ruta Race</option>
-                <option value="crossfit">CrossFit</option>
-            </select>
-            <select class="filter-select" id="sexoSelect" onchange="renderizar()">
-                <option value="todos">Todos los Sexos</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Femenino">Femenino</option>
-            </select>
-            <select class="filter-select" id="catSelect" onchange="renderizar()">
-                <option value="todos">Todas las Categorías</option>
-                <option value="Escalado">Escalado</option>
-                <option value="Avanzado">Avanzado</option>
-            </select>
-        </div>
+    <div id="loader" class="loading">Sincronizando Leaderboard...</div>
 
-        <div id="loader" class="loading">Cargando Tiempos...</div>
-
-        <table class="lb-table" id="tablaMain" style="display:none;">
-            <tbody id="lb-body"></tbody>
-        </table>
-    </div>
+    <table class="lb-table" id="tablaLB" style="display:none;">
+        <tbody id="lb-body"></tbody>
+    </table>
+</div>
 
 <script>
-    const WEB_APP_URL = "TU_URL_DE_EXEC_AQUI"; // REEMPLAZA CON TU URL .exec
-    let datos = [];
+    // Usando tu WEB_APP_URL
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
+    let atletas = [];
 
-    async function cargar() {
+    async function cargarDatos() {
         try {
             const res = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
-            datos = await res.json();
+            atletas = await res.json();
             document.getElementById('loader').style.display = 'none';
-            document.getElementById('tablaMain').style.display = 'table';
+            document.getElementById('tablaLB').style.display = 'table';
             renderizar();
         } catch (e) {
-            document.getElementById('loader').innerText = "Error al cargar datos";
+            document.getElementById('loader').innerText = "Error de conexión";
         }
     }
 
     function renderizar() {
-        const ev = document.getElementById('eventSelect').value;
+        const ev = document.getElementById('eventSelect').value.toLowerCase();
         const sx = document.getElementById('sexoSelect').value;
         const ct = document.getElementById('catSelect').value;
         const body = document.getElementById('lb-body');
         
-        let filtrados = datos.filter(a => {
-            const mEv = a.modalidad.toLowerCase().includes(ev);
-            const mSx = sx === 'todos' || a.sexo === sx;
-            const mCt = ct === 'todos' || (a.categoria && a.categoria.includes(ct));
-            const tieneRes = a.resultado && a.resultado !== ""; // Solo mostrar si tiene tiempo/puntos
-            return mEv && mSx && mCt && tieneRes && a.estatus === "Aprobado";
+        let filtrados = atletas.filter(a => {
+            const matchEv = a.modalidad && a.modalidad.toLowerCase().includes(ev);
+            const matchSx = sx === 'todos' || a.sexo === sx;
+            const matchCt = ct === 'todos' || (a.categoria && a.categoria.includes(ct));
+            const tieneResultado = a.resultado && a.resultado !== ""; 
+            return matchEv && matchSx && matchCt && tieneResultado && a.estatus === "Aprobado";
         });
 
-        // Ordenar
-        if(ev === 'race') {
+        if(ev.includes("race")) {
             filtrados.sort((a, b) => String(a.resultado).localeCompare(String(b.resultado)));
         } else {
             filtrados.sort((a, b) => parseFloat(b.resultado) - parseFloat(a.resultado));
         }
 
-        body.innerHTML = filtrados.length ? "" : "<tr><td colspan='3' style='text-align:center; padding:20px; color:#666;'>No hay resultados registrados todavía.</td></tr>";
-        
+        body.innerHTML = filtrados.length ? "" : "<tr><td colspan='3' style='text-align:center; padding:40px; color:#555;'>No hay resultados para esta selección.</td></tr>";
+
         filtrados.forEach((a, i) => {
+            let posClass = "";
+            if(i === 0) posClass = "top-1";
+            if(i === 1) posClass = "top-2";
+            if(i === 2) posClass = "top-3";
+
             const tr = document.createElement('tr');
-            tr.className = `lb-row ${i < 3 ? 'top-' + (i+1) : ''}`;
+            tr.className = "lb-row";
             tr.innerHTML = `
-                <td>${i === 0 ? '<i class="fas fa-crown"></i>' : (i + 1)}</td>
+                <td class="pos-col ${posClass}">${i + 1}</td>
                 <td>
-                    <strong>${a.nombre} ${a.apellido}</strong><br>
-                    <small style="color:#777;">#${a.dorsal} | ${a.box || 'Independiente'}</small>
+                    <span style="font-weight:800; text-transform:uppercase;">${a.nombre} ${a.apellido}</span><br>
+                    <small style="color:#666;">Dorsal #${a.dorsal} | ${a.box || 'Independiente'}</small>
                 </td>
-                <td>
+                <td class="res-col">
                     <span class="res-badge">${a.resultado}</span>
                 </td>
             `;
@@ -130,7 +152,7 @@
         });
     }
 
-    cargar();
+    window.onload = cargarDatos;
 </script>
 </body>
 </html>

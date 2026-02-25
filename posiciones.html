@@ -8,151 +8,56 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --neon: #d8ff5e; --bg: #0a0a0a; --card: rgba(20, 20, 20, 0.7); }
-        
+        :root { --neon: #d8ff5e; --bg: #0a0a0a; }
         body { 
             background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
                         url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FbglarutawebsiteBlack.jpg?alt=media&token=8e8d0ddb-b8a4-43f0-8199-98d31beaf078'); 
-            background-size: cover; background-position: center; background-attachment: fixed;
-            color: white; font-family: 'Montserrat', sans-serif; margin: 0; min-height: 100vh;
+            background-size: cover; background-attachment: fixed;
+            color: white; font-family: 'Montserrat', sans-serif; margin: 0; text-align: center;
         }
-
-        .header-lb { text-align: center; padding: 40px 20px; }
-        .header-lb img { width: 150px; filter: drop-shadow(0 0 10px rgba(216, 255, 94, 0.2)); }
-        h1 { font-weight: 800; text-transform: uppercase; color: var(--neon); margin: 15px 0 0; letter-spacing: 2px; font-size: 1.5rem; }
-
-        .lb-container { max-width: 800px; margin: auto; padding: 20px; }
-
-        .filter-box { 
-            background: var(--card); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(216, 255, 94, 0.15); border-radius: 15px;
-            padding: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 30px;
-        }
-        .filter-select { 
-            background: rgba(0,0,0,0.5); color: white; border: 1px solid #333; padding: 10px 15px; 
-            border-radius: 8px; font-family: 'Montserrat'; font-size: 0.8rem; outline: none; transition: 0.3s;
-        }
-        .filter-select:focus { border-color: var(--neon); }
-
-        .lb-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        .lb-row { background: rgba(20, 20, 20, 0.6); backdrop-filter: blur(5px); transition: 0.3s; }
-        .lb-row:hover { background: rgba(216, 255, 94, 0.05); transform: scale(1.01); }
-        .lb-row td { padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        
-        .pos-col { 
-            width: 50px; text-align: center; font-weight: 800; font-size: 1.2rem; color: var(--neon);
-            border-left: 1px solid rgba(216, 255, 94, 0.15); border-radius: 10px 0 0 10px;
-        }
-        .res-col { 
-            text-align: right; border-right: 1px solid rgba(216, 255, 94, 0.15); border-radius: 0 10px 10px 0;
-        }
-        .res-badge { 
-            background: var(--neon); color: black; padding: 5px 15px; border-radius: 5px; 
-            font-weight: 800; font-size: 1rem; box-shadow: 0 0 15px rgba(216, 255, 94, 0.2);
-        }
-
-        .top-1 { color: #ffd700 !important; }
-        .top-2 { color: #c0c0c0 !important; }
-        .top-3 { color: #cd7f32 !important; }
-
-        .loading { text-align: center; padding: 100px; color: var(--neon); font-weight: 600; text-transform: uppercase; letter-spacing: 3px; }
+        .container { max-width: 800px; margin: auto; padding: 50px 20px; }
+        img { width: 150px; margin-bottom: 20px; }
+        h1 { color: var(--neon); text-transform: uppercase; font-weight: 800; }
+        .card { background: rgba(20,20,20,0.8); padding: 30px; border-radius: 20px; border: 1px solid var(--neon); margin-top: 20px; }
+        .loading-text { letter-spacing: 3px; font-size: 0.8rem; color: #aaa; }
     </style>
 </head>
 <body>
-
-<div class="header-lb">
-    <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8">
-    <h1>Resultados Oficiales</h1>
-</div>
-
-<div class="lb-container">
-    <div class="filter-box">
-        <select class="filter-select" id="eventSelect" onchange="renderizar()">
-            <option value="ruta race">Ruta Race</option>
-            <option value="ruta crossfit">Ruta CrossFit</option>
-        </select>
-        <select class="filter-select" id="sexoSelect" onchange="renderizar()">
-            <option value="todos">Todos los Sexos</option>
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-        </select>
-        <select class="filter-select" id="catSelect" onchange="renderizar()">
-            <option value="todos">Todas las Categorías</option>
-            <option value="General">General</option>
-            <option value="Escalado">Escalado</option>
-            <option value="Avanzado">Avanzado</option>
-        </select>
+    <div class="container">
+        <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8">
+        <h1>Leaderboard Oficial</h1>
+        <div class="card">
+            <p class="loading-text">SINCRONIZANDO CON GOOGLE SHEETS...</p>
+            <div id="lista"></div>
+        </div>
     </div>
 
-    <div id="loader" class="loading">Sincronizando Leaderboard...</div>
-
-    <table class="lb-table" id="tablaLB" style="display:none;">
-        <tbody id="lb-body"></tbody>
-    </table>
-</div>
-
-<script>
-    // Usando tu WEB_APP_URL
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
-    let atletas = [];
-
-    async function cargarDatos() {
-        try {
-            const res = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
-            atletas = await res.json();
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('tablaLB').style.display = 'table';
-            renderizar();
-        } catch (e) {
-            document.getElementById('loader').innerText = "Error de conexión";
-        }
-    }
-
-    function renderizar() {
-        const ev = document.getElementById('eventSelect').value.toLowerCase();
-        const sx = document.getElementById('sexoSelect').value;
-        const ct = document.getElementById('catSelect').value;
-        const body = document.getElementById('lb-body');
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
         
-        let filtrados = atletas.filter(a => {
-            const matchEv = a.modalidad && a.modalidad.toLowerCase().includes(ev);
-            const matchSx = sx === 'todos' || a.sexo === sx;
-            const matchCt = ct === 'todos' || (a.categoria && a.categoria.includes(ct));
-            const tieneResultado = a.resultado && a.resultado !== ""; 
-            return matchEv && matchSx && matchCt && tieneResultado && a.estatus === "Aprobado";
-        });
-
-        if(ev.includes("race")) {
-            filtrados.sort((a, b) => String(a.resultado).localeCompare(String(b.resultado)));
-        } else {
-            filtrados.sort((a, b) => parseFloat(b.resultado) - parseFloat(a.resultado));
+        async function obtenerDatos() {
+            try {
+                const res = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
+                const datos = await res.json();
+                const div = document.getElementById('lista');
+                
+                // Filtrar solo los que tienen resultado en columna U (data[i][20])
+                const aprobados = datos.filter(a => a.resultado && a.resultado !== "" && a.estatus === "Aprobado");
+                
+                if(aprobados.length === 0) {
+                    div.innerHTML = "<p style='color:#666'>No hay resultados publicados aún.</p>";
+                } else {
+                    // Mostrar una lista simple para probar
+                    aprobados.forEach(a => {
+                        div.innerHTML += `<p>${a.nombre} - <b>${a.resultado}</b></p>`;
+                    });
+                }
+                document.querySelector('.loading-text').style.display = 'none';
+            } catch (e) {
+                document.getElementById('lista').innerHTML = "Error al conectar con la base de datos.";
+            }
         }
-
-        body.innerHTML = filtrados.length ? "" : "<tr><td colspan='3' style='text-align:center; padding:40px; color:#555;'>No hay resultados para esta selección.</td></tr>";
-
-        filtrados.forEach((a, i) => {
-            let posClass = "";
-            if(i === 0) posClass = "top-1";
-            if(i === 1) posClass = "top-2";
-            if(i === 2) posClass = "top-3";
-
-            const tr = document.createElement('tr');
-            tr.className = "lb-row";
-            tr.innerHTML = `
-                <td class="pos-col ${posClass}">${i + 1}</td>
-                <td>
-                    <span style="font-weight:800; text-transform:uppercase;">${a.nombre} ${a.apellido}</span><br>
-                    <small style="color:#666;">Dorsal #${a.dorsal} | ${a.box || 'Independiente'}</small>
-                </td>
-                <td class="res-col">
-                    <span class="res-badge">${a.resultado}</span>
-                </td>
-            `;
-            body.appendChild(tr);
-        });
-    }
-
-    window.onload = cargarDatos;
-</script>
+        window.onload = obtenerDatos;
+    </script>
 </body>
 </html>

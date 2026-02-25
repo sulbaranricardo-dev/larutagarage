@@ -3,61 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard | La Ruta Garage</title>
-    <link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FFavicon.png?alt=media&token=0e2d4383-2c9b-4005-9b46-943b40c0637d">
+    <title>Leaderboard Elite | La Ruta Garage</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --neon: #d8ff5e; --bg: #050505; --gold: #ffd700; --silver: #c0c0c0; --bronze: #cd7f32; }
-        body { background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0; }
-        
-        .header { text-align: center; padding: 25px 10px; background: linear-gradient(180deg, rgba(216, 255, 94, 0.1) 0%, transparent 100%); }
-        .logo { width: 90px; }
-
-        .container { max-width: 600px; margin: auto; padding: 15px; }
-
-        /* BOTONES GRANDES DE MODALIDAD */
-        .modality-selector { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-mod { 
-            flex: 1; padding: 18px; border: 1px solid #333; background: #111; color: white; 
-            font-weight: 900; border-radius: 12px; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.8rem;
+        :root { 
+            --neon: #d8ff5e; --bg: #050505; 
+            --gold: #ffd700; --silver: #e0e0e0; --bronze: #cd7f32;
         }
-        .btn-mod.active { background: var(--neon); color: black; border-color: var(--neon); box-shadow: 0 0 20px rgba(216, 255, 94, 0.2); }
-
-        /* FILTROS DINÁMICOS */
-        .sub-filters { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
-        .sub-filters::-webkit-scrollbar { display: none; }
-        .f-pill { 
-            background: rgba(255,255,255,0.05); border: 1px solid #333; color: #aaa; padding: 8px 15px; 
-            border-radius: 20px; font-size: 0.7rem; white-space: nowrap; cursor: pointer; font-weight: 700;
+        body { 
+            background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0; 
+            overflow-x: hidden; min-height: 100vh;
         }
-        .f-pill.active { border-color: var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.05); }
-
-        /* PODIO */
-        .podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 40px 0; height: 180px; }
-        .podium-item { background: rgba(20,20,20,0.8); border-radius: 15px; padding: 15px 5px; text-align: center; flex: 1; border: 1px solid #333; position: relative; }
         
-        .p-1 { height: 100%; border-color: var(--gold); order: 2; transform: scale(1.1); box-shadow: 0 0 25px rgba(255, 215, 0, 0.2); }
-        .p-2 { height: 85%; border-color: var(--silver); order: 1; }
-        .p-3 { height: 75%; border-color: var(--bronze); order: 3; }
+        .header { text-align: center; padding: 20px 10px; background: linear-gradient(to bottom, rgba(216, 255, 94, 0.1), transparent); }
+        .logo { width: 80px; margin-bottom: 10px; }
 
-        .crown { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; color: var(--gold); filter: drop-shadow(0 0 5px var(--gold)); }
-        .p-2 .medal-icon { color: var(--silver); }
-        .p-3 .medal-icon { color: var(--bronze); }
+        .container { max-width: 500px; margin: auto; padding: 15px; }
 
-        .podium-photo { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-bottom: 8px; border: 2px solid #444; }
-        .p-1 .podium-photo { width: 75px; height: 75px; border-color: var(--gold); }
+        /* FILTROS TIPO GAMER */
+        .modality-nav { display: flex; gap: 8px; margin-bottom: 20px; }
+        .btn-m { 
+            flex: 1; padding: 15px; border: 1px solid #222; background: #111; color: #666; 
+            font-weight: 900; border-radius: 12px; cursor: pointer; transition: 0.3s; font-size: 0.75rem;
+        }
+        .btn-m.active { background: var(--neon); color: black; border-color: var(--neon); box-shadow: 0 0 15px rgba(216, 255, 94, 0.3); }
+
+        .sub-nav { display: flex; gap: 6px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; }
+        .pill { 
+            background: rgba(255,255,255,0.05); border: 1px solid #333; color: #888; padding: 8px 16px; 
+            border-radius: 20px; font-size: 0.65rem; white-space: nowrap; cursor: pointer; font-weight: 700;
+        }
+        .pill.active { border-color: var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.1); }
+
+        /* PODIO 3D DINÁMICO */
+        .podium-container { 
+            display: flex; justify-content: center; align-items: flex-end; 
+            gap: 10px; margin: 60px 0 40px; height: 180px; position: relative;
+        }
+        .podium-slot {
+            flex: 1; background: linear-gradient(180deg, #111, #000); border-radius: 15px 15px 0 0;
+            position: relative; display: flex; flex-direction: column; align-items: center;
+            border: 1px solid #222; padding-bottom: 10px;
+        }
         
+        /* Alturas del podio */
+        .rank-1 { height: 100%; z-index: 3; border-color: var(--gold); order: 2; box-shadow: 0 0 30px rgba(255, 215, 0, 0.15); }
+        .rank-2 { height: 80%; border-color: var(--silver); order: 1; }
+        .rank-3 { height: 65%; border-color: var(--bronze); order: 3; }
+
+        /* Iconos y Coronas */
+        .crown-icon { position: absolute; top: -45px; font-size: 2.2rem; color: var(--gold); filter: drop-shadow(0 0 8px var(--gold)); animation: float 2s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
+
+        .photo-wrap {
+            width: 60px; height: 60px; border-radius: 50%; overflow: hidden;
+            margin-top: -30px; border: 3px solid #222; background: #111;
+        }
+        .rank-1 .photo-wrap { width: 85px; height: 85px; border-color: var(--gold); }
+        .rank-1 .photo-wrap img, .rank-2 img, .rank-3 img { width: 100%; height: 100%; object-fit: cover; }
+
+        .podium-info { text-align: center; margin-top: 10px; width: 100%; }
+        .podium-info strong { font-size: 0.7rem; display: block; text-transform: uppercase; color: #fff; margin-bottom: 4px; }
+        .podium-info .time-val { color: var(--neon); font-weight: 900; font-size: 0.85rem; }
+
         /* TABLA COMPACTA */
-        .lb-row { display: flex; align-items: center; background: rgba(255,255,255,0.03); margin-bottom: 5px; padding: 10px; border-radius: 10px; gap: 12px; }
-        .rank-n { width: 25px; font-weight: 900; color: #555; }
-        .atleta-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #333; }
-        .atleta-info { flex: 1; }
-        .atleta-info strong { font-size: 0.8rem; text-transform: uppercase; display: block; }
-        .atleta-info span { font-size: 0.65rem; color: #666; font-weight: 700; }
-        .result-val { font-weight: 900; color: var(--neon); font-size: 0.9rem; }
+        .atleta-row { 
+            display: flex; align-items: center; background: rgba(255,255,255,0.03); 
+            margin-bottom: 6px; padding: 10px 15px; border-radius: 12px; gap: 12px; border: 1px solid rgba(255,255,255,0.02);
+        }
+        .pos-num { width: 20px; font-weight: 900; color: #444; font-size: 0.75rem; }
+        .atleta-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #222; }
+        .data { flex: 1; }
+        .data b { font-size: 0.85rem; text-transform: uppercase; display: block; }
+        .data span { font-size: 0.65rem; color: #666; font-weight: 700; }
+        .time-res { font-weight: 900; color: var(--neon); font-size: 0.9rem; font-family: 'Courier New', monospace; }
 
-        .loading { text-align: center; color: var(--neon); padding: 50px; font-size: 0.7rem; letter-spacing: 2px; }
+        .loading { text-align: center; color: var(--neon); font-size: 0.7rem; letter-spacing: 3px; padding: 100px 0; }
     </style>
 </head>
 <body>
@@ -68,35 +90,36 @@
 </div>
 
 <div class="container">
-    <div class="modality-selector">
-        <button class="btn-mod active" onclick="changeMod('ruta race', this)">Ruta Race</button>
-        <button class="btn-mod" onclick="changeMod('ruta crossfit', this)">CrossFit</button>
+    <div class="modality-nav">
+        <button class="btn-m active" id="btn-race" onclick="setMod('ruta race')">RUTA RACE</button>
+        <button class="btn-m" id="btn-cf" onclick="setMod('ruta crossfit')">CROSSFIT</button>
     </div>
 
-    <div id="filterArea" class="sub-filters"></div>
+    <div id="subFilters" class="sub-nav"></div>
 
-    <div id="podiumArea" class="podium"></div>
-    <div id="loader" class="loading">SINCRONIZANDO...</div>
-    <div id="lb-list"></div>
+    <div id="podiumArea" class="podium-container"></div>
+
+    <div id="loader" class="loading">SINCRONIZANDO LIVE...</div>
+    <div id="leaderboardList"></div>
 </div>
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
-    let allData = [];
-    let curMod = 'ruta race';
-    let curSexo = 'todos';
-    let curCat = 'todos';
+    let database = [];
+    let filterMod = 'ruta race';
+    let filterSex = 'todos';
+    let filterCat = 'todos';
 
-    // Limpieza de formato de tiempo de Google (Evita el 1899-12-30)
-    function cleanTime(t) {
-        if (!t) return "--:--:--";
-        if (typeof t === 'string' && t.includes('T')) {
-            return t.split('T')[1].split('.')[0]; 
+    // LIMPIEZA TOTAL DEL TIEMPO: Convierte cualquier formato a HH:MM:SS
+    function formatTime(val) {
+        if (!val) return "--:--:--";
+        if (typeof val === 'string' && val.includes('T')) {
+            return val.split('T')[1].split('.')[0]; 
         }
-        return t;
+        return val;
     }
 
-    function formatImgUrl(url) {
+    function formatImg(url) {
         if (!url) return "https://via.placeholder.com/150?text=Atleta";
         let id = "";
         if (url.includes("id=")) id = url.split("id=")[1].split("&")[0];
@@ -104,105 +127,99 @@
         return id !== "" ? "https://lh3.googleusercontent.com/d/" + id : url;
     }
 
-    async function cargar() {
+    async function init() {
         try {
-            const res = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
-            allData = await res.json();
+            const r = await fetch(WEB_APP_URL + "?t=" + new Date().getTime());
+            database = await r.json();
             document.getElementById('loader').style.display = 'none';
-            renderFilters();
-            render();
+            setMod('ruta race');
         } catch (e) { console.error(e); }
     }
 
-    function changeMod(mod, btn) {
-        curMod = mod;
-        curSexo = 'todos';
-        curCat = 'todos';
-        document.querySelectorAll('.btn-mod').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderFilters();
-        render();
+    function setMod(m) {
+        filterMod = m; filterSex = 'todos'; filterCat = 'todos';
+        document.querySelectorAll('.btn-m').forEach(b => b.classList.remove('active'));
+        document.getElementById(m.includes('race') ? 'btn-race' : 'btn-cf').classList.add('active');
+        renderFilters(); render();
     }
 
     function renderFilters() {
-        const area = document.getElementById('filterArea');
-        area.innerHTML = "";
-        
-        // Botones de Sexo (Para ambos)
-        area.innerHTML += `<button class="f-pill ${curSexo==='todos'?'active':''}" onclick="curSexo='todos';render();updatePill(this)">Todos</button>`;
-        area.innerHTML += `<button class="f-pill ${curSexo==='Masculino'?'active':''}" onclick="curSexo='Masculino';render();updatePill(this)">Hombres</button>`;
-        area.innerHTML += `<button class="f-pill ${curSexo==='Femenino'?'active':''}" onclick="curSexo='Femenino';render();updatePill(this)">Mujeres</button>`;
-
-        if(curMod.includes('crossfit')) {
-            area.innerHTML += `<div style="width:1px; background:#333; margin:0 5px;"></div>`;
-            area.innerHTML += `<button class="f-pill ${curCat==='Escalado'?'active':''}" onclick="curCat='Escalado';render();updatePill(this)">Escalado</button>`;
-            area.innerHTML += `<button class="f-pill ${curCat==='Avanzado'?'active':''}" onclick="curCat='Avanzado';render();updatePill(this)">Avanzado</button>`;
+        const area = document.getElementById('subFilters');
+        area.innerHTML = `
+            <button class="pill ${filterSex==='todos'?'active':''}" onclick="filterSex='todos';render();updatePills(this)">Todos</button>
+            <button class="pill ${filterSex==='Masculino'?'active':''}" onclick="filterSex='Masculino';render();updatePills(this)">Hombres</button>
+            <button class="pill ${filterSex==='Femenino'?'active':''}" onclick="filterSex='Femenino';render();updatePills(this)">Mujeres</button>
+        `;
+        if (filterMod.includes('crossfit')) {
+            area.innerHTML += `
+                <div style="min-width:1px; background:#333; margin:0 5px;"></div>
+                <button class="pill ${filterCat==='Escalado'?'active':''}" onclick="filterCat='Escalado';render();updatePills(this)">Escalado</button>
+                <button class="pill ${filterCat==='Avanzado'?'active':''}" onclick="filterCat='Avanzado';render();updatePills(this)">Avanzado</button>
+            `;
         }
     }
 
-    function updatePill(btn) {
-        btn.parentElement.querySelectorAll('.f-pill').forEach(p => p.classList.remove('active'));
+    function updatePills(btn) {
+        btn.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
     }
 
     function render() {
-        const listCont = document.getElementById('lb-list');
-        const podiumCont = document.getElementById('podiumArea');
+        const list = document.getElementById('leaderboardList');
+        const podium = document.getElementById('podiumArea');
         
-        let filtrados = allData.filter(a => {
-            const mEv = a.modalidad && a.modalidad.toLowerCase().includes(curMod);
-            const mSx = curSexo === 'todos' || a.sexo === curSexo;
-            const mCt = curCat === 'todos' || (a.categoria && a.categoria.includes(curCat));
-            return mEv && mSx && mCt && a.resultado && a.estatus === "Aprobado";
+        let filtered = database.filter(a => {
+            const mMod = a.modalidad && a.modalidad.toLowerCase().includes(filterMod);
+            const mSex = filterSex === 'todos' || a.sexo === filterSex;
+            const mCat = filterCat === 'todos' || (a.categoria && a.categoria.includes(filterCat));
+            return mMod && mSex && mCat && a.resultado && a.estatus === "Aprobado";
         });
 
-        if(curMod.includes('race')) {
-            filtrados.sort((a, b) => cleanTime(a.resultado).localeCompare(cleanTime(b.resultado)));
+        // ORDENAMIENTO CRÍTICO
+        if(filterMod.includes('race')) {
+            // Menor tiempo primero
+            filtered.sort((a, b) => formatTime(a.resultado).localeCompare(formatTime(b.resultado)));
         } else {
-            filtrados.sort((a, b) => parseFloat(b.resultado) - parseFloat(a.resultado));
+            // Mayor puntaje primero
+            filtered.sort((a, b) => parseFloat(b.resultado) - parseFloat(a.resultado));
         }
 
-        // PODIO
-        podiumCont.innerHTML = "";
-        const top3 = filtrados.slice(0, 3);
-        top3.forEach((a, i) => {
-            const pos = i + 1;
-            const div = document.createElement('div');
-            div.className = `podium-item p-${pos}`;
-            div.innerHTML = `
-                ${pos === 1 ? '<i class="fas fa-crown crown"></i>' : ''}
-                <img src="${formatImgUrl(a.fotoCarnet)}" class="podium-photo">
-                <strong style="font-size:0.6rem; display:block; text-transform:uppercase;">${a.nombre}</strong>
-                <span style="color:var(--neon); font-weight:900; font-size:0.8rem;">${cleanTime(a.resultado)}</span>
+        // RENDER PODIUM
+        podium.innerHTML = "";
+        filtered.slice(0, 3).forEach((a, i) => {
+            const slot = document.createElement('div');
+            slot.className = `podium-slot rank-${i+1}`;
+            slot.innerHTML = `
+                ${i===0 ? '<i class="fas fa-crown crown-icon" style="left:50%"></i>' : ''}
+                <div class="photo-wrap"><img src="${formatImg(a.fotoCarnet)}"></div>
+                <div class="podium-info">
+                    <strong>${a.nombre}</strong>
+                    <div class="time-val">${formatTime(a.resultado)}</div>
+                </div>
             `;
-            podiumCont.appendChild(div);
+            podium.appendChild(slot);
         });
 
-        // LISTA
-        listCont.innerHTML = "";
-        filtrados.slice(3).forEach((a, i) => {
+        // RENDER LIST
+        list.innerHTML = "";
+        filtered.slice(3).forEach((a, i) => {
             const row = document.createElement('div');
-            row.className = "lb-row";
+            row.className = "atleta-row";
             row.innerHTML = `
-                <div class="rank-n">${i + 4}</div>
-                <img src="${formatImgUrl(a.fotoCarnet)}" class="atleta-img">
-                <div class="atleta-info">
-                    <strong>${a.nombre} ${a.apellido}</strong>
+                <div class="pos-num">${i + 4}</div>
+                <img src="${formatImg(a.fotoCarnet)}" class="atleta-img">
+                <div class="data">
+                    <b>${a.nombre} ${a.apellido}</b>
                     <span>#${a.dorsal} | ${a.box || 'IND.'}</span>
                 </div>
-                <div class="result-val">${cleanTime(a.resultado)}</div>
+                <div class="time-res">${formatTime(a.resultado)}</div>
             `;
-            listCont.appendChild(row);
+            list.appendChild(row);
         });
+        if(filtered.length === 0) list.innerHTML = "<p style='text-align:center; color:#444; margin-top:50px;'>No hay resultados registrados.</p>";
     }
 
-    function updatePill(btn) {
-        // Lógica simple para resaltar el botón seleccionado en su grupo
-        btn.parentElement.querySelectorAll('.f-pill').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-    }
-
-    window.onload = cargar;
+    window.onload = init;
 </script>
 </body>
 </html>

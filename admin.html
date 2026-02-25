@@ -5,13 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | La Ruta Garage</title>
     <link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FFavicon.png?alt=media&token=0e2d4383-2c9b-4005-9b46-943b40c0637d">
-    <meta name="description" content="Vuelve la competencia que pone a prueba tus límites en Maturín. ¡Un Plan, Una Ruta, Una Meta!">
-    <meta property="og:title" content="La Ruta Garage | Official Event 2026">
-    <meta property="og:description" content="La competencia que pone a prueba tus límites en Maturín. ¡Un Plan, Una Ruta, Una Meta!">
-    <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FImageMetadatos.jpg?alt=media&token=293c8a99-ed99-4155-8bfa-ecbbcc72b846">
-    <meta property="og:url" content="https://www.larutagarage.com/inscripcion"> 
-    <meta property="og:type" content="website">
-    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -73,16 +66,16 @@
         .atleta-chip { cursor: pointer; padding: 6px 12px; border: 1px solid #333; border-radius: 30px; font-size: 0.7rem; transition: 0.3s; background: rgba(255,255,255,0.05); }
         .atleta-chip.selected { border-color: var(--neon); color: var(--neon); background: rgba(216, 255, 94, 0.1); }
 
-        /* MÓVIL: Versión Tarjeta para Atletas / Versión Compacta para Heats */
+        /* Filtros Logística */
+        .logistica-filters { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .logistica-filters select { background: #111; color: white; border: 1px solid #333; padding: 8px; border-radius: 8px; font-family: 'Montserrat'; font-size: 0.75rem; }
+
         @media (max-width: 800px) {
-            /* Vista General (Tarjetas) */
             #viewGeneral table thead { display: none; }
             #viewGeneral table tr { display: block; background: rgba(0,0,0,0.3); margin-bottom: 15px; border: 1px solid #222; padding: 15px; border-radius: 12px; }
             #viewGeneral table td { display: flex; justify-content: flex-end; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 8px; flex-wrap: wrap; }
             #viewGeneral table td::before { content: attr(data-label); font-weight: 900; color: #666; text-transform: uppercase; font-size: 0.6rem; margin-right: auto; }
             #viewGeneral .btn { width: 100%; justify-content: center; }
-
-            /* Vista Logística (Heats) - Seguimos queriendo que sea compacta */
             #viewLogistica table th { padding: 8px 5px; font-size: 0.55rem; }
             #viewLogistica table td { padding: 5px; font-size: 0.75rem; }
         }
@@ -130,7 +123,7 @@
                     <thead>
                         <tr>
                             <th>Dorsal</th>
-                            <th>Atleta / Talla</th>
+                            <th>Atleta / Info</th>
                             <th>Modalidad</th>
                             <th>Pago Info</th>
                             <th>Multimedia</th>
@@ -159,7 +152,20 @@
         <div id="containerHeatsRace"></div>
         <div id="containerHeatsCF" style="display:none;">
             <div class="container" style="padding: 20px;">
-                <p style="font-size:0.8rem; color:var(--neon); font-weight:600; margin-bottom:15px; text-transform:uppercase;">1. Selecciona Atletas de CrossFit:</p>
+                <p style="font-size:0.8rem; color:var(--neon); font-weight:600; margin-bottom:15px; text-transform:uppercase;">1. Filtra y Selecciona Atletas:</p>
+                <div class="logistica-filters">
+                    <select id="filterSexoCF" onchange="renderizarSelectorCF()">
+                        <option value="todos">Todos los Sexos</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                    </select>
+                    <select id="filterCatCF" onchange="renderizarSelectorCF()">
+                        <option value="todos">Todas las Categorías</option>
+                        <option value="Escalado">Escalado</option>
+                        <option value="Avanzado">Avanzado</option>
+                        <option value="Master">Master</option>
+                    </select>
+                </div>
                 <div id="selectorAtletasCF" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"></div>
                 <button class="btn btn-approve" onclick="crearHeatManual()">Crear Heat con Seleccionados</button>
             </div>
@@ -272,13 +278,31 @@
 
     function renderizarSelectorCF() {
         const sel = document.getElementById('selectorAtletasCF');
+        const sFiltro = document.getElementById('filterSexoCF').value;
+        const cFiltro = document.getElementById('filterCatCF').value;
+        
         sel.innerHTML = "";
         let ocupados = heatsCrossfitCreados.flatMap(h => h.atletas.map(at => at.fila));
-        let cfAtletas = todosLosAtletas.filter(a => a.modalidad && a.modalidad.toLowerCase().includes('crossfit') && a.estatus === 'Aprobado' && !ocupados.includes(a.fila));
+        
+        let cfAtletas = todosLosAtletas.filter(a => {
+            const esCF = a.modalidad && a.modalidad.toLowerCase().includes('crossfit');
+            const estaAprobado = a.estatus === 'Aprobado';
+            const estaLibre = !ocupados.includes(a.fila);
+            const cumpleSexo = sFiltro === 'todos' || (a.sexo && a.sexo === sFiltro);
+            const cumpleCat = cFiltro === 'todos' || (a.categoria && a.categoria.includes(cFiltro));
+            
+            return esCF && estaAprobado && estaLibre && cumpleSexo && cumpleCat;
+        });
+
+        if(cfAtletas.length === 0) {
+            sel.innerHTML = "<p style='font-size:0.7rem; color:#666;'>No hay atletas disponibles con estos filtros.</p>";
+            return;
+        }
+
         cfAtletas.forEach(a => {
             let chip = document.createElement('div');
             chip.className = "atleta-chip" + (seleccionadosCF.includes(a.fila) ? " selected" : "");
-            chip.innerText = `${a.nombre} (${a.categoria})`;
+            chip.innerText = `${a.nombre} (${a.sexo ? a.sexo[0] : '?'}) - ${a.categoria}`;
             chip.onclick = () => {
                 chip.classList.toggle('selected');
                 if(seleccionadosCF.includes(a.fila)) seleccionadosCF = seleccionadosCF.filter(f => f !== a.fila);
@@ -322,13 +346,13 @@
                 </div>
                 <div class="table-wrapper">
                     <table>
-                        <thead><tr><th>Foto</th><th>Atleta</th><th>Categoría</th><th>Acción</th></tr></thead>
+                        <thead><tr><th>Foto</th><th>Atleta</th><th>Sexo/Cat</th><th>Acción</th></tr></thead>
                         <tbody>
                             ${heat.atletas.map(a => `
                                 <tr>
                                     <td><img src="${formatImgUrl(a.fotoCarnet)}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid #333;"></td>
                                     <td><strong>${a.nombre} ${a.apellido}</strong></td>
-                                    <td>${a.categoria}</td>
+                                    <td>${a.sexo || ''} / ${a.categoria}</td>
                                     <td><button class="btn-delete" onclick="quitarAtletaDeHeatCF(${heat.id}, ${a.fila})" style="padding:4px 8px;">Quitar</button></td>
                                 </tr>
                             `).join('')}
@@ -367,7 +391,11 @@
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td data-label="Dorsal"><span class="badge ${atleta.estatus === 'Pendiente' ? 'status-pendiente' : 'status-aprobado'}">${atleta.dorsal || 'PEND'}</span></td>
-                <td data-label="Atleta"><strong>${atleta.nombre} ${atleta.apellido || ''}</strong><br><small style="color:var(--neon); font-weight:600">Talla: ${atleta.talla || 'S/N'}</small></td>
+                <td data-label="Atleta">
+                    <strong>${atleta.nombre} ${atleta.apellido || ''}</strong><br>
+                    <small style="color:var(--neon); font-weight:600">Talla: ${atleta.talla || 'S/N'}</small><br>
+                    <small style="color:#aaa;">${atleta.sexo || 'S/S'} | ${atleta.categoria || 'S/C'}</small>
+                </td>
                 <td data-label="Modalidad">${atleta.modalidad}</td>
                 <td data-label="Pago Info"><strong>${atleta.metodo || 'S/M'}</strong><br><small style="color:#777">Ref: ${atleta.referencia}</small></td>
                 <td data-label="Multimedia">
@@ -393,7 +421,8 @@
             {id: "nombre", label: "Nombre", valor: atletaAEditar.nombre}, {id: "apellido", label: "Apellido", valor: atletaAEditar.apellido},
             {id: "cedula", label: "Cédula", valor: atletaAEditar.cedula}, {id: "telefono", label: "Teléfono", valor: atletaAEditar.telefono},
             {id: "correo", label: "Correo", valor: atletaAEditar.correo}, {id: "talla", label: "Talla", valor: atletaAEditar.talla},
-            {id: "modalidad", label: "Modalidad", valor: atletaAEditar.modalidad}, {id: "categoria", label: "Categoría", valor: atletaAEditar.categoria},
+            {id: "sexo", label: "Sexo", valor: atletaAEditar.sexo}, {id: "modalidad", label: "Modalidad", valor: atletaAEditar.modalidad}, 
+            {id: "categoria", label: "Categoría", valor: atletaAEditar.categoria},
             {id: "dorsal", label: "Dorsal", valor: atletaAEditar.dorsal}, {id: "fecha", label: "Fecha Registro", valor: atletaAEditar.fecha}
         ];
         campos.forEach(c => {
@@ -409,6 +438,7 @@
             nombre: document.getElementById('edit_nombre').value, apellido: document.getElementById('edit_apellido').value,
             cedula: document.getElementById('edit_cedula').value, telefono: document.getElementById('edit_telefono').value,
             correo: document.getElementById('edit_correo').value, talla: document.getElementById('edit_talla').value,
+            sexo: document.getElementById('edit_sexo').value,
             modalidad: document.getElementById('edit_modalidad').value, categoria: document.getElementById('edit_categoria').value,
             dorsal: document.getElementById('edit_dorsal').value, fecha: document.getElementById('edit_fecha').value
         };

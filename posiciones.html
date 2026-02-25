@@ -112,17 +112,14 @@
 
     // LIMPIEZA TOTAL DEL TIEMPO: Convierte cualquier formato a HH:MM:SS
     function formatTime(val) {
-    if (!val || val === "" || val === "undefined") return "--:--:--";
+    if (!val || val === "" || val === "undefined" || val === "null") return "--:--:--";
     
-    // Si Google envía el formato ISO (1899-12-30T19:54:09.000Z)
-    if (typeof val === 'string' && val.includes('T')) {
-        let parteTiempo = val.split('T')[1].split('.')[0];
-        // Aquí hay un truco: a veces Google Sheets desfasa la hora por la zona horaria (GMT)
-        // Si el tiempo que ves es 00:21 y debería ser 19:54, es que JS está restando horas.
-        return parteTiempo;
+    // Si por alguna razón el texto trae la zona horaria (GMT), la removemos
+    if (typeof val === 'string' && val.includes('GMT')) {
+        return val.split(' ')[0]; 
     }
     
-    // Si ya viene como texto limpio desde el GS corregido
+    // Retornamos el valor tal cual viene de getDisplayValues()
     return val;
 }
 

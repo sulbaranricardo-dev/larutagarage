@@ -11,11 +11,15 @@
         :root { --neon: #d8ff5e; --bg: #050505; --glass: rgba(20, 20, 20, 0.7); }
         body { background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FbglarutawebsiteBlack.jpg?alt=media&token=8e8d0ddb-b8a4-43f0-8199-98d31beaf078'); background-size: cover; background-position: center; background-attachment: fixed; color: white; font-family: 'Montserrat', sans-serif; padding: 10px; margin: 0; display: none; min-height: 100vh; }
         
-        /* ESTILOS DEL LOADER DE TABLA */
-        .table-loader { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 50px; background: rgba(0,0,0,0.3); border-radius: 15px; margin: 20px 0; }
-        .spinner { width: 40px; height: 40px; border: 4px solid rgba(216, 255, 94, 0.1); border-top: 4px solid var(--neon); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        /* ESTILOS DEL LOADER DE TABLA SUTIL */
+        .table-loader { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+        .spinner { width: 30px; height: 30px; border: 3px solid rgba(216, 255, 94, 0.1); border-top: 3px solid var(--neon); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loader-text { color: var(--neon); font-weight: 900; letter-spacing: 2px; font-size: 0.8rem; text-transform: uppercase; }
+        .loader-text { color: var(--neon); font-weight: 900; letter-spacing: 2px; font-size: 0.7rem; text-transform: uppercase; }
+        
+        /* INDICADOR DE SINCRONIZACIÓN DE FONDO */
+        #sync-indicator { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.8); border: 1px solid #333; padding: 10px 15px; border-radius: 30px; font-size: 0.7rem; display: none; align-items: center; gap: 8px; z-index: 9999; color: #aaa; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        #sync-indicator i { color: var(--neon); }
 
         #modalEditar, #modalAgregarAHeat { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; overflow-y:auto; padding:20px; box-sizing: border-box; }
         .modal-content { max-width:600px; margin:auto; background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(216, 255, 94, 0.2); padding:30px; border-radius:20px; }
@@ -63,6 +67,10 @@
 </head>
 <body>
 
+    <div id="sync-indicator">
+        <i class="fas fa-sync-alt fa-spin"></i> Sincronizando datos...
+    </div>
+
     <div class="header-admin">
         <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="Logo">
         <h1>Dashboard Administrativo</h1>
@@ -89,7 +97,7 @@
 
         <div id="tableLoader" class="table-loader" style="display: none;">
             <div class="spinner"></div>
-            <div class="loader-text">Sincronizando atletas...</div>
+            <div class="loader-text">Cargando primera vez...</div>
         </div>
 
         <div class="container" id="tableContainer">
@@ -162,24 +170,44 @@
         }
     })();
 
-    async function cargarAtletas() {
+    async function cargarAtletas(silencioso = false) {
         const loader = document.getElementById('tableLoader');
         const container = document.getElementById('tableContainer');
-        
-        loader.style.display = 'flex';
-        container.style.opacity = '0.5';
+        const syncIndicator = document.getElementById('sync-indicator');
 
+        // 1. CARGA INSTANTÁNEA DESDE CACHÉ (LOCAL STORAGE)
+        if (!silencioso) {
+            const cache = localStorage.getItem('rutagarage_atletas');
+            if (cache) {
+                todosLosAtletas = JSON.parse(cache);
+                aplicarFiltros();
+                syncIndicator.style.display = 'flex'; // Mostramos que estamos buscando data fresca
+            } else {
+                loader.style.display = 'flex';
+                container.style.display = 'none';
+            }
+        } else {
+            syncIndicator.style.display = 'flex';
+        }
+
+        // 2. SINCRONIZACIÓN EN SEGUNDO PLANO
         try {
-            // Se agrega Date.now() para forzar la carga de datos frescos sin caché
             const response = await fetch(`${WEB_APP_URL}?t=${Date.now()}`, { cache: "no-store" });
-            todosLosAtletas = await response.json();
-            todosLosAtletas.reverse();
-            aplicarFiltros();
+            const dataFresca = await response.json();
+            
+            todosLosAtletas = dataFresca.reverse();
+            localStorage.setItem('rutagarage_atletas', JSON.stringify(todosLosAtletas)); // Guardar nuevo caché
+            
+            aplicarFiltros(); // Refrescar vista suavemente
+            
         } catch (error) { 
-            console.error(error); 
+            console.error("Error al sincronizar datos:", error); 
         } finally {
-            loader.style.display = 'none';
-            container.style.opacity = '1';
+            if (!silencioso) {
+                loader.style.display = 'none';
+                container.style.display = 'block';
+            }
+            syncIndicator.style.display = 'none';
         }
     }
 
@@ -221,29 +249,51 @@
         if(!confirm(`¿Aprobar a ${n}?`)) return;
         
         const btn = document.getElementById(`btnApprove-${f}`);
-        const originalText = btn.innerHTML;
         
-        // ESTADO DE CARGA EN EL BOTÓN
+        // 1. ACTUALIZACIÓN VISUAL INMEDIATA (OPTIMISTIC UI)
         btn.disabled = true;
-        btn.style.opacity = '0.7';
         btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> APROBANDO...';
+        
+        // Cambiamos el estado localmente para no esperar a la base de datos
+        const atletaLocal = todosLosAtletas.find(a => a.fila === f);
+        if(atletaLocal) {
+            atletaLocal.estatus = 'Aprobado';
+            localStorage.setItem('rutagarage_atletas', JSON.stringify(todosLosAtletas));
+            setTimeout(aplicarFiltros, 500); // Quita al atleta visualmente de los pendientes rápido
+        }
 
+        // 2. ENVÍO REAL A LA BASE DE DATOS (En segundo plano)
         try {
-            await fetch(WEB_APP_URL, { 
+            fetch(WEB_APP_URL, { 
                 method: 'POST', 
                 mode: 'no-cors', 
                 body: JSON.stringify({ accion: "aprobar", fila: f, correo: c, nombre: n }) 
+            }).then(() => {
+                // Sincronizamos silenciosamente para traer el Dorsal Oficial
+                cargarAtletas(true); 
             });
-            await cargarAtletas();
         } catch(e) {
-            alert("Error al aprobar.");
-            btn.disabled = false;
-            btn.style.opacity = '1';
-            btn.innerHTML = originalText;
+            console.error("Fallo al enviar aprobación en segundo plano");
         }
     }
 
-    // Funciones de navegación y filtros permanecen sin cambios para no editar funcionalidad
+    async function eliminarAtleta(fila, n) {
+        if(!confirm(`¿Eliminar a ${n}?`)) return;
+        
+        // ACTUALIZACIÓN VISUAL INMEDIATA
+        todosLosAtletas = todosLosAtletas.filter(a => a.fila !== fila);
+        localStorage.setItem('rutagarage_atletas', JSON.stringify(todosLosAtletas));
+        aplicarFiltros();
+
+        // Envío en segundo plano
+        fetch(WEB_APP_URL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            body: JSON.stringify({ accion: "eliminar", fila: fila }) 
+        });
+    }
+
+    // Navegación, Paginación y Filtros (Intactos)
     function switchMainTab(tab) {
         document.getElementById('viewGeneral').style.display = tab === 'general' ? 'block' : 'none';
         document.getElementById('viewLogistica').style.display = tab === 'logistica' ? 'block' : 'none';
@@ -271,6 +321,7 @@
 
     function cambiarPagina(d) { paginaActual += d; renderizarTabla(); window.scrollTo(0,0); }
     function resetearYPaginacion() { paginaActual = 1; aplicarFiltros(); }
+    
     function actualizarControlesPagina(t) {
         const totalPaginas = Math.ceil(t / registrosPorPagina);
         document.getElementById('pageInfo').innerText = `Página ${paginaActual} de ${totalPaginas || 1}`;

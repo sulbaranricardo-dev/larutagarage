@@ -5,352 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripción | La Ruta Garage</title>
     <link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FFavicon.png?alt=media&token=0e2d4383-2c9b-4005-9b46-943b40c0637d">
-                <meta name="description" content="Vuelve la competencia que pone a prueba tus límites en Maturín. ¡Un Plan, Una Ruta, Una Meta!">
-                <meta property="og:title" content="La Ruta Garage | Official Event 2026">
-                <meta property="og:description" content="Inscríbete ahora en la competencia de Crossfit y Race más exigente de la región. ¿Estás listo para el reto?">
-                <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FImageMetadatos.jpg?alt=media&token=293c8a99-ed99-4155-8bfa-ecbbcc72b846">
-                <meta property="og:url" content="https://www.larutagarage.com/inscripcion"> <meta property="og:type" content="website">
-                
-                <meta name="twitter:card" content="summary_large_image">
-                <meta name="twitter:title" content="La Ruta Garage | Official Event">
-                <meta name="twitter:description" content="Prepárate para la meta. Inscripciones abiertas para Ruta Race y Ruta CrossFit.">
-                <meta name="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FImageMetadatos.jpg?alt=media&token=293c8a99-ed99-4155-8bfa-ecbbcc72b846">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { 
-            --neon: #d8ff5e; 
-            --bg: #0a0a0a; 
-            --card: rgba(20, 20, 20, 0.7); /* Fondo semi-transparente para el blur */
-        }
-
+        :root { --neon: #d8ff5e; --bg: #0a0a0a; --card: rgba(20, 20, 20, 0.7); }
         body { 
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FbglarutawebsiteBlack.jpg?alt=media&token=8e8d0ddb-b8a4-43f0-8199-98d31beaf078'); 
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed; /* Esto hace que el fondo no se mueva al hacer scroll */
-    color: white; 
-    font-family: 'Montserrat', sans-serif; 
-    margin: 0; 
-    padding: 20px; 
-    min-height: 100vh;
-}
-
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FbglarutawebsiteBlack.jpg?alt=media&token=8e8d0ddb-b8a4-43f0-8199-98d31beaf078'); 
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: white; font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px; min-height: 100vh;
+        }
         .header-registro { text-align: center; margin-bottom: 40px; }
-        .header-registro img { width: 180px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(216, 255, 94, 0.2)); }
-        
-        /* Título Principal Grueso (800) */
-        .header-registro h1 { 
-            font-weight: 800; 
-            color: var(--neon); 
-            font-size: 1.6rem; 
-            margin: 0; 
-            letter-spacing: -0.5px; 
-            text-transform: uppercase;
-        }
-        
-        /* Subtítulo más delgado (300) */
-        .header-registro p { font-weight: 300; font-size: 0.85rem; opacity: 0.8; letter-spacing: 1px; }
-
-        /* Efecto Cristal (Blur + Espejo) */
-        .form-container { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            background: var(--card); 
-            backdrop-filter: blur(15px); /* Desenfoque de fondo */
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(216, 255, 94, 0.15); /* Borde sutil verde */
-            border-radius: 20px; 
-            padding: 40px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
-        }
-
-        h2 { 
-            font-weight: 800; 
-            color: var(--neon); 
-            text-align: center; 
-            margin-bottom: 35px; 
-            font-size: 1.2rem; 
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(216, 255, 94, 0.2);
-            padding-bottom: 15px;
-        }
-        
-        .section-label { 
-            color: var(--neon); 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-            text-transform: uppercase; 
-            margin: 30px 0 20px; 
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .section-label i { font-size: 1rem; }
-
-        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .header-registro img { width: 150px; margin-bottom: 15px; }
+        .header-registro h1 { font-weight: 800; color: var(--neon); font-size: 1.6rem; text-transform: uppercase; margin: 0; }
+        .form-container { max-width: 700px; margin: 0 auto; background: var(--card); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(216, 255, 94, 0.15); border-radius: 20px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        h2 { font-weight: 800; color: var(--neon); text-align: center; margin-bottom: 30px; font-size: 1.2rem; text-transform: uppercase; border-bottom: 1px solid rgba(216, 255, 94, 0.2); padding-bottom: 10px; }
+        .section-label { color: var(--neon); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; margin: 25px 0 15px; display: flex; align-items: center; gap: 10px; }
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .full-width { grid-column: span 2; }
-        
         .input-group { position: relative; }
-        .input-group i { position: absolute; left: 12px; top: 38px; color: #555; font-size: 0.9rem; }
+        .input-group i { position: absolute; left: 12px; top: 35px; color: #555; font-size: 0.9rem; }
+        label { display: block; font-size: 0.65rem; color: #aaa; text-transform: uppercase; margin-bottom: 5px; font-weight: 600; }
+        input, select { width: 100%; padding: 10px 10px 10px 35px; background: rgba(0,0,0,0.4); border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat'; font-size: 0.85rem; }
+        input:focus { border-color: var(--neon); outline: none; }
         
-        label { display: block; font-size: 0.7rem; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+        /* Estilo para el producto Short */
+        .short-card { background: rgba(216, 255, 94, 0.05); border: 1px solid rgba(216, 255, 94, 0.2); border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+        .short-card img { width: 70px; border-radius: 8px; }
+        .short-info p { margin: 0; font-size: 0.7rem; color: #ccc; }
+        .short-info strong { color: var(--neon); font-size: 0.85rem; }
         
-        input, select { 
-            width: 100%; 
-            padding: 12px 12px 12px 38px; /* Espacio para el icono */
-            background: rgba(0,0,0,0.4); 
-            border: 1px solid #333; 
-            color: white; 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            font-family: 'Montserrat'; 
-            font-size: 0.85rem; 
-            transition: 0.3s;
-        }
-        
-        input:focus { border-color: var(--neon); outline: none; background: rgba(0,0,0,0.6); box-shadow: 0 0 10px rgba(216, 255, 94, 0.1); }
-
-        .foto-guia { background: rgba(216, 255, 94, 0.05); border: 1px dashed rgba(216, 255, 94, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; }
-        .foto-ejemplo { font-size: 1.5rem; color: var(--neon); opacity: 0.5; }
-        .foto-instruccion { font-size: 0.7rem; color: #bbb; line-height: 1.5; font-weight: 300; }
-
-        .pago-box { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 12px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .price-tag { font-weight: 800; font-size: 1.5rem; color: #fff; margin-bottom: 5px; display: block; }
-        
-        #instruccionesPago { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; font-size: 0.8rem; margin-top: 15px; border-left: 4px solid var(--neon); line-height: 1.6; display: none; font-weight: 300; }
-
-        .btn-submit { 
-            width: 100%; 
-            padding: 20px; 
-            background: var(--neon); 
-            color: black; 
-            border: none; 
-            font-weight: 800; 
-            font-family: 'Montserrat'; 
-            font-size: 1rem;
-            cursor: pointer; 
-            margin-top: 40px; 
-            transition: 0.4s; 
-            border-radius: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(216, 255, 94, 0.3); background: #f0ffcc; }
-
-        .help-container { position: fixed; bottom: 25px; right: 25px; display: flex; align-items: center; gap: 12px; z-index: 100; text-decoration: none; }
-        .help-msg { background: white; color: black; padding: 10px 18px; border-radius: 30px; font-size: 0.75rem; font-weight: 600; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-        .btn-help { background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 8px 20px rgba(0,0,0,0.3); transition: 0.3s; }
-        .btn-help:hover { transform: scale(1.1); }
-
-        @media (max-width: 600px) { 
-            .grid-form { grid-template-columns: 1fr; } 
-            .full-width { grid-column: span 1; } 
-            .help-msg { display: none; } 
-            .form-container { padding: 25px; }
-        }
+        .pago-box { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .price-tag { font-weight: 800; font-size: 1.4rem; color: #fff; display: block; }
+        .btn-submit { width: 100%; padding: 18px; background: var(--neon); color: black; border: none; font-weight: 800; font-family: 'Montserrat'; font-size: 1rem; cursor: pointer; margin-top: 30px; border-radius: 10px; text-transform: uppercase; }
+        @media (max-width: 600px) { .grid-form { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
     </style>
 </head>
 <body>
 
-<a href="https://wa.me/584148670207?text=Hola!%20Tengo%20un%20problema%20con%20el%20formulario%20de%20inscripción" class="help-container" target="_blank">
-    <div class="help-msg">¿Problemas con el registro?</div>
-    <div class="btn-help"><i class="fab fa-whatsapp"></i></div>
-</a>
-
 <div class="header-registro">
-    <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="Logo">
-    <h1>¡Un Plan, Una Ruta, Una Meta!</h1>
-    <p>¿Estás listo para adentrarte a nuestro terreno?</p>
+    <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8">
+    <h1>Inscripción 2026</h1>
 </div>
 
 <div class="form-container">
-    <h2>REGISTRO DE ATLETA</h2>
-    
+    <h2>Registro de Atleta</h2>
     <form id="registroForm">
-        <span class="section-label"><i class="fas fa-user-circle"></i> 1. Datos Personales</span>
+        <span class="section-label"><i class="fas fa-user"></i> 1. Datos Personales</span>
         <div class="grid-form">
-            <div class="input-group">
-                <label>Nombre</label>
-                <i class="fas fa-user"></i>
-                <input type="text" id="nombre" required>
-            </div>
-            <div class="input-group">
-                <label>Apellido</label>
-                <i class="fas fa-user-tag"></i>
-                <input type="text" id="apellido" required>
-            </div>
-            <div class="input-group">
-                <label>Cédula</label>
-                <i class="fas fa-id-card"></i>
-                <input type="number" id="cedula" required>
-            </div>
-            <div class="input-group">
-                <label>Fecha de Nacimiento</label>
-                <i class="fas fa-calendar-alt"></i>
-                <input type="date" id="fechaNac" required>
-            </div>
-            <div class="input-group">
-                <label>Sexo</label>
-                <i class="fas fa-venus-mars"></i>
-                <select id="sexo">
-                    <option value="Masculino">Masculino</option>
-                    <option value="Femenino">Femenino</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Ciudad</label>
-                <i class="fas fa-map-marker-alt"></i>
-                <input type="text" id="ciudad" required>
-            </div>
-            <div class="input-group">
-                <label>WhatsApp</label>
-                <i class="fab fa-whatsapp"></i>
-                <input type="tel" id="telefono" maxlength="11" placeholder="04121234567" required>
-            </div>
-            <div class="input-group">
-                <label>Correo Electrónico</label>
-                <i class="fas fa-envelope"></i>
-                <input type="email" id="correo" required>
-            </div>
-            
-            <div class="full-width input-group">
-                <label>Centro de Entrenamiento / Box</label>
-                <i class="fas fa-dumbbell"></i>
-                <input type="text" id="box" placeholder="Nombre de tu gimnasio o box">
-            </div>
-            
-            <div class="input-group">
-                <label>Talla de Franela</label>
-                <i class="fas fa-shirt"></i>
-                <select id="talla" required>
-                    <option value="">Seleccione...</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                </select>
-            </div>
-            
-            <div class="full-width input-group">
-                <label>Foto Tipo Carnet</label>
-                <div class="foto-guia">
-                    <div class="foto-ejemplo"><i class="fas fa-camera"></i></div>
-                    <div class="foto-instruccion">
-                        Fondo unicolor, rostro despejado.<br>
-                        <strong>Máximo 1MB.</strong>
-                    </div>
+            <div class="input-group"><label>Nombre</label><i class="fas fa-user"></i><input type="text" id="nombre" required></div>
+            <div class="input-group"><label>Apellido</label><i class="fas fa-user-tag"></i><input type="text" id="apellido" required></div>
+            <div class="input-group"><label>Cédula</label><i class="fas fa-id-card"></i><input type="number" id="cedula" required></div>
+            <div class="input-group"><label>Fecha Nacimiento</label><i class="fas fa-calendar"></i><input type="date" id="fechaNac" required></div>
+            <div class="input-group"><label>Sexo</label><i class="fas fa-venus-mars"></i><select id="sexo"><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option></select></div>
+            <div class="input-group"><label>WhatsApp</label><i class="fab fa-whatsapp"></i><input type="tel" id="telefono" placeholder="04121234567" required></div>
+            <div class="full-width input-group"><label>Correo</label><i class="fas fa-envelope"></i><input type="email" id="correo" required></div>
+            <div class="input-group"><label>Talla Franela</label><i class="fas fa-shirt"></i><select id="talla" required><option value="S">S</option><option value="M">M</option><option value="L">L</option><option value="XL">XL</option></select></div>
+            <div class="input-group"><label>Box / Gym</label><i class="fas fa-dumbbell"></i><input type="text" id="box"></div>
+        </div>
+
+        <span class="section-label"><i class="fas fa-trophy"></i> 2. Modalidad</span>
+        <div class="grid-form">
+            <div class="input-group"><label>Modalidad</label><i class="fas fa-running"></i><select id="modalidad" onchange="actualizarPrecio()"><option value="Ruta Race">Ruta Race ($25)</option><option value="Ruta CrossFit">Ruta CrossFit ($30)</option></select></div>
+            <div class="input-group"><label>Categoría</label><i class="fas fa-medal"></i><select id="categoria"></select></div>
+        </div>
+
+        <span class="section-label"><i class="fas fa-shopping-bag"></i> 3. Complemento (Opcional)</span>
+        <div class="short-card">
+            <img src="https://i.ibb.co/FqHK7c5s/Short-Referencial.png" alt="Short">
+            <div class="short-info">
+                <strong>Short Deportivo Oficial</strong>
+                <p>Preventa: $25 (Día del evento: $30)</p>
+                <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+                    <input type="checkbox" id="addShort" onchange="actualizarPrecio()" style="width:18px; height:18px; margin:0; cursor:pointer;">
+                    <label style="margin:0; font-size:0.75rem; color:white;">Añadir al registro</label>
                 </div>
-                <i class="fas fa-upload" style="top:115px"></i>
-                <input type="file" id="fotoCarnet" accept="image/*" required style="padding-top: 10px;">
             </div>
         </div>
 
-        <span class="section-label"><i class="fas fa-trophy"></i> 2. Modalidad de Competencia</span>
-        <div class="grid-form">
-            <div class="input-group">
-                <label>Modalidad</label>
-                <i class="fas fa-running"></i>
-                <select id="modalidad" onchange="ajustarCategorias()">
-                    <option value="Ruta Race">Ruta Race ($25)</option>
-                    <option value="Ruta CrossFit">Ruta CrossFit ($30)</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Categoría</label>
-                <i class="fas fa-medal"></i>
-                <select id="categoria"></select>
-            </div>
-        </div>
-
-        <span class="section-label"><i class="fas fa-credit-card"></i> 3. Información de Pago</span>
+        <span class="section-label"><i class="fas fa-credit-card"></i> 4. Pago</span>
         <div class="pago-box">
-            <span id="labelPrecio" class="price-tag">TOTAL A PAGAR: $25</span>
-            <span id="tasaDisplay" style="color:var(--neon); font-size: 0.75rem; font-weight: 600;">Cargando tasa BCV...</span>
-
-            <div class="grid-form" style="margin-top: 25px;">
-                <div class="full-width input-group">
-                    <label>Método de Pago</label>
-                    <i class="fas fa-wallet"></i>
-                    <select id="metodoPago" onchange="mostrarInstrucciones()" required>
-                        <option value="">Seleccione...</option>
-                        <option value="Pago Móvil">Pago Móvil (Bolívares)</option>
-                        <option value="Zelle">Zelle (Dólares)</option>
-                    </select>
-                </div>
-                
-                <div id="instruccionesPago" class="full-width"></div>
-
-                <div class="input-group">
-                    <label>Monto a pagar</label>
-                    <i class="fas fa-money-bill-wave"></i>
-                    <input type="text" id="montoBs" readonly>
-                </div>
-                <div class="input-group">
-                    <label>Referencia Bancaria</label>
-                    <i class="fas fa-hashtag"></i>
-                    <input type="text" id="referencia" required>
-                </div>
-                <div class="full-width input-group">
-                    <label>Adjuntar Comprobante</label>
-                    <i class="fas fa-file-invoice-dollar" style="top:38px"></i>
-                    <input type="file" id="fotoPago" accept="image/*" required style="padding-top: 10px;">
-                </div>
+            <span id="labelPrecio" class="price-tag">TOTAL: $25</span>
+            <span id="tasaDisplay" style="color:var(--neon); font-size: 0.7rem;">Cargando tasa...</span>
+            <div class="grid-form" style="margin-top:20px;">
+                <div class="full-width input-group"><label>Método de Pago</label><i class="fas fa-wallet"></i><select id="metodo" onchange="mostrarInstrucciones()"><option value="Pago Móvil">Pago Móvil (Bs)</option><option value="Zelle">Zelle ($)</option></select></div>
+                <div id="instrucciones" class="full-width" style="background:rgba(0,0,0,0.5); padding:10px; border-radius:8px; font-size:0.75rem; border-left:3px solid var(--neon); display:none; margin-bottom:10px;"></div>
+                <div class="input-group"><label>Monto a transferir</label><i class="fas fa-money-bill"></i><input type="text" id="montoFinal" readonly></div>
+                <div class="input-group"><label>Referencia</label><i class="fas fa-hashtag"></i><input type="text" id="referencia" required></div>
+                <div class="full-width input-group"><label>Foto Carnet</label><input type="file" id="fotoCarnet" accept="image/*" required></div>
+                <div class="full-width input-group"><label>Comprobante de Pago</label><input type="file" id="fotoPago" accept="image/*" required></div>
             </div>
         </div>
-
-        <button type="submit" id="btnEnviar" class="btn-submit">ENVIAR INSCRIPCIÓN</button>
+        <button type="submit" id="btnEnviar" class="btn-submit">Enviar Registro</button>
     </form>
-    <div id="mensajeFinal" style="display:none; text-align:center; padding:40px;">
-        <i class="fas fa-check-circle" style="color:var(--neon); font-size: 4rem; margin-bottom: 20px;"></i>
-        <h3 style="color:var(--neon); font-weight: 800;">¡REGISTRO ENVIADO EXITOSAMENTE!</h3>
-        <p style="font-weight: 300;">Tu inscripción está en proceso de verificación. Revisa tu correo electrónico en las próximas horas.</p>
-    </div>
+    <div id="mensajeExito" style="display:none; text-align:center; padding:30px;"><i class="fas fa-check-circle" style="color:var(--neon); font-size:3rem;"></i><p>¡Registro enviado! Revisa tu correo.</p></div>
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
     let TASA_BCV = 0;
-    let inscritos = [];
 
-    async function inicializar() {
-        try {
-            const [respTasa, respInscritos] = await Promise.all([
-                fetch(WEB_APP_URL + "?getTasa=true"),
-                fetch(WEB_APP_URL)
-            ]);
-            const dataTasa = await respTasa.json();
-            TASA_BCV = dataTasa.tasa;
-            document.getElementById('tasaDisplay').innerHTML = '<i class="fas fa-university"></i> Tasa Oficial BCV: ' + TASA_BCV.toFixed(2) + " Bs.";
-            inscritos = await respInscritos.json();
-            ajustarCategorias();
-        } catch (e) { console.error("Error inicializando"); }
+    async function init() {
+        const res = await fetch(WEB_APP_URL + "?getTasa=true");
+        const data = await res.json();
+        TASA_BCV = data.tasa;
+        document.getElementById('tasaDisplay').innerText = "Tasa BCV: " + TASA_BCV + " Bs.";
+        actualizarPrecio();
+        mostrarInstrucciones();
     }
 
-    function ajustarCategorias() {
+    function actualizarPrecio() {
         const mod = document.getElementById('modalidad').value;
         const cat = document.getElementById('categoria');
-        const precioUSD = (mod === "Ruta Race") ? 25 : 30;
-        cat.innerHTML = mod === "Ruta Race" ? '<option>General</option>' : '<option>Escalado</option><option>Avanzado</option>';
-        document.getElementById('labelPrecio').innerText = "TOTAL A PAGAR: $" + precioUSD;
-        if(TASA_BCV > 0) document.getElementById('montoBs').value = (precioUSD * TASA_BCV).toFixed(2) + " Bs.";
+        const short = document.getElementById('addShort').checked;
+        
+        cat.innerHTML = mod.includes("Race") ? "<option>General</option>" : "<option>Escalado</option><option>Avanzado</option>";
+        
+        let totalUSD = mod.includes("Race") ? 25 : 30;
+        if(short) totalUSD += 25;
+        
+        document.getElementById('labelPrecio').innerText = "TOTAL: $" + totalUSD;
+        document.getElementById('montoFinal').value = (totalUSD * TASA_BCV).toFixed(2) + " Bs.";
     }
 
     function mostrarInstrucciones() {
-        const metodo = document.getElementById('metodoPago').value;
-        const div = document.getElementById('instruccionesPago');
-        div.style.display = metodo ? "block" : "none";
-        if(metodo === "Pago Móvil") {
-            div.innerHTML = `<strong>DATOS PAGO MÓVIL:</strong><br>Banco: Banesco (0134)<br>Teléfono: 04148215396<br>Cédula: J-293740126`;
-        } else if(metodo === "Zelle") {
-            div.innerHTML = `<strong>DATOS ZELLE:</strong><br>Correo: Aquafontanella@gmail.com<br>Titular: Luis Javier Parra`;
-        }
+        const m = document.getElementById('metodo').value;
+        const div = document.getElementById('instrucciones');
+        div.style.display = "block";
+        div.innerHTML = m === "Zelle" ? "<strong>Zelle:</strong> Aquafontanella@gmail.com<br>Luis Javier Parra" : "<strong>Pago Móvil:</strong> Banesco (0134)<br>04148215396 | J-293740126";
     }
 
-    async function processFile(file) {
+    async function toBase64(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -361,50 +146,32 @@
     document.getElementById('registroForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('btnEnviar');
-        const cedulaInput = document.getElementById('cedula').value.trim();
-        const refInput = document.getElementById('referencia').value.trim();
+        btn.disabled = true; btn.innerText = "PROCESANDO...";
 
-        const duplicadoRef = inscritos.some(a => String(a.referencia).trim() === refInput);
-        if (duplicadoRef) {
-            alert("⚠️ ERROR: Este número de referencia de pago ya ha sido registrado anteriormente.");
-            return;
-        }
+        const data = {
+            nombre: document.getElementById('nombre').value,
+            apellido: document.getElementById('apellido').value,
+            cedula: document.getElementById('cedula').value,
+            fechaNac: document.getElementById('fechaNac').value,
+            sexo: document.getElementById('sexo').value,
+            telefono: document.getElementById('telefono').value,
+            correo: document.getElementById('correo').value,
+            box: document.getElementById('box').value,
+            talla: document.getElementById('talla').value,
+            modalidad: document.getElementById('modalidad').value,
+            categoria: document.getElementById('categoria').value,
+            compraShort: document.getElementById('addShort').checked ? "SI" : "NO",
+            referencia: document.getElementById('referencia').value,
+            montoBs: document.getElementById('montoFinal').value,
+            fotoCarnet: await toBase64(document.getElementById('fotoCarnet').files[0]),
+            fotoPago: await toBase64(document.getElementById('fotoPago').files[0])
+        };
 
-        btn.disabled = true;
-        btn.innerText = "ENVIANDO DATOS...";
-
-        try {
-            const data = {
-                nombre: document.getElementById('nombre').value,
-                apellido: document.getElementById('apellido').value,
-                cedula: cedulaInput,
-                fechaNac: document.getElementById('fechaNac').value,
-                sexo: document.getElementById('sexo').value,
-                ciudad: document.getElementById('ciudad').value,
-                telefono: document.getElementById('telefono').value,
-                correo: document.getElementById('correo').value,
-                box: document.getElementById('box').value,
-                talla: document.getElementById('talla').value,
-                modalidad: document.getElementById('modalidad').value,
-                categoria: document.getElementById('categoria').value,
-                metodo: document.getElementById('metodoPago').value,
-                referencia: refInput,
-                montoBs: document.getElementById('montoBs').value,
-                fotoCarnet: await processFile(document.getElementById('fotoCarnet').files[0]),
-                fotoPago: await processFile(document.getElementById('fotoPago').files[0])
-            };
-
-            await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            document.getElementById('registroForm').style.display = 'none';
-            document.getElementById('mensajeFinal').style.display = 'block';
-            window.scrollTo(0,0);
-        } catch (error) {
-            alert("Ocurrió un error de conexión. Inténtalo de nuevo.");
-            btn.disabled = false;
-            btn.innerText = "ENVIAR INSCRIPCIÓN";
-        }
+        await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        document.getElementById('registroForm').style.display = 'none';
+        document.getElementById('mensajeExito').style.display = 'block';
     };
-    window.onload = inicializar;
+    window.onload = init;
 </script>
 </body>
 </html>

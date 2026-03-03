@@ -105,8 +105,9 @@
                 <div class="input-group"><label>Cédula</label><i class="fas fa-id-card"></i><input type="number" id="cedula" required></div>
                 <div class="input-group"><label>Fecha de Nacimiento</label><i class="fas fa-calendar"></i><input type="date" id="fechaNac" required></div>
                 <div class="input-group"><label>Sexo</label><i class="fas fa-venus-mars"></i><select id="sexo"><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option></select></div>
+                <div class="input-group"><label>Ciudad</label><i class="fas fa-map-marker-alt"></i><input type="text" id="ciudad" required></div>
                 <div class="input-group"><label>WhatsApp</label><i class="fab fa-whatsapp"></i><input type="tel" id="telefono" placeholder="04121234567" required></div>
-                <div class="full-width input-group"><label>Correo Electrónico</label><i class="fas fa-envelope"></i><input type="email" id="correo" required></div>
+                <div class="input-group"><label>Correo Electrónico</label><i class="fas fa-envelope"></i><input type="email" id="correo" required></div>
                 <div class="input-group"><label>Talla de Franela</label><i class="fas fa-shirt"></i><select id="talla" required><option value="S">S</option><option value="M">M</option><option value="L">L</option><option value="XL">XL</option></select></div>
                 <div class="input-group"><label>Box / Centro de Entrenamiento</label><i class="fas fa-dumbbell"></i><input type="text" id="box"></div>
                 
@@ -198,7 +199,6 @@
         
         cat.innerHTML = mod.includes("Race") ? "<option>General</option>" : "<option>Escalado</option><option>Avanzado</option>";
         
-        // LÓGICA DE PRECIOS ACTUALIZADA
         let totalUSD = mod.includes("Race") ? 30 : 40; 
         if(short) totalUSD += 25;
         
@@ -241,6 +241,8 @@
                 cedula: document.getElementById('cedula').value,
                 fechaNac: document.getElementById('fechaNac').value,
                 sexo: document.getElementById('sexo').value,
+                ciudad: document.getElementById('ciudad').value, // ¡CORREGIDO!
+                metodo: document.getElementById('metodo').value, // ¡CORREGIDO!
                 telefono: document.getElementById('telefono').value,
                 correo: document.getElementById('correo').value,
                 box: document.getElementById('box').value,

@@ -10,10 +10,10 @@
     
     <style>
         :root {
-            --neon: #d8ff5e; /* Tu nuevo verde */
+            --neon: #d8ff5e; 
             --neon-glow: rgba(216, 255, 94, 0.4);
             --bg: #050505;
-            --surface: rgba(20, 20, 20, 0.6); /* Transparencia para Glassmorphism */
+            --surface: rgba(20, 20, 20, 0.6);
         }
 
         body {
@@ -25,7 +25,7 @@
             scroll-behavior: smooth;
         }
 
-        /* --- NAVBAR (Efecto Espejo) --- */
+        /* --- NAVBAR --- */
         nav {
             display: flex;
             justify-content: space-between;
@@ -40,22 +40,9 @@
             -webkit-backdrop-filter: blur(15px);
         }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-        }
-
-        .nav-logo {
-            height: 40px;
-            width: auto;
-            display: block;
-            transition: transform 0.3s ease;
-        }
-
-        .nav-logo:hover {
-            transform: scale(1.05);
-        }
+        .logo-container { display: flex; align-items: center; text-decoration: none; }
+        .nav-logo { height: 40px; width: auto; display: block; transition: transform 0.3s ease; }
+        .nav-logo:hover { transform: scale(1.05); }
 
         /* --- HERO SECTION --- */
         .hero {
@@ -71,9 +58,8 @@
         }
 
         .hero h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900; /* Extra Gruesa */
-            font-size: clamp(2rem, 8vw, 4.5rem);
+            font-weight: 900;
+            font-size: clamp(2.2rem, 8vw, 4.5rem);
             margin: 10px 0;
             text-transform: uppercase;
             letter-spacing: -2px;
@@ -85,12 +71,42 @@
             text-shadow: 0 0 20px var(--neon-glow); 
         }
 
-        .hero p {
-            font-weight: 300; /* Delgada */
+        /* --- COUNTDOWN STYLES --- */
+        .countdown-container {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
         }
 
+        .countdown-item {
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(216, 255, 94, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            min-width: 80px;
+            transition: 0.3s;
+        }
+
+        .countdown-item span {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--neon);
+            text-shadow: 0 0 10px var(--neon-glow);
+        }
+
+        .countdown-item label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            color: #aaa;
+        }
+
+        /* --- BOTONES --- */
         .btn-neon {
-            margin-top: 30px;
+            margin-top: 10px;
             padding: 18px 50px;
             background: var(--neon);
             color: black;
@@ -105,16 +121,24 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-        .btn-neon:hover {
+        /* Estado deshabilitado del botón */
+        .btn-disabled {
+            background: #222 !important;
+            color: #555 !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .btn-neon:not(.btn-disabled):hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 30px var(--neon-glow);
             background: white;
         }
 
-        /* --- ESTADÍSTICAS (Efecto Glassmorphism) --- */
+        /* --- ESTADÍSTICAS --- */
         .section-title {
             text-align: center;
-            font-family: 'Montserrat', sans-serif;
             font-weight: 900;
             font-size: 1.8rem;
             margin: 80px 0 40px;
@@ -133,13 +157,11 @@
         .hex-stat {
             background: var(--surface);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             padding: 40px 20px;
             text-align: center;
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             transition: 0.4s;
-            position: relative;
         }
 
         .hex-stat:hover { 
@@ -156,28 +178,8 @@
             filter: drop-shadow(0 0 10px var(--neon-glow));
         }
 
-        .hex-stat h2 { 
-            font-weight: 900; 
-            font-size: 2.5rem; 
-            margin: 5px 0; 
-        }
-
-        .hex-stat p { 
-            color: #aaa; 
-            font-size: 0.8rem; 
-            text-transform: uppercase; 
-            letter-spacing: 2px; 
-            font-weight: 600;
-        }
-
-        /* --- BOTONES ACCIÓN --- */
-        .actions {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 60px 10%;
-            flex-wrap: wrap;
-        }
+        .hex-stat h2 { font-weight: 900; font-size: 2.5rem; margin: 5px 0; }
+        .hex-stat p { color: #aaa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
 
         .btn-outline {
             padding: 15px 30px;
@@ -185,18 +187,13 @@
             color: var(--neon);
             text-decoration: none;
             font-weight: 900;
-            font-family: 'Montserrat', sans-serif;
             font-size: 0.8rem;
             border-radius: 8px;
             transition: 0.3s;
             text-transform: uppercase;
         }
 
-        .btn-outline:hover { 
-            background: var(--neon); 
-            color: black; 
-            box-shadow: 0 0 20px var(--neon-glow);
-        }
+        .btn-outline:hover { background: var(--neon); color: black; box-shadow: 0 0 20px var(--neon-glow); }
 
         footer {
             padding: 60px 10%;
@@ -206,12 +203,12 @@
             color: #444;
             font-size: 0.8rem;
             font-weight: 600;
-            letter-spacing: 1px;
         }
 
         @media (max-width: 600px) {
-            .hero h1 { font-size: 2.5rem; }
-            nav { padding: 10px 5%; }
+            .hero h1 { font-size: 2.3rem; }
+            .countdown-item { min-width: 65px; padding: 10px; }
+            .countdown-item span { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -221,16 +218,32 @@
         <a href="#" class="logo-container">
             <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="La Ruta Garage" class="nav-logo">
         </a>
-        <a href="#" class="btn-neon" style="padding: 10px 20px; font-size: 0.7rem; margin-top: 0;">PRONTO!</a>
+        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon btn-disabled" id="nav-btn-reg" style="padding: 10px 20px; font-size: 0.7rem; margin-top: 0;">PRONTO!</a>
     </nav>
 
     <section class="hero">
-        <p style="letter-spacing: 10px; font-weight: 300; color: var(--neon); text-transform: uppercase; margin-bottom: 0;">PRÓXIMAMENTE</p>
+        <p id="hero-tag" style="letter-spacing: 10px; font-weight: 300; color: var(--neon); text-transform: uppercase; margin-bottom: 0;">ABRIMOS EN:</p>
+        
+        <div class="countdown-container">
+            <div class="countdown-item">
+                <span id="hours">00</span>
+                <label>Horas</label>
+            </div>
+            <div class="countdown-item">
+                <span id="minutes">00</span>
+                <label>Minutos</label>
+            </div>
+            <div class="countdown-item">
+                <span id="seconds">00</span>
+                <label>Segundos</label>
+            </div>
+        </div>
+
         <h1>UN PLAN. <span>UNA RUTA.</span> UNA META.</h1>
         <p style="max-width: 700px; color: #ccc; margin-top: 20px; line-height: 1.8; font-weight: 300;">
             Vuelve la competencia que pone a prueba tus límites. Maturín se prepara para recibir a los mejores atletas en una jornada de pura potencia y resistencia.
         </p>
-        <a href="#" class="btn-neon">INSCRIPCIONES PRONTO</a>
+        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon btn-disabled" id="hero-btn-reg">INSCRIPCIONES PRONTO</a>
     </section>
 
     <h2 class="section-title">MEMORIAS 2025</h2>
@@ -252,7 +265,7 @@
         </div>
     </section>
 
-    <div class="actions">
+    <div class="actions" style="display: flex; justify-content: center; gap: 20px; padding: 60px 10%; flex-wrap: wrap;">
         <a href="https://drive.google.com/drive/u/0/folders/1jvNeuXgAO6jxJWh3sJoujsYOiHGAZHnr" target="_blank" class="btn-outline">VER GALERÍA DE FOTOS</a>
         <a href="https://wa.link/5j0kc7" target="_blank" class="btn-outline">¿QUIERES SER NUESTRO ALIADO?</a>
     </div>
@@ -261,6 +274,49 @@
         &copy; 2026 LA RUTA GARAGE | MATURIN, VENEZUELA <br>
         <span style="color: #222;">DESIGNED FOR CHAMPIONS</span>
     </footer>
+
+    <script>
+        // CONFIGURACIÓN DEL TIEMPO
+        // Para pruebas: 24 horas a partir de ahora. 
+        // Para fecha fija usa: const targetDate = new Date('March 5, 2026 08:00:00').getTime();
+        const targetDate = new Date().getTime() + (24 * 60 * 60 * 1000);
+
+        const countdown = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            // Cálculos de tiempo
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Mostrar resultados
+            document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+
+            // Si el countdown termina
+            if (distance < 0) {
+                clearInterval(countdown);
+                
+                // Resetear números a cero
+                document.getElementById("hours").innerText = "00";
+                document.getElementById("minutes").innerText = "00";
+                document.getElementById("seconds").innerText = "00";
+
+                // Cambiar textos
+                document.getElementById("hero-tag").innerText = "¡INSCRIPCIONES ABIERTAS!";
+                document.getElementById("nav-btn-reg").innerText = "INSCRÍBETE!";
+                document.getElementById("hero-btn-reg").innerText = "INSCRIBIRME AHORA";
+
+                // Habilitar botones
+                const regButtons = [document.getElementById("nav-btn-reg"), document.getElementById("hero-btn-reg")];
+                regButtons.forEach(btn => {
+                    btn.classList.remove("btn-disabled");
+                });
+            }
+        }, 1000);
+    </script>
 
 </body>
 </html>

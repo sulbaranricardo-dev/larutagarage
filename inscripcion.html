@@ -55,13 +55,14 @@
         }
         input:focus { border-color: var(--neon); outline: none; background: rgba(0,0,0,0.7); }
 
-        /* NUEVOS ESTILOS PARA ESTÁNDARES */
+        /* ESTILOS PARA ESTÁNDARES */
         .btn-estandares { background: transparent; border: 1px solid var(--neon); color: var(--neon); padding: 5px 10px; border-radius: 8px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; cursor: pointer; margin-top: 5px; display: none; transition: 0.3s; }
         .btn-estandares:hover { background: var(--neon); color: black; }
 
-        #modalEstandares { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; padding: 20px; box-sizing: border-box; overflow-y: auto; align-items: center; justify-content: center; flex-direction: column; }
-        .modal-estandares-content { max-width: 600px; width: 100%; text-align: center; }
-        .modal-estandares-content img { width: 100%; border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(216, 255, 94, 0.3); }
+        /* FIX APLICADO AQUÍ PARA QUE NO SE CORTE LA IMAGEN SUPERIOR */
+        #modalEstandares { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; padding: 40px 20px; box-sizing: border-box; overflow-y: auto; /* Permite scroll */ display: none; /* Se activa por JS */ justify-content: center; align-items: flex-start; /* Alinea al tope, no al centro, para evitar cortes */ }
+        .modal-estandares-content { max-width: 600px; width: 100%; text-align: center; margin-top: 0; /* Asegura inicio arriba */ margin-bottom: 40px; /* Espacio al final del scroll */ }
+        .modal-estandares-content img { width: 100%; height: auto; display: block; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(216, 255, 94, 0.3); }
 
         .short-card { background: rgba(216, 255, 94, 0.05); border: 1px solid rgba(216, 255, 94, 0.2); border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 20px; margin-top: 10px; }
         .short-card img { width: 85px; border-radius: 10px; border: 1px solid #333; }
@@ -99,10 +100,10 @@
 
 <div id="modalEstandares">
     <div class="modal-estandares-content">
-        <h2 style="margin-bottom: 20px;">ESTÁNDARES RUTA CROSSFIT</h2>
+        <h2 style="margin-bottom: 30px; color: var(--neon);">ESTÁNDARES RUTA CROSSFIT</h2>
         <img src="https://i.ibb.co/qYXCVFLq/Est-Avanz.jpg" alt="Estándares Avanzado">
         <img src="https://i.ibb.co/Ps6QwYsZ/Est-Esc.jpg" alt="Estándares Escalado">
-        <button onclick="document.getElementById('modalEstandares').style.display='none'" class="btn-submit" style="background:#222; color:white; padding: 15px;">CERRAR VENTANA</button>
+        <button onclick="cerrarModalEstandares()" class="btn-submit" style="background:#222; color:white; padding: 15px; margin-top: 20px;">CERRAR VENTANA</button>
     </div>
 </div>
 
@@ -149,7 +150,7 @@
                     <label>Categoría</label>
                     <i class="fas fa-trophy"></i>
                     <select id="categoria"></select>
-                    <button type="button" id="btnEstandares" class="btn-estandares" onclick="document.getElementById('modalEstandares').style.display='flex'">Ver Estándares</button>
+                    <button type="button" id="btnEstandares" class="btn-estandares" onclick="abrirModalEstandares()">Ver Estándares</button>
                 </div>
             </div>
 
@@ -202,6 +203,18 @@
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyKOZQgueIrJ63Mfxp6Pz87dbVFgQmDgOjKcU990nOMqjuDphoM4UOvrKKkpbWQTwYp/exec";
     let TASA_BCV = 0;
+
+    // FUNCIONES MODAL CON FIX
+    function abrirModalEstandares() {
+        const modal = document.getElementById('modalEstandares');
+        modal.style.display = 'flex';
+        // Forzamos el scroll al principio por seguridad
+        modal.scrollTop = 0; 
+    }
+
+    function cerrarModalEstandares() {
+        document.getElementById('modalEstandares').style.display = 'none';
+    }
 
     async function init() {
         try {

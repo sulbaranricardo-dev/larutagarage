@@ -71,7 +71,7 @@
             text-shadow: 0 0 20px var(--neon-glow); 
         }
 
-        /* --- COUNTDOWN STYLES --- */
+        /* --- COUNTDOWN STYLES (Conservados por seguridad, aunque ya no se usen) --- */
         .countdown-container {
             display: flex;
             gap: 15px;
@@ -134,6 +134,81 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 30px var(--neon-glow);
             background: white;
+        }
+
+        /* --- CARRUSEL MARCAS ALIADAS --- */
+        .sponsors-wrapper {
+            background: #050505;
+            padding: 40px 0;
+            border-top: 1px solid rgba(216, 255, 94, 0.1);
+            position: relative;
+        }
+
+        .sponsors-title {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #aaa;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .sponsors-carousel {
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+
+        /* Difuminado a los lados */
+        .sponsors-carousel::before,
+        .sponsors-carousel::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            width: 80px;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .sponsors-carousel::before {
+            left: 0;
+            background: linear-gradient(to right, #050505 0%, transparent 100%);
+        }
+
+        .sponsors-carousel::after {
+            right: 0;
+            background: linear-gradient(to left, #050505 0%, transparent 100%);
+        }
+
+        .sponsors-track {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            padding-right: 60px; /* Crucial para el loop infinito perfecto */
+            animation: scroll-sponsors 20s linear infinite;
+        }
+
+        .sponsors-track img {
+            height: 45px;
+            max-width: 180px;
+            object-fit: contain;
+            filter: grayscale(100%);
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+
+        .sponsors-track img:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+
+        @keyframes scroll-sponsors {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
         }
 
         /* --- ESTADÍSTICAS --- */
@@ -218,33 +293,46 @@
         <a href="#" class="logo-container">
             <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="La Ruta Garage" class="nav-logo">
         </a>
-        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon btn-disabled" id="nav-btn-reg" style="padding: 10px 20px; font-size: 0.7rem; margin-top: 0;">PRONTO!</a>
+        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon" id="nav-btn-reg" style="padding: 10px 20px; font-size: 0.7rem; margin-top: 0;">INSCRÍBETE!</a>
     </nav>
 
     <section class="hero">
-        <p id="hero-tag" style="letter-spacing: 10px; font-weight: 300; color: var(--neon); text-transform: uppercase; margin-bottom: 0;">ABRIMOS EN:</p>
+        <p id="hero-tag" style="letter-spacing: 10px; font-weight: 300; color: var(--neon); text-transform: uppercase; margin-bottom: 0;">¡INSCRIPCIONES ABIERTAS!</p>
         
-        <div class="countdown-container">
-            <div class="countdown-item">
-                <span id="hours">00</span>
-                <label>Horas</label>
-            </div>
-            <div class="countdown-item">
-                <span id="minutes">00</span>
-                <label>Minutos</label>
-            </div>
-            <div class="countdown-item">
-                <span id="seconds">00</span>
-                <label>Segundos</label>
-            </div>
-        </div>
-
         <h1>UN PLAN. <span>UNA RUTA.</span> UNA META.</h1>
         <p style="max-width: 700px; color: #ccc; margin-top: 20px; line-height: 1.8; font-weight: 300;">
             Vuelve la competencia que pone a prueba tus límites. Maturín se prepara para recibir a los mejores atletas en una jornada de pura potencia y resistencia.
         </p>
-        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon btn-disabled" id="hero-btn-reg">INSCRIPCIONES PRONTO</a>
+        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon" id="hero-btn-reg">INSCRIBIRME AHORA</a>
     </section>
+
+    <div class="sponsors-wrapper">
+        <h3 class="sponsors-title">Marcas Aliadas</h3>
+        <div class="sponsors-carousel">
+            <div class="sponsors-track">
+                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
+                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
+                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
+                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
+                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
+                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
+                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
+                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
+                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
+            </div>
+            <div class="sponsors-track">
+                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
+                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
+                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
+                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
+                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
+                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
+                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
+                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
+                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
+            </div>
+        </div>
+    </div>
 
     <h2 class="section-title">MEMORIAS 2025</h2>
     <section class="stats-container">
@@ -275,41 +363,5 @@
         <span style="color: #222;">DESIGNED FOR CHAMPIONS</span>
     </footer>
 
-    <script>
-        // CONFIGURACIÓN DEL TIEMPO FIJA
-        // Formato: 'Month Day, Year HH:MM:SS'
-        // El contador apunta a mañana a las 8:00 AM.
-        const targetDate = new Date('March 3, 2026 19:00:00').getTime();
-
-        const countdown = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-
-            // Cálculos de tiempo
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Mostrar resultados (agregamos ceros a la izquierda)
-            document.getElementById("hours").innerText = hours < 10 && hours >= 0 ? "0" + hours : (hours < 0 ? "00" : hours);
-            document.getElementById("minutes").innerText = minutes < 10 && minutes >= 0 ? "0" + minutes : (minutes < 0 ? "00" : minutes);
-            document.getElementById("seconds").innerText = seconds < 10 && seconds >= 0 ? "0" + seconds : (seconds < 0 ? "00" : seconds);
-
-            // Si el countdown termina
-            if (distance < 0) {
-                clearInterval(countdown);
-                
-                // Cambiar textos y estados
-                document.getElementById("hero-tag").innerText = "¡INSCRIPCIONES ABIERTAS!";
-                document.getElementById("nav-btn-reg").innerText = "INSCRÍBETE!";
-                document.getElementById("hero-btn-reg").innerText = "INSCRIBIRME AHORA";
-
-                // Habilitar botones eliminando la clase deshabilitada
-                document.getElementById("nav-btn-reg").classList.remove("btn-disabled");
-                document.getElementById("hero-btn-reg").classList.remove("btn-disabled");
-            }
-        }, 1000);
-    </script>
-
-</body>
+    </body>
 </html>

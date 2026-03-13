@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acerca del Evento | La Ruta Garage</title>
+    <link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FFavicon.png?alt=media&token=0e2d4383-2c9b-4005-9b46-943b40c0637d">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --neon: #d8ff5e; 
+            --neon-glow: rgba(216, 255, 94, 0.4);
+            --bg: #050505;
+            --surface: rgba(20, 20, 20, 0.6);
+            --glass: rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- NAVBAR MEJORADO CON MENÚ COMPLETO --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5%;
+            background: var(--glass);
+            border-bottom: 1px solid rgba(216, 255, 94, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .logo-container { display: flex; align-items: center; text-decoration: none; }
+        .nav-logo { height: 45px; width: auto; display: block; transition: 0.3s; }
+        .nav-logo:hover { transform: scale(1.05) rotate(-3deg); }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #aaa;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            padding: 10px 0;
+        }
+
+        .nav-links a i { font-size: 0.9rem; transition: 0.3s; }
+
+        /* Efecto de hover y active */
+        .nav-links a:hover, .nav-links a.active { color: white; }
+        .nav-links a:hover i, .nav-links a.active i { color: var(--neon); text-shadow: 0 0 10px var(--neon-glow); }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0; height: 2px;
+            bottom: 0; left: 0;
+            background-color: var(--neon);
+            box-shadow: 0 0 10px var(--neon-glow);
+            transition: width 0.3s;
+        }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+        .btn-neon-nav {
+            padding: 10px 20px;
+            background: var(--neon);
+            color: black;
+            font-weight: 900;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px var(--neon-glow);
+            transition: 0.4s;
+            font-size: 0.7rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-neon-nav:hover { transform: translateY(-2px); box-shadow: 0 5px 20px var(--neon-glow); background: white; }
+
+        /* --- HEADER SECTION --- */
+        .page-header {
+            padding: 100px 20px 50px;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), var(--bg)), url('https://i.ibb.co/8L0bxwx3/bglarutawebsite.jpg') center/cover;
+            border-bottom: 1px solid rgba(216, 255, 94, 0.1);
+        }
+        .page-header h1 {
+            font-weight: 900;
+            font-size: clamp(2.2rem, 6vw, 4rem);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            color: white;
+        }
+        .page-header h1 span {
+            color: var(--neon);
+            text-shadow: 0 0 20px var(--neon-glow);
+        }
+        .page-header p {
+            color: #ccc;
+            max-width: 600px;
+            margin: 20px auto 0;
+            line-height: 1.8;
+            font-weight: 300;
+            font-size: 0.95rem;
+        }
+
+        /* --- CONTENIDO DIVIDIDO EN COLUMNAS --- */
+        .split-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+            padding: 100px 10%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* Invertir orden en secciones pares */
+        .split-section.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .split-text { flex: 1.2; }
+        .split-image { flex: 0.8; display: flex; justify-content: center; position: relative; }
+
+        .split-text h2 {
+            font-weight: 900;
+            font-size: 2.3rem;
+            color: white;
+            margin-top: 0;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .split-text h2 span { color: var(--neon); }
+        .split-text h2 i { color: var(--neon); font-size: 2rem; filter: drop-shadow(0 0 10px var(--neon-glow)); }
+
+        .split-text p {
+            color: #ccc;
+            line-height: 1.9;
+            font-size: 0.95rem;
+            font-weight: 300;
+            margin-bottom: 18px;
+        }
+
+        /* NUEVO ESTILO DE IMÁGENES MÁS PEQUEÑAS Y PULIDAS */
+        .split-image img {
+            max-width: 85%; /* ¡IMAGEN MÁS PEQUEÑA! */
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            border: 2px solid rgba(216, 255, 94, 0.15);
+            transition: 0.5s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Efecto de resplandor sutil detrás de la imagen */
+        .split-image::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%; height: 70%;
+            background: var(--neon);
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        .split-image img:hover {
+            transform: scale(1.03) translateY(-5px);
+            border-color: var(--neon);
+            box-shadow: 0 25px 60px var(--neon-glow);
+        }
+
+        /* --- CRONOGRAMA --- */
+        .schedule-section {
+            padding: 100px 10%;
+            background: rgba(10, 10, 10, 0.5);
+            text-align: center;
+        }
+        .schedule-section h2 {
+            font-weight: 900;
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+        }
+        .schedule-section h2 span { color: var(--neon); text-shadow: 0 0 20px var(--neon-glow); }
+        
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .day-card {
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 50px 40px;
+            border-radius: 25px;
+            text-align: left;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+        .day-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 5px; height: 100%;
+            background: var(--neon);
+            box-shadow: 0 0 15px var(--neon-glow);
+        }
+        .day-card:hover { 
+            border-color: rgba(216, 255, 94, 0.3); 
+            transform: translateY(-8px); 
+            background: rgba(216, 255, 94, 0.03);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+        }
+
+        .day-date {
+            color: var(--neon);
+            font-weight: 900;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex; align-items: center; gap: 10px;
+            text-transform: uppercase;
+        }
+        .day-card h4 { font-weight: 800; font-size: 1rem; margin: 0 0 15px; color: white; text-transform: uppercase;}
+        .day-desc { color: #ccc; font-size: 0.95rem; line-height: 1.7; margin: 0; font-weight: 300; }
+        
+        .kit-note {
+            margin-top: 60px;
+            display: inline-block;
+            background: rgba(216, 255, 94, 0.08);
+            color: white;
+            padding: 18px 35px;
+            border-radius: 50px;
+            border: 1px solid var(--neon);
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 0 20px rgba(216, 255, 94, 0.1);
+        }
+        .kit-note i { color: var(--neon); margin-right: 10px; font-size: 1rem; }
+
+        footer {
+            padding: 60px 10%;
+            background: #000;
+            text-align: center;
+            border-top: 1px solid #111;
+            color: #444;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1000px) {
+            nav { padding: 10px 3%; }
+            .nav-links { gap: 15px; }
+            .nav-links a { font-size: 0.7rem; letter-spacing: 1px; }
+        }
+
+        @media (max-width: 800px) {
+            nav { flex-direction: column; gap: 10px; padding: 15px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; gap: 10px 20px; }
+            .split-section, .split-section.reverse { flex-direction: column; text-align: center; padding: 70px 5%; gap: 40px; }
+            .split-text h2 { font-size: 2rem; justify-content: center; }
+            .split-image img { max-width: 90%; }
+            .schedule-section h2 { font-size: 2rem; }
+            .timeline { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo-container">
+            <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="La Ruta Garage" class="nav-logo">
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fas fa-home"></i>Home</a></li>
+            <li><a href="la-ruta.html" class="active"><i class="fas fa-info-circle"></i>La Ruta</a></li>
+            <li><a href="faq.html"><i class="fas fa-question-circle"></i>FAQ</a></li>
+            <li><a href="SobreNosotros.html"><i class="fas fa-users"></i>Nosotros</a></li>
+        </ul>
+        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon-nav"><i class="fas fa-user-plus"></i>Inscríbete!</a>
+    </nav>
+
+    <header class="page-header">
+        <h1>UN PLAN. UNA META. <span>UNA RUTA.</span></h1>
+        <p>Conoce la historia, la estructura y el desafío que definen la competencia de fitness funcional más exigente de Maturín.</p>
+    </header>
+
+    <section class="split-section">
+        <div class="split-text">
+            <h2><i class="fas fa-history"></i>El Origen: <span>The Garage Box</span></h2>
+            <p><strong>La Ruta Garage</strong> es el evento deportivo premium de Maturín, diseñado para atletas de todos los niveles. Nacido de la pasión de **The Garage Box**, este festival de fitness reúne a la comunidad para celebrar el esfuerzo, la superación y la potencia pura.</p>
+            <p>Nuestra misión es clara: ofrecer un escenario de clase mundial en Maturín donde cada participante pueda llevar sus capacidades físicas y mentales al límite, en un entorno electrizante y profesional.</p>
+        </div>
+        <div class="split-image">
+            <img src="https://i.postimg.cc/HxwW0h06/garage.jpg" alt="The Garage Box Community">
+        </div>
+    </section>
+
+    <section class="split-section reverse">
+        <div class="split-text">
+            <h2><i class="fas fa-running"></i>Modalidad: <span>Ruta Race</span></h2>
+            <p>La combinación perfecta de running y desafíos funcionales. La Ruta Race es una carrera intensa donde la velocidad se encuentra con la fuerza rústica.</p>
+            <p>Prepárate para superar obstáculos desafiantes: escalar, saltar, cargar pesos y dominar pruebas de agilidad mientras recorres una ruta épica. Es el desafío definitivo para el atleta completo.</p>
+        </div>
+        <div class="split-image">
+            <img src="https://i.postimg.cc/9M5F7h9s/rutarace.jpg" alt="Atletas en Ruta Race">
+        </div>
+    </section>
+
+    <section class="split-section">
+        <div class="split-text">
+            <h2><i class="fas fa-dumbbell"></i>Modalidad: <span>Ruta CrossFit</span></h2>
+            <p>La esencia del fitness funcional puro bajo el formato de competencia de alto nivel. Evaluamos fuerza, técnica, potencia, agilidad y resistencia en WODs diseñados para separar a los mejores.</p>
+            <p><strong>¿Por qué La Ruta?</strong> Porque tú eliges tu camino. Tienes dos rutas hacia la meta: la explosividad de la <em>Ruta Race</em>, o la técnica y potencia de la <em>Ruta CrossFit</em>. ¿Quieres demostrar de qué estás hecho? <strong>Conquista ambas.</strong></p>
+        </div>
+        <div class="split-image">
+            <img src="https://i.postimg.cc/d1PtyYdP/rutacrossfit.jpg" alt="Atleta de CrossFit">
+        </div>
+    </section>
+
+    <section class="schedule-section">
+        <h2><i class="far fa-calendar-alt"></i><span>Cronograma</span> Oficial</h2>
+        <div class="timeline">
+            <div class="day-card">
+                <span class="day-date"><i class="fas fa-bolt"></i> Viernes, 22 de Mayo</span>
+                <h4>Apertura del Desafío</h4>
+                <p class="day-desc">La batalla comienza. Durante este primer día se llevará a cabo el desarrollo de la <strong>Primera Parte de la competencia Ruta CrossFit</strong>.</p>
+            </div>
+            <div class="day-card">
+                <span class="day-date"><i class="fas fa-fire"></i> Sábado, 23 de Mayo</span>
+                <h4>El Gran Desenlace</h4>
+                <p class="day-desc">Día masivo de acción. Viviremos la intensa <strong>Segunda Parte de Ruta CrossFit</strong> en simultáneo con el desarrollo explosivo de la <strong>Ruta Race</strong>.</p>
+            </div>
+        </div>
+        <div class="kit-note">
+            <i class="fas fa-box-open"></i> <strong>ENTREGA DE KITS:</strong> La fecha y lugar exacto de la entrega de kits está en fase final de planificación. Lo anunciaremos próximamente por nuestras redes sociales.
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 LA RUTA GARAGE | MATURIN, VENEZUELA <br>
+        <span style="color: #222;">DESIGNED FOR CHAMPIONS</span>
+    </footer>
+
+</body>
+</html>

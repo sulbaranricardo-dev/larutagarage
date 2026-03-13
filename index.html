@@ -14,6 +14,7 @@
             --neon-glow: rgba(216, 255, 94, 0.4);
             --bg: #050505;
             --surface: rgba(20, 20, 20, 0.6);
+            --glass: rgba(0, 0, 0, 0.7);
         }
 
         body {
@@ -25,13 +26,13 @@
             scroll-behavior: smooth;
         }
 
-        /* --- NAVBAR --- */
+        /* --- NAVBAR EVOLUCIONADO --- */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 5%;
-            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 5%;
+            background: var(--glass);
             border-bottom: 1px solid rgba(216, 255, 94, 0.1);
             position: sticky;
             top: 0;
@@ -41,8 +42,64 @@
         }
 
         .logo-container { display: flex; align-items: center; text-decoration: none; }
-        .nav-logo { height: 40px; width: auto; display: block; transition: transform 0.3s ease; }
-        .nav-logo:hover { transform: scale(1.05); }
+        .nav-logo { height: 45px; width: auto; display: block; transition: 0.3s; }
+        .nav-logo:hover { transform: scale(1.05) rotate(-3deg); }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #aaa;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            padding: 10px 0;
+        }
+
+        .nav-links a i { font-size: 0.9rem; transition: 0.3s; }
+
+        .nav-links a:hover, .nav-links a.active { color: white; }
+        .nav-links a:hover i, .nav-links a.active i { color: var(--neon); text-shadow: 0 0 10px var(--neon-glow); }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0; height: 2px;
+            bottom: 0; left: 0;
+            background-color: var(--neon);
+            box-shadow: 0 0 10px var(--neon-glow);
+            transition: width 0.3s;
+        }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+        .btn-neon-nav {
+            padding: 10px 20px;
+            background: var(--neon);
+            color: black;
+            font-weight: 900;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px var(--neon-glow);
+            transition: 0.4s;
+            font-size: 0.7rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-neon-nav:hover { transform: translateY(-2px); box-shadow: 0 5px 20px var(--neon-glow); background: white; }
 
         /* --- HERO SECTION --- */
         .hero {
@@ -71,41 +128,7 @@
             text-shadow: 0 0 20px var(--neon-glow); 
         }
 
-        /* --- COUNTDOWN STYLES (Conservados por seguridad, aunque ya no se usen) --- */
-        .countdown-container {
-            display: flex;
-            gap: 15px;
-            margin: 20px 0 30px;
-        }
-
-        .countdown-item {
-            background: var(--surface);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(216, 255, 94, 0.2);
-            padding: 15px;
-            border-radius: 12px;
-            min-width: 80px;
-            transition: 0.3s;
-        }
-
-        .countdown-item span {
-            display: block;
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--neon);
-            text-shadow: 0 0 10px var(--neon-glow);
-        }
-
-        .countdown-item label {
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 600;
-            color: #aaa;
-        }
-
-        /* --- BOTONES --- */
+        /* --- BOTONES HERO --- */
         .btn-neon {
             margin-top: 10px;
             padding: 18px 50px;
@@ -122,15 +145,7 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-        .btn-disabled {
-            background: #222 !important;
-            color: #555 !important;
-            box-shadow: none !important;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .btn-neon:not(.btn-disabled):hover {
+        .btn-neon:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 30px var(--neon-glow);
             background: white;
@@ -162,7 +177,6 @@
             width: 100%;
         }
 
-        /* Difuminado a los lados */
         .sponsors-carousel::before,
         .sponsors-carousel::after {
             content: "";
@@ -188,7 +202,7 @@
             display: flex;
             align-items: center;
             gap: 60px;
-            padding-right: 60px; /* Crucial para el loop infinito perfecto */
+            padding-right: 60px;
             animation: scroll-sponsors 20s linear infinite;
         }
 
@@ -280,20 +294,33 @@
             font-weight: 600;
         }
 
-        @media (max-width: 600px) {
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1000px) {
+            nav { padding: 10px 3%; }
+            .nav-links { gap: 15px; }
+            .nav-links a { font-size: 0.7rem; letter-spacing: 1px; }
+        }
+
+        @media (max-width: 800px) {
+            nav { flex-direction: column; gap: 10px; padding: 15px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; gap: 10px 20px; }
             .hero h1 { font-size: 2.3rem; }
-            .countdown-item { min-width: 65px; padding: 10px; }
-            .countdown-item span { font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
 
     <nav>
-        <a href="#" class="logo-container">
+        <a href="index.html" class="logo-container">
             <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="La Ruta Garage" class="nav-logo">
         </a>
-        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon" id="nav-btn-reg" style="padding: 10px 20px; font-size: 0.7rem; margin-top: 0;">INSCRÍBETE!</a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active"><i class="fas fa-home"></i>Home</a></li>
+            <li><a href="la-ruta.html"><i class="fas fa-info-circle"></i>La Ruta</a></li>
+            <li><a href="faq.html"><i class="fas fa-question-circle"></i>FAQ</a></li>
+            <li><a href="la-ruta.html"><i class="fas fa-users"></i>Nosotros</a></li>
+        </ul>
+        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon-nav"><i class="fas fa-user-plus"></i>Inscríbete!</a>
     </nav>
 
     <section class="hero">
@@ -348,7 +375,7 @@
         </div>
         <div class="hex-stat">
             <i class="fas fa-users"></i>
-            <h2>1000+</h2>
+            <h2>600+</h2>
             <p>Visitantes</p>
         </div>
     </section>
@@ -363,5 +390,5 @@
         <span style="color: #222;">DESIGNED FOR CHAMPIONS</span>
     </footer>
 
-    </body>
+</body>
 </html>

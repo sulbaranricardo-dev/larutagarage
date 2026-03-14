@@ -301,11 +301,23 @@
         const short = document.getElementById('addShort').checked;
         const btnEstandares = document.getElementById('btnEstandares');
         
-        cat.innerHTML = mod.includes("Race") ? "<option>General</option>" : "<option>Escalado</option><option>Avanzado</option><option>RX</option>";
+        // 1. Guardamos lo que el usuario ya había seleccionado
+        const categoriaSeleccionada = cat.value;
+        
+        // 2. Dibujamos las opciones
+        cat.innerHTML = mod.includes("Race") 
+            ? "<option value='General'>General</option>" 
+            : "<option value='Escalado'>Escalado</option><option value='Avanzado'>Avanzado</option><option value='RX'>RX</option>";
+        
+        // 3. Si la categoría que tenía guardada sigue existiendo en esta lista, se la volvemos a poner
+        if (Array.from(cat.options).some(opt => opt.value === categoriaSeleccionada)) {
+            cat.value = categoriaSeleccionada;
+        }
         
         // MOSTRAR BOTÓN DE ESTÁNDARES SOLO EN CROSSFIT
         btnEstandares.style.display = mod.includes("CrossFit") ? "block" : "none";
 
+        // CÁLCULO DE PRECIO
         let totalUSD = mod.includes("Race") ? 30 : 40; 
         if(short) totalUSD += 25;
         

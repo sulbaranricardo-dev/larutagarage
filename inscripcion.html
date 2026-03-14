@@ -60,14 +60,21 @@
         .btn-estandares:hover { background: var(--neon); color: black; }
 
         /* FIX APLICADO AQUÍ PARA QUE NO SE CORTE LA IMAGEN SUPERIOR */
-        #modalEstandares { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; padding: 40px 20px; box-sizing: border-box; overflow-y: auto; display: none; justify-content: center; align-items: flex-start; }
-        .modal-estandares-content { max-width: 600px; width: 100%; text-align: center; margin-top: 0; margin-bottom: 40px; }
+        #modalEstandares, #modalShort { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; padding: 40px 20px; box-sizing: border-box; overflow-y: auto; display: none; justify-content: center; align-items: flex-start; }
+        
+        /* Modal de Short se alinea al centro porque es 1 sola imagen */
+        #modalShort { align-items: center; } 
+
+        .modal-estandares-content { max-width: 600px; width: 100%; text-align: center; margin-top: 0; margin-bottom: 40px; position: relative; }
         .modal-estandares-content img { width: 100%; height: auto; display: block; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(216, 255, 94, 0.3); }
 
         .short-card { background: rgba(216, 255, 94, 0.05); border: 1px solid rgba(216, 255, 94, 0.2); border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 20px; margin-top: 10px; }
-        .short-card img { width: 85px; border-radius: 10px; border: 1px solid #333; }
+        .short-card img { width: 85px; border-radius: 10px; border: 1px solid #333; cursor: pointer; transition: 0.3s; }
+        .short-card img:hover { border-color: var(--neon); transform: scale(1.05); }
+        
         .short-info strong { color: var(--neon); font-size: 0.9rem; display: block; margin-bottom: 5px; }
         .short-info p { margin: 0; font-size: 0.7rem; color: #ccc; line-height: 1.4; }
+        .short-click-hint { font-size: 0.6rem; color: var(--neon); margin-bottom: 5px; display: block; cursor: pointer; }
         
         .pago-box { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 15px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .price-tag { font-weight: 800; font-size: 1.5rem; color: #fff; display: block; margin-bottom: 5px; }
@@ -139,9 +146,17 @@
 <div id="modalEstandares">
     <div class="modal-estandares-content">
         <h2 style="margin-bottom: 30px; color: var(--neon);">ESTÁNDARES RUTA CROSSFIT</h2>
+        <img src="https://i.postimg.cc/pXhgF5Pp/Estandares-RX.jpg" alt="Estándares RX">
         <img src="https://i.ibb.co/qYXCVFLq/Est-Avanz.jpg" alt="Estándares Avanzado">
         <img src="https://i.ibb.co/Ps6QwYsZ/Est-Esc.jpg" alt="Estándares Escalado">
         <button onclick="cerrarModalEstandares()" class="btn-submit" style="background:#222; color:white; padding: 15px; margin-top: 20px;">CERRAR VENTANA</button>
+    </div>
+</div>
+
+<div id="modalShort">
+    <div class="modal-estandares-content" style="margin-bottom: 0;">
+        <img src="https://i.postimg.cc/tgqbWRSx/Shorts.jpg" alt="Short Deportivo Ampliado" style="margin-bottom: 0;">
+        <button onclick="cerrarModalShort()" class="btn-submit" style="background:#222; color:white; padding: 15px; margin-top: 20px;">CERRAR VENTANA</button>
     </div>
 </div>
 
@@ -194,9 +209,10 @@
 
             <span class="section-label"><i class="fas fa-shopping-bag"></i> 3. Complemento Opcional</span>
             <div class="short-card">
-                <img src="https://i.ibb.co/FqHK7c5s/Short-Referencial.png" alt="Short">
+                <img src="https://i.postimg.cc/tgqbWRSx/Shorts.jpg" alt="Short Oficial" onclick="abrirModalShort()" title="Clic para ampliar">
                 <div class="short-info">
                     <strong>Short Deportivo Oficial</strong>
+                    <span class="short-click-hint" onclick="abrirModalShort()"><i class="fas fa-search-plus"></i> Clic en la foto para ampliar</span>
                     <p>Precio Preventa: $25 (Ahorra $5 comparado al día del evento)</p>
                     <div style="margin-top:10px; display:flex; align-items:center; gap:10px;">
                         <input type="checkbox" id="addShort" onchange="actualizarPrecio()" style="width:20px; height:20px; cursor:pointer;">
@@ -257,6 +273,16 @@
     function cerrarModalEstandares() {
         document.getElementById('modalEstandares').style.display = 'none';
     }
+    
+    // FUNCIONES MODAL SHORT
+    function abrirModalShort() {
+        const modal = document.getElementById('modalShort');
+        modal.style.display = 'flex';
+        modal.scrollTop = 0;
+    }
+    function cerrarModalShort() {
+        document.getElementById('modalShort').style.display = 'none';
+    }
 
     async function init() {
         try {
@@ -275,7 +301,7 @@
         const short = document.getElementById('addShort').checked;
         const btnEstandares = document.getElementById('btnEstandares');
         
-        cat.innerHTML = mod.includes("Race") ? "<option>General</option>" : "<option>Escalado</option><option>Avanzado</option>";
+        cat.innerHTML = mod.includes("Race") ? "<option>General</option>" : "<option>Escalado</option><option>Avanzado</option><option>RX</option>";
         
         // MOSTRAR BOTÓN DE ESTÁNDARES SOLO EN CROSSFIT
         btnEstandares.style.display = mod.includes("CrossFit") ? "block" : "none";

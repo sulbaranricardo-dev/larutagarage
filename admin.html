@@ -110,9 +110,9 @@
                 <input type="text" id="searchInput" placeholder="Buscar por nombre, cédula o dorsal..." oninput="resetearYPaginacion()">
             </div>
             <div class="filter-buttons">
-                <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('todos')">Todos</button>
-                <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">Race</button>
-                <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">Crossfit</button>
+                <button class="btn-filter active" id="btnAll" onclick="filtrarModalidad('todos')">Todos (<span id="countTodos">0</span>)</button>
+                <button class="btn-filter" id="btnRace" onclick="filtrarModalidad('race')">Race (<span id="countRace">0</span>)</button>
+                <button class="btn-filter" id="btnCF" onclick="filtrarModalidad('crossfit')">Crossfit (<span id="countCF">0</span>)</button>
             </div>
         </div>
 
@@ -370,6 +370,18 @@
 
     function aplicarFiltros() {
         const busqueda = document.getElementById('searchInput').value.toLowerCase();
+        
+        // 1. Primero calculamos los totales absolutos (ignorando la barra de búsqueda)
+        const totalAtletas = todosLosAtletas.length;
+        const totalRace = todosLosAtletas.filter(a => a.modalidad && a.modalidad.toLowerCase().includes('race')).length;
+        const totalCF = todosLosAtletas.filter(a => a.modalidad && a.modalidad.toLowerCase().includes('crossfit')).length;
+        
+        // 2. Inyectamos los números en los botones
+        document.getElementById('countTodos').innerText = totalAtletas;
+        document.getElementById('countRace').innerText = totalRace;
+        document.getElementById('countCF').innerText = totalCF;
+
+        // 3. Aplicamos el filtro para la tabla visual
         atletasFiltrados = todosLosAtletas.filter(atleta => {
             const cumpleMod = (modalidadActual === 'todos' || (atleta.modalidad && atleta.modalidad.toLowerCase().includes(modalidadActual)));
             const dataStr = [atleta.nombre, atleta.apellido, atleta.cedula, atleta.referencia, atleta.dorsal].join(' ').toLowerCase();

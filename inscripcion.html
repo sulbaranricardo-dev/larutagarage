@@ -75,6 +75,18 @@
         .short-info strong { color: var(--neon); font-size: 0.9rem; display: block; margin-bottom: 5px; }
         .short-info p { margin: 0; font-size: 0.7rem; color: #ccc; line-height: 1.4; }
         .short-click-hint { font-size: 0.6rem; color: var(--neon); margin-bottom: 5px; display: block; cursor: pointer; }
+        /* ESTILOS MINI TIENDA */
+        .store-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px; }
+        .store-card { background: rgba(216, 255, 94, 0.05); border: 1px solid rgba(216, 255, 94, 0.2); border-radius: 15px; padding: 15px; text-align: center; transition: 0.3s; display: flex; flex-direction: column; justify-content: space-between; }
+        .store-card:hover { border-color: var(--neon); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(216, 255, 94, 0.1); }
+        .store-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; border: 1px solid #333; cursor: pointer; margin-bottom: 10px; }
+        .store-card strong { color: var(--neon); font-size: 0.85rem; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        .store-card p { margin: 0; font-size: 0.65rem; color: #ccc; line-height: 1.4; margin-bottom: 10px; }
+        .price-preventa { color: white; font-weight: 800; font-size: 1rem; margin-bottom: 10px; display: block; }
+        .counter-box { display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 8px; border: 1px solid #333; }
+        .counter-btn { background: #222; border: none; color: var(--neon); width: 25px; height: 25px; border-radius: 5px; cursor: pointer; font-weight: 900; transition: 0.3s; }
+        .counter-btn:hover { background: var(--neon); color: black; }
+        .counter-value { font-weight: 800; font-size: 0.9rem; color: white; width: 20px; text-align: center; }
         
         .pago-box { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 15px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .price-tag { font-weight: 800; font-size: 1.5rem; color: #fff; display: block; margin-bottom: 5px; }
@@ -155,7 +167,7 @@
 
 <div id="modalShort">
     <div class="modal-estandares-content" style="margin-bottom: 0;">
-        <img src="https://i.postimg.cc/tgqbWRSx/Shorts.jpg" alt="Short Deportivo Ampliado" style="margin-bottom: 0;">
+        <img id="modalTiendaImg" src="" alt="Producto Ampliado" style="margin-bottom: 0;">
         <button onclick="cerrarModalShort()" class="btn-submit" style="background:#222; color:white; padding: 15px; margin-top: 20px;">CERRAR VENTANA</button>
     </div>
 </div>
@@ -207,16 +219,50 @@
                 </div>
             </div>
 
-            <span class="section-label"><i class="fas fa-shopping-bag"></i> 3. Complemento Opcional</span>
-            <div class="short-card">
-                <img src="https://i.postimg.cc/tgqbWRSx/Shorts.jpg" alt="Short Oficial" onclick="abrirModalShort()" title="Clic para ampliar">
-                <div class="short-info">
-                    <strong>Short Deportivo Oficial</strong>
-                    <span class="short-click-hint" onclick="abrirModalShort()"><i class="fas fa-search-plus"></i> Clic en la foto para ampliar</span>
-                    <p>Precio Preventa: $25 (Ahorra $5 comparado al día del evento)</p>
-                    <div style="margin-top:10px; display:flex; align-items:center; gap:10px;">
-                        <input type="checkbox" id="addShort" onchange="actualizarPrecio()" style="width:20px; height:20px; cursor:pointer;">
-                        <label style="margin:0; font-size:0.8rem; color:white;">¡Deseo añadir el Short!</label>
+            <span class="section-label"><i class="fas fa-shopping-bag"></i> 3. Tienda Oficial (Opcional)</span>
+            <div class="store-grid">
+                <!-- PRODUCTO 1 -->
+                <div class="store-card">
+                    <img src="https://i.postimg.cc/2SMQLmGf/Short_Woman.jpg" alt="Short Damas" onclick="abrirModalTienda('https://i.postimg.cc/2SMQLmGf/Short_Woman.jpg')" title="Clic para ampliar">
+                    <div>
+                        <strong>Short Oficial Damas</strong>
+                        <p>Precio Día del Evento: $25</p>
+                        <span class="price-preventa">OFERTA: $20</span>
+                    </div>
+                    <div class="counter-box">
+                        <button type="button" class="counter-btn" onclick="updateQty('qty-short-f', -1)">-</button>
+                        <span class="counter-value" id="qty-short-f" data-price="20" data-name="Short Damas">0</span>
+                        <button type="button" class="counter-btn" onclick="updateQty('qty-short-f', 1)">+</button>
+                    </div>
+                </div>
+
+                <!-- PRODUCTO 2 -->
+                <div class="store-card">
+                    <img src="https://i.postimg.cc/qvSs60wr/Short_Men.jpg" alt="Short Hombres" onclick="abrirModalTienda('https://i.postimg.cc/qvSs60wr/Short_Men.jpg')" title="Clic para ampliar">
+                    <div>
+                        <strong>Short Oficial Hombres</strong>
+                        <p>Precio Día del Evento: $30</p>
+                        <span class="price-preventa">OFERTA: $25</span>
+                    </div>
+                    <div class="counter-box">
+                        <button type="button" class="counter-btn" onclick="updateQty('qty-short-m', -1)">-</button>
+                        <span class="counter-value" id="qty-short-m" data-price="25" data-name="Short Hombres">0</span>
+                        <button type="button" class="counter-btn" onclick="updateQty('qty-short-m', 1)">+</button>
+                    </div>
+                </div>
+
+                <!-- PRODUCTO 3 -->
+                <div class="store-card">
+                    <img src="https://i.postimg.cc/Sx36Yqdq/Licra.jpg" alt="Licra Damas" onclick="abrirModalTienda('https://i.postimg.cc/Sx36Yqdq/Licra.jpg')" title="Clic para ampliar">
+                    <div>
+                        <strong>Licra Oficial Damas</strong>
+                        <p>Precio Día del Evento: $30</p>
+                        <span class="price-preventa">OFERTA: $25</span>
+                    </div>
+                    <div class="counter-box">
+                        <button type="button" class="counter-btn" onclick="updateQty('qty-licra-f', -1)">-</button>
+                        <span class="counter-value" id="qty-licra-f" data-price="25" data-name="Licra Damas">0</span>
+                        <button type="button" class="counter-btn" onclick="updateQty('qty-licra-f', 1)">+</button>
                     </div>
                 </div>
             </div>
@@ -275,13 +321,22 @@
     }
     
     // FUNCIONES MODAL SHORT
-    function abrirModalShort() {
+    function abrirModalTienda(imgSrc) {
+        document.getElementById('modalTiendaImg').src = imgSrc;
         const modal = document.getElementById('modalShort');
         modal.style.display = 'flex';
         modal.scrollTop = 0;
     }
     function cerrarModalShort() {
         document.getElementById('modalShort').style.display = 'none';
+    }
+    function updateQty(id, change) {
+        let span = document.getElementById(id);
+        let currentQty = parseInt(span.innerText);
+        let newQty = currentQty + change;
+        if (newQty < 0) newQty = 0;
+        span.innerText = newQty;
+        actualizarPrecio();
     }
 
     async function init() {
@@ -298,28 +353,30 @@
     function actualizarPrecio() {
         const mod = document.getElementById('modalidad').value;
         const cat = document.getElementById('categoria');
-        const short = document.getElementById('addShort').checked;
         const btnEstandares = document.getElementById('btnEstandares');
         
-        // 1. Guardamos lo que el usuario ya había seleccionado
         const categoriaSeleccionada = cat.value;
         
-        // 2. Dibujamos las opciones
         cat.innerHTML = mod.includes("Race") 
             ? "<option value='General'>General</option>" 
             : "<option value='Escalado'>Escalado</option><option value='Avanzado'>Avanzado</option><option value='RX'>RX</option>";
         
-        // 3. Si la categoría que tenía guardada sigue existiendo en esta lista, se la volvemos a poner
         if (Array.from(cat.options).some(opt => opt.value === categoriaSeleccionada)) {
             cat.value = categoriaSeleccionada;
         }
         
-        // MOSTRAR BOTÓN DE ESTÁNDARES SOLO EN CROSSFIT
         btnEstandares.style.display = mod.includes("CrossFit") ? "block" : "none";
 
-        // CÁLCULO DE PRECIO
+        // CÁLCULO DE INSCRIPCIÓN
         let totalUSD = mod.includes("Race") ? 30 : 40; 
-        if(short) totalUSD += 25;
+        
+        // CÁLCULO DE TIENDA
+        const items = ['qty-short-f', 'qty-short-m', 'qty-licra-f'];
+        items.forEach(id => {
+            let qty = parseInt(document.getElementById(id).innerText);
+            let price = parseInt(document.getElementById(id).getAttribute('data-price'));
+            totalUSD += (qty * price);
+        });
         
         document.getElementById('labelPrecio').innerText = "TOTAL: $" + totalUSD;
         document.getElementById('montoFinal').value = (totalUSD * TASA_BCV).toFixed(2) + " Bs.";
@@ -354,6 +411,17 @@
         setTimeout(() => fill.style.width = '60%', 2000);
 
         try {
+            // Recopilar pedido de la tienda
+            const idsTienda = ['qty-short-f', 'qty-short-m', 'qty-licra-f'];
+            let pedidoTienda = [];
+            idsTienda.forEach(id => {
+                let span = document.getElementById(id);
+                let qty = parseInt(span.innerText);
+                if (qty > 0) {
+                    pedidoTienda.push(`${qty}x ${span.getAttribute('data-name')}`);
+                }
+            });
+
             const data = {
                 nombre: document.getElementById('nombre').value,
                 apellido: document.getElementById('apellido').value,
@@ -368,7 +436,8 @@
                 talla: document.getElementById('talla').value,
                 modalidad: document.getElementById('modalidad').value,
                 categoria: document.getElementById('categoria').value,
-                compraShort: document.getElementById('addShort').checked ? "SI" : "NO",
+                compraShort: pedidoTienda.length > 0 ? "SI" : "NO",
+                detalleTienda: pedidoTienda.length > 0 ? pedidoTienda.join(' | ') : "Ninguno",
                 referencia: document.getElementById('referencia').value,
                 montoBs: document.getElementById('montoFinal').value,
                 fotoCarnet: await toBase64(document.getElementById('fotoCarnet').files[0]),

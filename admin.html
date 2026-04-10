@@ -92,6 +92,18 @@
         </div>
     </div>
 
+    <div id="modalTienda" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; overflow-y:auto; padding:20px; box-sizing: border-box;">
+        <div class="modal-content" style="max-width: 700px;">
+            <h2 style="font-weight:900; color:var(--neon); font-size:1.2rem; margin-bottom:15px; text-transform: uppercase; text-align: center;"><i class="fas fa-box-open"></i> Reporte de Tienda</h2>
+            <div id="contenidoResumenTienda" style="background:rgba(0,0,0,0.4); border-radius:10px; padding: 15px; max-height: 400px; overflow-y: auto; border: 1px solid #333;">
+                </div>
+            <div style="margin-top:20px; display:flex; gap:12px;">
+                <button onclick="document.getElementById('modalTienda').style.display='none'" class="btn btn-view" style="flex:1; justify-content: center; padding: 15px;">CERRAR</button>
+                <button onclick="imprimirResumen()" class="btn btn-approve" style="flex:1; justify-content: center; padding: 15px;"><i class="fas fa-print"></i> IMPRIMIR REPORTE</button>
+            </div>
+        </div>
+    </div>
+
     <div class="header-admin">
         <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="Logo">
         <h1>Dashboard Administrativo</h1>
@@ -101,6 +113,7 @@
         <div class="filter-buttons">
             <button class="btn-filter active" id="tabGeneral" onclick="switchMainTab('general')">Atletas</button>
             <button class="btn-filter" id="tabLogistica" onclick="switchMainTab('logistica')">Heats / Logística</button>
+            <button class="btn-filter" style="background: var(--neon); color: black;" onclick="abrirResumenTienda()"><i class="fas fa-store"></i> Resumen Tienda</button>
         </div>
     </div>
 
@@ -407,6 +420,103 @@
         document.getElementById('prevPage').disabled = paginaActual === 1;
         document.getElementById('nextPage').disabled = paginaActual >= totalPaginas;
     }
+
+    // --- FUNCIONES DEL REPORTE DE TIENDA ---
+    function abrirResumenTienda() {
+        let resumen = {};
+        let totalArticulos = 0;
+
+        todosLosAtletas.forEach(atleta => {
+            // Solo contamos a los que compraron algo y ya pagaron (Aprobados)
+            if (atleta.estatus === 'Aprobado' && atleta.compraShort === 'SI' && atleta.detalleTienda && atleta.detalleTienda !== 'Ninguno') {
+                
+                // Separamos si pidieron varias cosas (por el " | " que pusimos en el formulario)
+                let items = atleta.detalleTienda.split(' | '); 
+                let talla = atleta.talla || 'S/N'; // Tomamos la talla general del atleta
+
+                items.forEach(itemStr => {
+                    // Extraemos la cantidad y el nombre (Ej: "2x Short Damas")
+                    let match = itemStr.match(/^(\d+)x\s+(.+)$/);
+                    if (match) {
+                        let qty = parseInt(match[1]);
+                        let nombreItem = match[2].trim();
+
+                        // Creamos la estructura si no existe
+                        if (!resumen[nombreItem]) resumen[nombreItem] = {};
+                        if (!resumen[nombreItem][talla]) resumen[nombreItem][talla] = 0;
+
+                        // Sumamos
+                        resumen[nombreItem][talla] += qty;
+                        totalArticulos += qty;
+                    }
+                });
+            }
+        });
+
+        // Generar el HTML de la tabla para mostrar
+        let html = `<p style="text-align:center; color:#ccc; font-size:0.85rem; margin-top:0;">Total Artículos Vendidos: <strong style="color:var(--neon); font-size:1.2rem;">${totalArticulos}</strong></p>`;
+        
+        if (totalArticulos === 0) {
+            html += "<p style='text-align:center; color:#ff4444; font-weight:bold; margin-top:30px;'>No hay ventas registradas o los atletas aún están 'Pendientes'.</p>";
+        } else {
+            html += `<table style="width:100%; border-collapse: collapse; margin-top:10px;">
+                        <thead>
+                            <tr>
+                                <th style="border-bottom:2px solid var(--neon); padding:10px; text-align:left; color:white;">PRODUCTO</th>
+                                <th style="border-bottom:2px solid var(--neon); padding:10px; text-align:center; color:white;">TALLA</th>
+                                <th style="border-bottom:2px solid var(--neon); padding:10px; text-align:center; color:white;">CANTIDAD</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            for (let item in resumen) {
+                for (let t in resumen[item]) {
+                    html += `<tr>
+                                <td style="padding:10px; border-bottom:1px solid #222; color:#ccc;">${item}</td>
+                                <td style="padding:10px; border-bottom:1px solid #222; text-align:center; color:var(--neon); font-weight:bold;">${t}</td>
+                                <td style="padding:10px; border-bottom:1px solid #222; text-align:center; font-weight:900; font-size:1.1rem;">${resumen[item][t]}</td>
+                             </tr>`;
+                }
+            }
+            html += `</tbody></table>`;
+        }
+
+        document.getElementById('contenidoResumenTienda').innerHTML = html;
+        document.getElementById('modalTienda').style.display = 'flex';
+    }
+
+    function imprimirResumen() {
+        let contenido = document.getElementById('contenidoResumenTienda').innerHTML;
+        let ventana = window.open('', '', 'width=800,height=600');
+        ventana.document.write(`
+            <html>
+            <head>
+                <title>Reporte de Tienda - La Ruta Garage</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 30px; color: #000; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                    th { background-color: #f4f4f4; color: #000 !important; border-bottom: 2px solid #000 !important; }
+                    td { color: #000 !important; }
+                    h2 { text-align: center; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 10px; }
+                    strong { color: #000 !important; }
+                </style>
+            </head>
+            <body>
+                <h2>Reporte de Inventario (Tienda) - La Ruta Garage</h2>
+                ${contenido}
+                <p style="margin-top: 40px; text-align:center; font-size: 12px; color: #666;">Documento generado automáticamente por el sistema logístico.</p>
+            </body>
+            </html>
+        `);
+        ventana.document.close();
+        ventana.focus();
+        setTimeout(() => {
+            ventana.print();
+            ventana.close();
+        }, 250);
+    }
+    
 </script>
 </body>
 </html>

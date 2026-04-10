@@ -421,63 +421,109 @@
         document.getElementById('nextPage').disabled = paginaActual >= totalPaginas;
     }
 
-    // --- FUNCIONES DEL REPORTE DE TIENDA ---
-    function abrirResumenTienda() {
-        let resumen = {};
+function abrirResumenTienda() {
+        let resumenAgrupado = {}; // Para el inventario
+        let listaDetallada = [];   // Para saber quién compró qué
         let totalArticulos = 0;
 
         todosLosAtletas.forEach(atleta => {
-            // Solo contamos a los que compraron algo y ya pagaron (Aprobados)
-            if (atleta.estatus === 'Aprobado' && atleta.compraShort === 'SI' && atleta.detalleTienda && atleta.detalleTienda !== 'Ninguno') {
+            // Solo contamos a los que pagaron (Aprobados) y marcaron "SI" en compraShort
+            if (atleta.estatus === 'Aprobado' && atleta.compraShort === 'SI') {
                 
-                // Separamos si pidieron varias cosas (por el " | " que pusimos en el formulario)
-                let items = atleta.detalleTienda.split(' | '); 
-                let talla = atleta.talla || 'S/N'; // Tomamos la talla general del atleta
+                let talla = atleta.talla || 'S/N';
+                let nombreCompleto = `${atleta.nombre} ${atleta.apellido || ''}`;
+                let telefono = atleta.telefono || 'Sin Tel.';
+                let pedidoDelAtleta = [];
 
-                items.forEach(itemStr => {
-                    // Extraemos la cantidad y el nombre (Ej: "2x Short Damas")
-                    let match = itemStr.match(/^(\d+)x\s+(.+)$/);
-                    if (match) {
-                        let qty = parseInt(match[1]);
-                        let nombreItem = match[2].trim();
+                // ¿Tiene detalle en la nueva Mini Tienda?
+                if (atleta.detalleTienda && atleta.detalleTienda !== 'Ninguno' && String(atleta.detalleTienda).trim() !== '') {
+                    
+                    let items = String(atleta.detalleTienda).split(' | '); 
+                    items.forEach(itemStr => {
+                        let match = itemStr.match(/^(\d+)x\s+(.+)$/);
+                        if (match) {
+                            let qty = parseInt(match[1]);
+                            let nombreItem = match[2].trim();
 
-                        // Creamos la estructura si no existe
-                        if (!resumen[nombreItem]) resumen[nombreItem] = {};
-                        if (!resumen[nombreItem][talla]) resumen[nombreItem][talla] = 0;
+                            // 1. Sumar al resumen de inventario
+                            if (!resumenAgrupado[nombreItem]) resumenAgrupado[nombreItem] = {};
+                            if (!resumenAgrupado[nombreItem][talla]) resumenAgrupado[nombreItem][talla] = 0;
+                            resumenAgrupado[nombreItem][talla] += qty;
+                            
+                            // 2. Guardar para la lista detallada
+                            pedidoDelAtleta.push(`${qty}x ${nombreItem} (${talla})`);
+                            totalArticulos += qty;
+                        }
+                    });
 
-                        // Sumamos
-                        resumen[nombreItem][talla] += qty;
-                        totalArticulos += qty;
-                    }
+                } else {
+                    // Sistema Viejo (Legado)
+                    let nombreItem = (atleta.sexo === 'Femenino') ? 'Short Damas' : 'Short Hombres';
+                    let qty = 1;
+
+                    if (!resumenAgrupado[nombreItem]) resumenAgrupado[nombreItem] = {};
+                    if (!resumenAgrupado[nombreItem][talla]) resumenAgrupado[nombreItem][talla] = 0;
+                    resumenAgrupado[nombreItem][talla] += qty;
+
+                    pedidoDelAtleta.push(`${qty}x ${nombreItem} (${talla})`);
+                    totalArticulos += qty;
+                }
+
+                // Agregamos a la lista de entrega
+                listaDetallada.push({
+                    atleta: nombreCompleto,
+                    tlf: telefono,
+                    pedido: pedidoDelAtleta.join(' / ')
                 });
             }
         });
 
-        // Generar el HTML de la tabla para mostrar
+        // --- GENERAR HTML ---
         let html = `<p style="text-align:center; color:#ccc; font-size:0.85rem; margin-top:0;">Total Artículos Vendidos: <strong style="color:var(--neon); font-size:1.2rem;">${totalArticulos}</strong></p>`;
         
         if (totalArticulos === 0) {
-            html += "<p style='text-align:center; color:#ff4444; font-weight:bold; margin-top:30px;'>No hay ventas registradas o los atletas aún están 'Pendientes'.</p>";
+            html += "<p style='text-align:center; color:#ff4444; font-weight:bold; margin-top:30px;'>No hay ventas registradas.</p>";
         } else {
-            html += `<table style="width:100%; border-collapse: collapse; margin-top:10px;">
+            // TABLA 1: INVENTARIO (Lo que se pide al proveedor)
+            html += `<h3 style="color:var(--neon); font-size:0.8rem; border-bottom:1px solid #333; padding-bottom:5px; margin-top:20px;">1. INVENTARIO TOTAL</h3>
+                     <table style="width:100%; border-collapse: collapse; margin-bottom:30px;">
                         <thead>
-                            <tr>
-                                <th style="border-bottom:2px solid var(--neon); padding:10px; text-align:left; color:white;">PRODUCTO</th>
-                                <th style="border-bottom:2px solid var(--neon); padding:10px; text-align:center; color:white;">TALLA</th>
-                                <th style="border-bottom:2px solid var(--neon); padding:10px; text-align:center; color:white;">CANTIDAD</th>
+                            <tr style="font-size:0.65rem; color:#aaa;">
+                                <th style="text-align:left; padding:8px;">PRODUCTO</th>
+                                <th style="text-align:center; padding:8px;">TALLA</th>
+                                <th style="text-align:center; padding:8px;">CANT.</th>
                             </tr>
                         </thead>
                         <tbody>`;
-
-            for (let item in resumen) {
-                for (let t in resumen[item]) {
-                    html += `<tr>
-                                <td style="padding:10px; border-bottom:1px solid #222; color:#ccc;">${item}</td>
-                                <td style="padding:10px; border-bottom:1px solid #222; text-align:center; color:var(--neon); font-weight:bold;">${t}</td>
-                                <td style="padding:10px; border-bottom:1px solid #222; text-align:center; font-weight:900; font-size:1.1rem;">${resumen[item][t]}</td>
+            for (let item in resumenAgrupado) {
+                for (let t in resumenAgrupado[item]) {
+                    html += `<tr style="font-size:0.8rem; border-bottom:1px solid #222;">
+                                <td style="padding:8px; color:#ccc;">${item}</td>
+                                <td style="padding:8px; text-align:center; color:var(--neon); font-weight:bold;">${t}</td>
+                                <td style="padding:8px; text-align:center; font-weight:900;">${resumenAgrupado[item][t]}</td>
                              </tr>`;
                 }
             }
+            html += `</tbody></table>`;
+
+            // TABLA 2: LISTA DE ENTREGA (Nombres y Teléfonos)
+            html += `<h3 style="color:var(--neon); font-size:0.8rem; border-bottom:1px solid #333; padding-bottom:5px;">2. DETALLE POR ATLETA</h3>
+                     <table style="width:100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="font-size:0.65rem; color:#aaa;">
+                                <th style="text-align:left; padding:8px;">ATLETA</th>
+                                <th style="text-align:left; padding:8px;">TELÉFONO</th>
+                                <th style="text-align:left; padding:8px;">PEDIDO</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            listaDetallada.forEach(fila => {
+                html += `<tr style="font-size:0.75rem; border-bottom:1px solid #222;">
+                            <td style="padding:8px; color:white; font-weight:600;">${fila.atleta}</td>
+                            <td style="padding:8px; color:#aaa;">${fila.tlf}</td>
+                            <td style="padding:8px; color:var(--neon); font-style:italic;">${fila.pedido}</td>
+                         </tr>`;
+            });
             html += `</tbody></table>`;
         }
 

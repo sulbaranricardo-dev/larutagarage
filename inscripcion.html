@@ -90,6 +90,9 @@
         
         .pago-box { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 15px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
         .price-tag { font-weight: 800; font-size: 1.5rem; color: #fff; display: block; margin-bottom: 5px; }
+
+        .store-talla { width: 100%; margin-top: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--neon); color: white; padding: 8px; border-radius: 8px; font-family: 'Montserrat'; font-size: 0.75rem; text-align: center; }
+        .store-talla:focus { outline: none; box-shadow: 0 0 10px rgba(216, 255, 94, 0.3); }
         
         .btn-submit { 
             width: 100%; padding: 20px; background: var(--neon); color: black; border: none; 
@@ -220,8 +223,8 @@
             </div>
 
             <span class="section-label"><i class="fas fa-shopping-bag"></i> 3. Tienda Oficial (Opcional)</span>
+
             <div class="store-grid">
-                <!-- PRODUCTO 1 -->
                 <div class="store-card">
                     <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Intop%2FShortF.jpg?alt=media&token=7cace4b6-857d-4dfa-a880-60bd49787750" alt="Short Damas" onclick="abrirModalTienda('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Intop%2FShortF.jpg?alt=media&token=7cace4b6-857d-4dfa-a880-60bd49787750')" title="Clic para ampliar">
                     <div>
@@ -234,9 +237,14 @@
                         <span class="counter-value" id="qty-short-f" data-price="20" data-name="Short Damas">0</span>
                         <button type="button" class="counter-btn" onclick="updateQty('qty-short-f', 1)">+</button>
                     </div>
+                    <select id="talla-short-f" class="store-talla">
+                        <option value="S">Talla S</option>
+                        <option value="M">Talla M</option>
+                        <option value="L">Talla L</option>
+                        <option value="XL">Talla XL</option>
+                    </select>
                 </div>
 
-                <!-- PRODUCTO 2 -->
                 <div class="store-card">
                     <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Intop%2FShortH.jpg?alt=media&token=c43fec8d-da1a-4fee-9674-98b20e05bc42" alt="Short Hombres" onclick="abrirModalTienda('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Intop%2FShortH.jpg?alt=media&token=c43fec8d-da1a-4fee-9674-98b20e05bc42')" title="Clic para ampliar">
                     <div>
@@ -249,9 +257,14 @@
                         <span class="counter-value" id="qty-short-m" data-price="25" data-name="Short Hombres">0</span>
                         <button type="button" class="counter-btn" onclick="updateQty('qty-short-m', 1)">+</button>
                     </div>
+                    <select id="talla-short-m" class="store-talla">
+                        <option value="S">Talla S</option>
+                        <option value="M">Talla M</option>
+                        <option value="L">Talla L</option>
+                        <option value="XL">Talla XL</option>
+                    </select>
                 </div>
 
-                <!-- PRODUCTO 3 -->
                 <div class="store-card">
                     <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Intop%2FLicra.jpg?alt=media&token=780bd8d9-81e6-4997-b61a-e4764fd29417" alt="Licra Damas" onclick="abrirModalTienda('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Intop%2FLicra.jpg?alt=media&token=780bd8d9-81e6-4997-b61a-e4764fd29417')" title="Clic para ampliar">
                     <div>
@@ -264,6 +277,12 @@
                         <span class="counter-value" id="qty-licra-f" data-price="25" data-name="Licra Damas">0</span>
                         <button type="button" class="counter-btn" onclick="updateQty('qty-licra-f', 1)">+</button>
                     </div>
+                    <select id="talla-licra-f" class="store-talla">
+                        <option value="S">Talla S</option>
+                        <option value="M">Talla M</option>
+                        <option value="L">Talla L</option>
+                        <option value="XL">Talla XL</option>
+                    </select>
                 </div>
             </div>
 
@@ -411,14 +430,24 @@
         setTimeout(() => fill.style.width = '60%', 2000);
 
         try {
-            // Recopilar pedido de la tienda
-            const idsTienda = ['qty-short-f', 'qty-short-m', 'qty-licra-f'];
+            // Recopilar pedido de la tienda CON TALLAS
+            const productosTienda = [
+                { idQty: 'qty-short-f', idTalla: 'talla-short-f' },
+                { idQty: 'qty-short-m', idTalla: 'talla-short-m' },
+                { idQty: 'qty-licra-f', idTalla: 'talla-licra-f' }
+            ];
+            
             let pedidoTienda = [];
-            idsTienda.forEach(id => {
-                let span = document.getElementById(id);
-                let qty = parseInt(span.innerText);
+            productosTienda.forEach(prod => {
+                let spanQty = document.getElementById(prod.idQty);
+                let selectTalla = document.getElementById(prod.idTalla);
+                
+                let qty = parseInt(spanQty.innerText);
                 if (qty > 0) {
-                    pedidoTienda.push(`${qty}x ${span.getAttribute('data-name')}`);
+                    let nombreItem = spanQty.getAttribute('data-name');
+                    let tallaElegida = selectTalla.value;
+                    // Genera formato: "1x Short Damas (M)"
+                    pedidoTienda.push(`${qty}x ${nombreItem} (${tallaElegida})`);
                 }
             });
 
@@ -461,6 +490,7 @@
             loader.style.display = 'none';
         }
     };
+    
     window.onload = init;
 </script>
 </body>

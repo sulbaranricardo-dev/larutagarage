@@ -576,8 +576,10 @@ function abrirResumenTienda() {
         }, 250);
     }
 // --- FUNCIONES DEL REPORTE DE FRANELAS ---
+// --- FUNCIONES DEL REPORTE DE FRANELAS ---
     function abrirResumenFranelas() {
-        let resumenTallas = {}; // Para el conteo de producción
+        let resumenTallas = {}; // Para el conteo general
+        let resumenPorSexo = { 'Femenino': {}, 'Masculino': {}, 'S/D': {} }; // Para el conteo por sexo
         let listaDetalladaFranelas = []; // Para el listado individual
         let totalFranelas = 0;
 
@@ -588,12 +590,17 @@ function abrirResumenTienda() {
                 let nombreCompleto = `${atleta.nombre} ${atleta.apellido || ''}`;
                 let sexo = atleta.sexo || 'S/D';
 
-                // 1. Sumar al conteo agrupado por talla
+                // 1. Sumar al conteo general agrupado por talla
                 if (!resumenTallas[talla]) resumenTallas[talla] = 0;
                 resumenTallas[talla]++;
                 totalFranelas++;
 
-                // 2. Guardar en la lista detallada
+                // 2. Sumar al conteo agrupado por SEXO y TALLA
+                if (!resumenPorSexo[sexo]) resumenPorSexo[sexo] = {};
+                if (!resumenPorSexo[sexo][talla]) resumenPorSexo[sexo][talla] = 0;
+                resumenPorSexo[sexo][talla]++;
+
+                // 3. Guardar en la lista detallada
                 listaDetalladaFranelas.push({
                     atleta: nombreCompleto,
                     talla: talla,
@@ -608,21 +615,20 @@ function abrirResumenTienda() {
         if (totalFranelas === 0) {
             html += "<p style='text-align:center; color:#ff4444; font-weight:bold; margin-top:30px;'>No hay atletas aprobados en el sistema.</p>";
         } else {
-            // TABLA 1: RESUMEN DE PRODUCCIÓN
-            html += `<h3 style="color:white; font-size:0.8rem; border-bottom:1px solid #333; padding-bottom:5px; margin-top:20px;">1. RESUMEN PARA PRODUCCIÓN</h3>
-                     <table style="width:100%; border-collapse: collapse; margin-bottom:30px;">
+            const ordenTallas = { 'S': 1, 'M': 2, 'L': 3, 'XL': 4, 'S/N': 5 };
+
+            // TABLA 1: RESUMEN GENERAL
+            html += `<h3 style="color:white; font-size:0.8rem; border-bottom:1px solid #333; padding-bottom:5px; margin-top:20px;">1. RESUMEN GENERAL (TOTALES)</h3>
+                     <table style="width:100%; border-collapse: collapse; margin-bottom:20px;">
                         <thead>
                             <tr style="font-size:0.65rem; color:#aaa;">
                                 <th style="text-align:center; padding:8px;">TALLA</th>
-                                <th style="text-align:center; padding:8px;">CANTIDAD A FABRICAR</th>
+                                <th style="text-align:center; padding:8px;">CANTIDAD TOTAL</th>
                             </tr>
                         </thead>
                         <tbody>`;
             
-            // Ordenar las tallas lógicamente si es posible (S, M, L, XL)
-            const ordenTallas = { 'S': 1, 'M': 2, 'L': 3, 'XL': 4, 'S/N': 5 };
             const tallasOrdenadas = Object.keys(resumenTallas).sort((a, b) => (ordenTallas[a] || 99) - (ordenTallas[b] || 99));
-
             tallasOrdenadas.forEach(t => {
                 html += `<tr style="font-size:0.8rem; border-bottom:1px solid #222;">
                             <td style="padding:8px; text-align:center; color:white; font-weight:bold; font-size:1.1rem;">${t}</td>
@@ -631,8 +637,35 @@ function abrirResumenTienda() {
             });
             html += `</tbody></table>`;
 
-            // TABLA 2: DETALLE INDIVIDUAL
-            html += `<h3 style="color:white; font-size:0.8rem; border-bottom:1px solid #333; padding-bottom:5px;">2. DETALLE POR ATLETA</h3>
+            // TABLA 2: RESUMEN POR SEXO (NUEVA)
+            html += `<h3 style="color:white; font-size:0.8rem; border-bottom:1px solid #333; padding-bottom:5px;">2. CORTE POR SEXO Y TALLA</h3>
+                     <table style="width:100%; border-collapse: collapse; margin-bottom:30px;">
+                        <thead>
+                            <tr style="font-size:0.65rem; color:#aaa;">
+                                <th style="text-align:left; padding:8px;">SEXO</th>
+                                <th style="text-align:center; padding:8px;">TALLA</th>
+                                <th style="text-align:center; padding:8px;">CANTIDAD</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            
+            const sexos = ['Femenino', 'Masculino', 'S/D'];
+            sexos.forEach(s => {
+                if(resumenPorSexo[s] && Object.keys(resumenPorSexo[s]).length > 0) {
+                    let tallasDelSexo = Object.keys(resumenPorSexo[s]).sort((a, b) => (ordenTallas[a] || 99) - (ordenTallas[b] || 99));
+                    tallasDelSexo.forEach(t => {
+                        html += `<tr style="font-size:0.8rem; border-bottom:1px solid #222;">
+                                    <td style="padding:8px; color:#ccc;">${s}</td>
+                                    <td style="padding:8px; text-align:center; color:white; font-weight:bold;">${t}</td>
+                                    <td style="padding:8px; text-align:center; font-weight:900; color:var(--neon);">${resumenPorSexo[s][t]}</td>
+                                 </tr>`;
+                    });
+                }
+            });
+            html += `</tbody></table>`;
+
+            // TABLA 3: DETALLE INDIVIDUAL
+            html += `<h3 style="color:white; font-size:0.8rem; border-bottom:1px solid #333; padding-bottom:5px;">3. DETALLE POR ATLETA</h3>
                      <table style="width:100%; border-collapse: collapse;">
                         <thead>
                             <tr style="font-size:0.65rem; color:#aaa;">

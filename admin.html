@@ -734,12 +734,12 @@ function abrirResumenTienda() {
         }, 250);
     }
 
-    // --- FUNCIONES DEL REPORTE DE EDADES ---
+   // --- FUNCIONES DEL REPORTE DE EDADES ---
     function abrirResumenEdades() {
         // Objeto para armar la matriz
         let resumen = {
-            'Masculino': { '15 - 29 años': 0, '30 - 44 años': 0, '45+ años': 0, 'Fuera de rango': 0 },
-            'Femenino': { '15 - 29 años': 0, '30 - 44 años': 0, '45+ años': 0, 'Fuera de rango': 0 }
+            'Masculino': { '15 - 29 años': 0, '30 - 44 años': 0, '45+ años': 0, 'Sin datos': 0 },
+            'Femenino': { '15 - 29 años': 0, '30 - 44 años': 0, '45+ años': 0, 'Sin datos': 0 }
         };
         let listaDetallada = [];
         let totalAtletas = 0;
@@ -749,11 +749,12 @@ function abrirResumenTienda() {
             if (atleta.estatus === 'Aprobado') {
                 let edad = parseInt(atleta.edad);
                 let sexo = atleta.sexo === 'Femenino' ? 'Femenino' : 'Masculino'; // Forzamos formato
-                let rango = 'Fuera de rango';
+                let rango = 'Sin datos';
                 
                 // Clasificamos por edad
                 if (!isNaN(edad)) {
-                    if (edad >= 15 && edad <= 29) rango = '15 - 29 años';
+                    // Si tiene 29 o menos (incluyendo 14, 13, etc.), entra aquí
+                    if (edad <= 29) rango = '15 - 29 años';
                     else if (edad >= 30 && edad <= 44) rango = '30 - 44 años';
                     else if (edad >= 45) rango = '45+ años';
                 }
@@ -792,15 +793,15 @@ function abrirResumenTienda() {
                         </thead>
                         <tbody>`;
             
-            const rangos = ['15 - 29 años', '30 - 44 años', '45+ años', 'Fuera de rango'];
+            const rangos = ['15 - 29 años', '30 - 44 años', '45+ años', 'Sin datos'];
             
             rangos.forEach(r => {
                 let fem = resumen['Femenino'][r];
                 let masc = resumen['Masculino'][r];
                 let totalRango = fem + masc;
                 
-                // Si hay gente en este rango (o si no es "Fuera de rango"), lo mostramos
-                if (totalRango > 0 || r !== 'Fuera de rango') {
+                // Si hay gente en este rango (o si no es la fila de "Sin datos"), lo mostramos
+                if (totalRango > 0 || r !== 'Sin datos') {
                     html += `<tr style="font-size:0.85rem; border-bottom:1px solid #222;">
                                 <td style="padding:10px; color:white; font-weight:bold;">${r}</td>
                                 <td style="padding:10px; text-align:center; color:#ccc;">${fem}</td>
@@ -838,38 +839,6 @@ function abrirResumenTienda() {
 
         document.getElementById('contenidoResumenEdades').innerHTML = html;
         document.getElementById('modalEdades').style.display = 'flex';
-    }
-
-    function imprimirResumenEdades() {
-        let contenido = document.getElementById('contenidoResumenEdades').innerHTML;
-        let ventana = window.open('', '', 'width=800,height=600');
-        ventana.document.write(`
-            <html>
-            <head>
-                <title>Reporte de Edades - La Ruta Garage</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding: 30px; color: #000; }
-                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                    th, td { border: 1px solid #ddd; padding: 12px; }
-                    th { background-color: #f4f4f4; color: #000 !important; border-bottom: 2px solid #000 !important; }
-                    td { color: #000 !important; }
-                    h2 { text-align: center; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 10px; }
-                    strong { color: #000 !important; }
-                </style>
-            </head>
-            <body>
-                <h2>Reporte de Edades y Categorías - La Ruta Garage</h2>
-                ${contenido}
-                <p style="margin-top: 40px; text-align:center; font-size: 12px; color: #666;">Documento generado automáticamente por el sistema logístico.</p>
-            </body>
-            </html>
-        `);
-        ventana.document.close();
-        ventana.focus();
-        setTimeout(() => {
-            ventana.print();
-            ventana.close();
-        }, 250);
     }
     
 </script>

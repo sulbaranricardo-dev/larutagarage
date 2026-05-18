@@ -82,10 +82,13 @@
     <div id="listaAtletas" class="athlete-list" style="display:none;"></div>
 
     <script>
-        // INICIALIZAR SUPABASE
+        
+            // INICIALIZAR SUPABASE
         const SUPABASE_URL = 'https://hzywpjzvlvdxscgtebvi.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eXdwanp2bHZkeHNjZ3RlYnZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNjI0OTQsImV4cCI6MjA5NDYzODQ5NH0.L7gdDpxOD7N1gpSoCVI0FEiwxR44sG8XwAORYm16sEM';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // LE CAMBIAMOS EL NOMBRE A LA VARIABLE AQUÍ:
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let todosLosAtletas = [];
 
@@ -94,8 +97,8 @@
             document.getElementById('loading').style.display = 'block';
             document.getElementById('listaAtletas').style.display = 'none';
 
-            // Filtrar directamente desde la base de datos para traer solo la modalidad RACE
-            const { data, error } = await supabase
+            // Usamos la nueva variable "supabaseClient"
+            const { data, error } = await supabaseClient
                 .from('atletas')
                 .select('*')
                 .ilike('modalidad', '%Race%')
@@ -120,7 +123,7 @@
             contenedor.innerHTML = '';
 
             if(lista.length === 0) {
-                contenedor.innerHTML = '<p style="text-align:center; color:#888;">No se encontraron atletas.</p>';
+                contenedor.innerHTML = '<p style="text-align:center; color:#888;">No se encontraron atletas de Race.</p>';
                 return;
             }
 
@@ -182,7 +185,8 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GUARDANDO...';
 
-            const { data, error } = await supabase
+            // Usamos la nueva variable "supabaseClient"
+            const { data, error } = await supabaseClient
                 .from('atletas')
                 .update({ 
                     score: scoreVal, 
@@ -219,6 +223,7 @@
 
         // Iniciar
         window.onload = cargarDatos;
+        
     </script>
 </body>
 </html>

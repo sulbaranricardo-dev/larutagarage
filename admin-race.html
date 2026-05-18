@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría Race | La Ruta Garage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --neon: #d8ff5e; --bg: #050505; --card: rgba(20, 20, 20, 0.7); }
+        body { 
+            background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)), url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FbglarutawebsiteBlack.jpg?alt=media&token=8e8d0ddb-b8a4-43f0-8199-98d31beaf078');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: white; font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px; min-height: 100vh;
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-weight: 900; color: var(--neon); font-size: 1.6rem; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        .header p { color: #aaa; font-size: 0.8rem; margin-top: 5px; font-weight: 600; text-transform: uppercase; }
+
+        .controls { max-width: 1200px; margin: 0 auto 20px auto; display: flex; flex-direction: column; gap: 15px; }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 10px; }
+        .filter-label { font-size: 0.7rem; color: var(--neon); text-transform: uppercase; font-weight: 900; display: block; margin-bottom: 5px; width: 100%; letter-spacing: 1px; }
+        
+        .btn-pill { padding: 10px 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #333; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; font-family: 'Montserrat'; transition: 0.3s; }
+        .btn-pill.active { background: var(--neon); color: black; border-color: var(--neon); font-weight: 900; box-shadow: 0 0 10px rgba(216, 255, 94, 0.2); }
+
+        .container { max-width: 1200px; margin: auto; background: var(--card); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(216, 255, 94, 0.05); color: var(--neon); text-align: left; padding: 15px; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid var(--neon); letter-spacing: 1px; }
+        td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; font-weight: 300; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+        
+        .badge-dorsal { background: #222; color: var(--neon); padding: 4px 10px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; border: 1px solid #333; }
+        .text-score { color: var(--neon); font-weight: 900; font-size: 1rem; }
+        .text-pen { color: #ff4444; font-weight: 600; }
+        .text-notes { color: #aaa; font-style: italic; font-size: 0.8rem; }
+        
+        .live-indicator { display: inline-flex; align-items: center; gap: 8px; font-size: 0.7rem; background: rgba(37, 211, 102, 0.1); border: 1px solid #25D366; color: #25D366; padding: 5px 12px; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        .live-dot { width: 8px; height: 8px; background: #25D366; border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.8); opacity: 0.5; } }
+        .loader { text-align: center; padding: 5px; color: var(--neon); font-weight: 900; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="live-indicator"><div class="live-dot"></div> Conexión en Vivo Realtime</div>
+        <h1 style="margin-top: 10px;">Panel de Auditoría (Race)</h1>
+        <p>Monitoreo de Scores, Penalizaciones y Control de Jueces</p>
+    </div>
+
+    <div class="controls">
+        <div>
+            <span class="filter-label">Filtrar por Sexo</span>
+            <div class="filter-row">
+                <button class="btn-pill active" id="sex-todos" onclick="cambiarSexo('todos')">Todos</button>
+                <button class="btn-pill" id="sex-masculino" onclick="cambiarSexo('Masculino')">Masculino</button>
+                <button class="btn-pill" id="sex-femenino" onclick="cambiarSexo('Femenino')">Femenino</button>
+            </div>
+        </div>
+        <div>
+            <span class="filter-label">Filtrar por Rango de Edad</span>
+            <div class="filter-row">
+                <button class="btn-pill active" id="age-todos" onclick="cambiarEdad('todos')">Todos los rangos</button>
+                <button class="btn-pill" id="age-junior" onclick="cambiarEdad('0-29')">0 - 29 años</button>
+                <button class="btn-pill" id="age-master" onclick="cambiarEdad('30-44')">30 - 44 años</button>
+                <button class="btn-pill" id="age-senior" onclick="cambiarEdad('45+')">45+ años</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tableLoader" class="loader"><i class="fas fa-spinner fa-spin"></i> Sincronizando base de datos...</div>
+
+    <div class="container">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 80px; text-align: center;">Pos</th>
+                        <th style="width: 100px;">Dorsal</th>
+                        <th>Atleta</th>
+                        <th>Categoría Base</th>
+                        <th style="text-align: center; width: 80px;">Edad</th>
+                        <th>Score / Tiempo</th>
+                        <th>Penalización</th>
+                        <th>Notas del Juez</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaCuerpo"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://hzywpjzvlvdxscgtebvi.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eXdwanp2bHZkeHNjZ3RlYnZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNjI0OTQsImV4cCI6MjA5NDYzODQ5NH0.L7gdDpxOD7N1gpSoCVI0FEiwxR44sG8XwAORYm16sEM';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let atletasLocales = [];
+        let filtroSexo = 'todos';
+        let filtroEdad = 'todos';
+
+        // FUNCIÓN COMPLEJA PARA CONVERTIR SCORE A SEGUNDOS PARA EL ORDENAMIENTO CORRECTO
+        function scoreToSeconds(scoreStr) {
+            if (!scoreStr || scoreStr.trim() === "" || scoreStr.toLowerCase() === "dns" || scoreStr.toLowerCase() === "dnf") return Infinity;
+            let partes = scoreStr.split(':');
+            if (partes.length === 2) {
+                let min = parseInt(partes[0]) || 0;
+                let seg = parseInt(partes[1]) || 0;
+                return (min * 60) + seg;
+            }
+            let num = parseFloat(scoreStr);
+            return isNaN(num) ? Infinity : num;
+        }
+
+        async function inicializar() {
+            // 1. Carga inicial de datos de la modalidad Race
+            const { data, error } = await supabaseClient
+                .from('atletas')
+                .select('*')
+                .ilike('modalidad', '%Race%');
+
+            if (error) { console.error(error); return; }
+            atletasLocales = data;
+            document.getElementById('tableLoader').style.display = 'none';
+            procesarYRenderizar();
+
+            // 2. ACTIVAR REALTIME ESCUCHA EN VIVO
+            supabaseClient
+                .channel('cambios-atletas-admin')
+                .on('postgres_changes', { event: 'UPDATE', scheme: 'public', table: 'atletas' }, payload => {
+                    let nuevo = payload.new;
+                    // Solo nos interesan actualizaciones de atletas Race
+                    if (nuevo.modalidad && nuevo.modalidad.toLowerCase().includes('race')) {
+                        let idx = atletasLocales.findIndex(a => a.id === nuevo.id);
+                        if (idx !== -1) {
+                            atletasLocales[idx] = nuevo;
+                        } else {
+                            atletasLocales.push(nuevo);
+                        }
+                        procesarYRenderizar();
+                    }
+                })
+                .subscribe();
+        }
+
+        function calcularEdad(fechaNacStr) {
+            if (!fechaNacStr) return 'N/A';
+            let nacimiento = new Date(fechaNacStr);
+            if (isNaN(nacimiento.getTime())) return 'N/A';
+            let hoy = new Date();
+            let edad = hoy.getFullYear() - nacimiento.getFullYear();
+            let m = hoy.getMonth() - nacimiento.getMonth();
+            if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) { edad--; }
+            return edad;
+        }
+
+        function procesarYRenderizar() {
+            let filtrados = atletasLocales.filter(atleta => {
+                // Filtro Sexo
+                if (filtroSexo !== 'todos' && atleta.sexo !== filtroSexo) return false;
+
+                // Filtro Edad
+                let edad = calcularEdad(atleta.fechaNac);
+                if (filtroEdad !== 'todos') {
+                    if (edad === 'N/A') return false;
+                    if (filtroEdad === '0-29' && edad > 29) return false;
+                    if (filtroEdad === '30-44' && (edad < 30 || edad > 44)) return false;
+                    if (filtroEdad === '45+' && edad < 45) return false;
+                }
+                return true;
+            });
+
+            // Ordenamiento: Los atletas que ya tienen score van arriba ordenados de menor a mayor tiempo. Los que no tienen van abajo.
+            filtrados.sort((a, b) => {
+                let scoreA = scoreToSeconds(a.score);
+                let scoreB = scoreToSeconds(b.score);
+                return scoreA - scoreB;
+            });
+
+            const tbody = document.getElementById('tablaCuerpo');
+            tbody.innerHTML = '';
+
+            filtrados.forEach((atleta, index) => {
+                let edadVal = calcularEdad(atleta.fechaNac);
+                let tieneScore = atleta.score && atleta.score.trim() !== "";
+                let posMostrar = tieneScore ? (index + 1) : '-';
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align: center; font-weight: 900; color: ${tieneScore ? 'var(--neon)' : '#666'}">${posMostrar}</td>
+                    <td><span class="badge-dorsal">${atleta.dorsal}</span></td>
+                    <td><strong>${atleta.nombre}</strong></td>
+                    <td><small style="color: #aaa;">${atleta.categoria}</small></td>
+                    <td style="text-align: center; font-weight: 600;">${edadVal}</td>
+                    <td><span class="text-score">${atleta.score || '--:--'}</span></td>
+                    <td><span class="text-pen">${atleta.penalizacion || '-'}</span></td>
+                    <td><span class="text-notes">${atleta.notas || '-'}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function cambiarSexo(valor) {
+            filtroSexo = valor;
+            document.querySelectorAll('[id^="sex-"]').forEach(b => b.classList.remove('active'));
+            document.getElementById('sex-' + valor.toLowerCase()).classList.add('active');
+            procesarYRenderizar();
+        }
+
+        function cambiarEdad(valor) {
+            filtroEdad = valor;
+            document.querySelectorAll('[id^="age-"]').forEach(b => b.classList.remove('active'));
+            let idBoton = valor === 'todos' ? 'todos' : valor === '0-29' ? 'junior' : valor === '30-44' ? 'master' : 'senior';
+            document.getElementById('age-' + idBoton).classList.add('active');
+            procesarYRenderizar();
+        }
+
+        window.onload = inicializar;
+    </script>
+</body>
+</html>

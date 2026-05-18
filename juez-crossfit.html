@@ -39,8 +39,8 @@
 
         /* NAVEGACIÓN INFERIOR MÓVIL */
         .bottom-nav { display: none; position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #333; z-index: 1000; }
-        .nav-item-mob { flex: 1; padding: 10px 0; text-align: center; color: #666; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; cursor: pointer; }
-        .nav-item-mob i { display: block; font-size: 1.2rem; margin-bottom: 4px; }
+        .nav-item-mob { flex: 1; padding: 10px 0; text-align: center; color: #666; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; cursor: pointer; }
+        .nav-item-mob i { display: block; font-size: 1.1rem; margin-bottom: 4px; }
         .nav-item-mob.active { color: var(--cf); border-top: 3px solid var(--cf); background: rgba(255, 68, 68, 0.1); }
 
         /* MAIN CONTENT */
@@ -78,6 +78,7 @@
         .btn-action-small { background: transparent; border: 1px solid #444; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
         .btn-action-small:hover { border-color: var(--cf); color: var(--cf); }
         .dorsal-tag { background: #000; padding: 5px 10px; border-radius: 6px; font-weight: 900; color: var(--cf); border: 1px solid #333; }
+        .heat-badge { background: #222; padding: 5px 10px; border-radius: 6px; font-weight: 900; color: white; border: 1px solid #444; font-size: 0.8rem; }
 
         /* GRILLA DE HEATS */
         .heats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
@@ -123,6 +124,7 @@
         </div>
         <nav class="nav-menu">
             <div class="nav-item active" onclick="switchTab('scores')"><i class="fas fa-edit"></i> Juez (Scores)</div>
+            <div class="nav-item" onclick="switchTab('audit')"><i class="fas fa-chart-line"></i> Auditoría</div>
             <div class="nav-item" onclick="switchTab('heats')"><i class="fas fa-users"></i> Ver Heats</div>
             <div class="nav-item locked coach-only" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i> Gestión WODs</div>
         </nav>
@@ -164,6 +166,39 @@
             </div>
         </section>
 
+        <section id="sec-audit" class="section">
+            <div class="section-header">
+                <div><h2>Auditoría de Resultados</h2><p>Revisa todos los scores ingresados agrupados por Heat</p></div>
+            </div>
+            <div class="panel-controls">
+                <div class="form-group">
+                    <label>Seleccionar WOD</label>
+                    <select id="auditWodSelect" class="form-control" onchange="renderAuditTable()"></select>
+                </div>
+                <div class="form-group">
+                    <label>Seleccionar Heat</label>
+                    <select id="auditHeatSelect" class="form-control" onchange="renderAuditTable()"></select>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Heat</th>
+                            <th style="width: 60px;">Dorsal</th>
+                            <th>Atleta / Categ</th>
+                            <th>Score(s) Ingresado</th>
+                            <th>Penalización</th>
+                            <th>Notas del Juez</th>
+                        </tr>
+                    </thead>
+                    <tbody id="auditTableBody">
+                        <tr><td colspan="6" style="text-align:center; padding:30px; color:#666;">Selecciona un WOD arriba</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <section id="sec-heats" class="section">
             <div class="section-header">
                 <div><h2>Organización de Heats</h2><p>Grupos globales de la competencia</p></div>
@@ -176,7 +211,6 @@
             <div class="section-header">
                 <div><h2>Gestión de WODs</h2><p>Crea, edita o elimina las pruebas</p></div>
             </div>
-
             <div class="panel-controls">
                 <div class="form-group">
                     <label>Nombre del WOD</label>
@@ -193,7 +227,7 @@
                 <div class="form-group">
                     <label>Tipo de Score 2 <span style="color:var(--cf)">(Opcional)</span></label>
                     <select id="newWodType2" class="form-control">
-                        <option value="">Ninguno (Solo 1 Score)</option>
+                        <option value="">Ninguno</option>
                         <option value="For Time">For Time</option>
                         <option value="AMRAP">AMRAP</option>
                         <option value="RM">RM / Peso</option>
@@ -208,7 +242,6 @@
                     <button id="btnCancelarEdicion" class="btn-primary" style="display:none; background:#444;" onclick="cancelarEdicionWod()"><i class="fas fa-times"></i></button>
                 </div>
             </div>
-
             <div class="table-wrap">
                 <table>
                     <thead><tr><th style="width:50px;">ID</th><th>Nombre del WOD</th><th>S1</th><th>S2</th><th>Descripción</th><th style="text-align:right;">Acciones</th></tr></thead>
@@ -220,6 +253,7 @@
 
     <div class="bottom-nav">
         <div class="nav-item-mob active" onclick="switchTab('scores')"><i class="fas fa-edit"></i>Scores</div>
+        <div class="nav-item-mob" onclick="switchTab('audit')"><i class="fas fa-chart-line"></i>Audit</div>
         <div class="nav-item-mob" onclick="switchTab('heats')"><i class="fas fa-users"></i>Heats</div>
         <div class="nav-item-mob locked coach-only" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i>WODs</div>
     </div>
@@ -254,6 +288,7 @@
             event.currentTarget.classList.add('active');
 
             if(tabId === 'scores') { actualizarSelectHeatsJuez(); renderJudgeTable(); }
+            if(tabId === 'audit') { actualizarSelectHeatsAudit(); renderAuditTable(); }
             if(tabId === 'heats') renderHeatsGrid();
         }
 
@@ -263,20 +298,16 @@
             if(pin === "1234") {
                 isCoach = true;
                 document.body.classList.add('coach-mode'); 
-                
                 document.getElementById('btnLockDesk').classList.add('unlocked');
                 document.getElementById('btnLockDesk').innerHTML = '<i class="fas fa-unlock"></i> Coach Activo';
                 document.getElementById('btnLockMob').classList.add('unlocked');
                 document.getElementById('btnLockMob').innerHTML = '<i class="fas fa-unlock"></i>';
-                
                 document.querySelectorAll('.coach-only').forEach(el => el.classList.remove('locked'));
             } else { alert("PIN Incorrecto"); }
         }
 
-        // --- MÁSCARA DE TIEMPO INTELIGENTE ---
-        // Se ejecuta cada vez que el juez escribe, pero SOLO la inyectaremos si el WOD es por tiempo.
         function maskTimeInput(input) {
-            let val = input.value.replace(/\D/g, ''); // Deja solo números
+            let val = input.value.replace(/\D/g, ''); 
             let formatted = "";
             if (val.length <= 4) {
                 if (val.length > 0) {
@@ -291,7 +322,6 @@
             input.value = formatted;
         }
 
-        // --- CARGA DE DATOS ---
         async function cargarWods() {
             const { data, error } = await supabaseClient.from('wods_cf').select('*').order('id', { ascending: true });
             if(data) {
@@ -299,12 +329,17 @@
                 renderWodsManager();
                 let options = wods.map(w => `<option value="${w.id}">${w.nombre}</option>`).join('');
                 document.getElementById('judgeWodSelect').innerHTML = '<option value="">-- Selecciona el WOD --</option>' + options;
+                document.getElementById('auditWodSelect').innerHTML = '<option value="">-- Selecciona el WOD --</option>' + options;
             }
         }
 
         async function cargarAtletas() {
             const { data, error } = await supabaseClient.from('atletas').select('*').ilike('modalidad', '%CrossFit%').order('dorsal', { ascending: true });
-            if(data) { atletas = data; actualizarSelectHeatsJuez(); }
+            if(data) { 
+                atletas = data; 
+                actualizarSelectHeatsJuez(); 
+                actualizarSelectHeatsAudit();
+            }
         }
 
         // --- SCORES ---
@@ -330,8 +365,6 @@
 
             let wodActual = wods.find(w => w.id == wodId);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
-            
-            // Detectar inteligente: ¿Es por tiempo?
             let isTime1 = wodActual && wodActual.tipo && wodActual.tipo.toLowerCase().includes('time');
             let isTime2 = wodActual && wodActual.tipo2 && wodActual.tipo2.toLowerCase().includes('time');
 
@@ -342,20 +375,9 @@
 
             atletasEnHeat.forEach(a => {
                 let wData = a.wods_data || {}; let cWod = wData[wodId] || {};
-                let inputsScoreHTML = `
-                    <div class="score-stack">
-                        <div>
-                            <span class="score-label">${wodActual.tipo}</span>
-                            <input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="${place1}" ${maskAttr1}>
-                        </div>
-                `;
+                let inputsScoreHTML = `<div class="score-stack"><div><span class="score-label">${wodActual.tipo}</span><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="${place1}" ${maskAttr1}></div>`;
                 if(tieneDobleScore) {
-                    inputsScoreHTML += `
-                        <div>
-                            <span class="score-label">${wodActual.tipo2}</span>
-                            <input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="${place2}" ${maskAttr2}>
-                        </div>
-                    `;
+                    inputsScoreHTML += `<div><span class="score-label">${wodActual.tipo2}</span><input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="${place2}" ${maskAttr2}></div>`;
                 }
                 inputsScoreHTML += `</div>`;
 
@@ -382,13 +404,8 @@
 
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
 
-            // SOLUCIÓN DEL BUG: Comparar los IDs como string para evitar fallos estrictos.
             let index = atletas.findIndex(a => String(a.id) === String(idAtleta));
-            if (index === -1) {
-                alert("Error: Atleta no encontrado.");
-                btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.disabled = false;
-                return;
-            }
+            if (index === -1) { alert("Error: Atleta no encontrado."); btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.disabled = false; return; }
 
             let wodsData = atletas[index].wods_data || {};
             wodsData[wodId] = { score: score1, score2: score2, penalizacion: pen, notas: nota };
@@ -400,6 +417,64 @@
                 btn.innerHTML = '<i class="fas fa-check"></i>'; btn.style.background = '#25D366';
                 setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.style.background = ''; btn.disabled = false; }, 1500);
             } else { alert("Error al guardar"); btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.disabled = false; }
+        }
+
+        // --- AUDITORÍA ---
+        function actualizarSelectHeatsAudit() {
+            let heatsSet = new Set();
+            atletas.forEach(a => { if(a.heat && a.heat !== 'Sin Asignar') heatsSet.add(a.heat); });
+            let heatsArray = Array.from(heatsSet).sort((a,b) => a - b);
+            document.getElementById('auditHeatSelect').innerHTML = '<option value="todos">Todos los Heats</option>' + 
+                heatsArray.map(h => `<option value="${h}">Heat ${h}</option>`).join('');
+        }
+
+        function renderAuditTable() {
+            let wodId = document.getElementById('auditWodSelect').value;
+            let heatSelected = document.getElementById('auditHeatSelect').value;
+            let tbody = document.getElementById('auditTableBody');
+
+            if(!wodId) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
+
+            let filtrados = atletas.filter(a => {
+                if(heatSelected !== 'todos' && a.heat != heatSelected) return false;
+                return true;
+            });
+
+            // Ordenamos primero por Heat numérico, luego por Dorsal
+            filtrados.sort((a, b) => {
+                let hA = parseInt(a.heat) || 999;
+                let hB = parseInt(b.heat) || 999;
+                if(hA !== hB) return hA - hB;
+                return parseInt(a.dorsal) - parseInt(b.dorsal);
+            });
+
+            if(filtrados.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#666;">No hay atletas</td></tr>'; return; }
+
+            let wodActual = wods.find(w => w.id == wodId);
+            let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
+
+            tbody.innerHTML = filtrados.map(a => {
+                let wData = a.wods_data || {};
+                let cWod = wData[wodId] || {};
+                
+                let s1 = (cWod.score && cWod.score.trim() !== "") ? cWod.score : '--';
+                let scoreText = s1;
+                if(tieneDobleScore) {
+                    let s2 = (cWod.score2 && cWod.score2.trim() !== "") ? cWod.score2 : '--';
+                    scoreText += ` <span style="color:#aaa; font-size:0.8rem; margin: 0 5px;">|</span> TB: ${s2}`;
+                }
+
+                return `
+                    <tr>
+                        <td><span class="heat-badge">H-${a.heat || '-'}</span></td>
+                        <td><span class="dorsal-tag">${a.dorsal}</span></td>
+                        <td><strong style="color:white;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
+                        <td><strong style="color:var(--cf); font-size:1.05rem;">${scoreText}</strong></td>
+                        <td style="color:#ff4444;">${cWod.penalizacion || '-'}</td>
+                        <td style="color:#aaa;">${cWod.notas || '-'}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         // --- HEATS GLOBALES ---
@@ -414,7 +489,6 @@
                 let grupo = heatsMap[hKey];
                 let tituloCat = grupo.length > 0 ? `${grupo[0].categoria} | ${grupo[0].sexo}` : 'Mixto';
                 let card = document.createElement('div'); card.className = 'heat-card';
-                
                 card.innerHTML = `
                     <div class="heat-header"><h3>Heat ${hKey}</h3><span>${tituloCat}</span></div>
                     <div style="flex:1;">${grupo.map(a => `<div class="heat-athlete"><strong>${a.nombre}</strong><span class="dorsal-tag" style="background:transparent; border-color:#444;">#${a.dorsal}</span></div>`).join('')}</div>
@@ -434,13 +508,13 @@
                 let grupoAtletas = grupos[key];
                 for (let i = 0; i < grupoAtletas.length; i += 4) {
                     let chunk = grupoAtletas.slice(i, i + 4);
-                    chunk.forEach(a => { actualizaciones.push({ id: a.id, heat: currentHeatGlobal.toString() }); let idx = atletas.findIndex(x => x.id === a.id); if(idx !== -1) atletas[idx].heat = currentHeatGlobal.toString(); });
+                    chunk.forEach(a => { actualizaciones.push({ id: a.id, heat: currentHeatGlobal.toString() }); let idx = atletas.findIndex(x => String(x.id) === String(a.id)); if(idx !== -1) atletas[idx].heat = currentHeatGlobal.toString(); });
                     currentHeatGlobal++;
                 }
             }
             alert("Procesando...");
             for(let act of actualizaciones) { await supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id); }
-            alert("Heats generados"); renderHeatsGrid(); actualizarSelectHeatsJuez();
+            alert("Heats generados"); renderHeatsGrid(); actualizarSelectHeatsJuez(); actualizarSelectHeatsAudit();
         }
 
         let atletasModalActual = [];
@@ -464,10 +538,10 @@
                 if(nuevoHeat === '') nuevoHeat = 'Sin Asignar';
                 if(a.heat !== nuevoHeat) {
                     await supabaseClient.from('atletas').update({ heat: nuevoHeat }).eq('id', a.id);
-                    let idx = atletas.findIndex(x => x.id === a.id); if(idx !== -1) atletas[idx].heat = nuevoHeat;
+                    let idx = atletas.findIndex(x => String(x.id) === String(a.id)); if(idx !== -1) atletas[idx].heat = nuevoHeat;
                 }
             }
-            cerrarModal(); renderHeatsGrid(); actualizarSelectHeatsJuez();
+            cerrarModal(); renderHeatsGrid(); actualizarSelectHeatsJuez(); actualizarSelectHeatsAudit();
             btn.innerHTML = 'Guardar Cambios'; btn.disabled = false;
         }
 
@@ -500,7 +574,7 @@
 
             if (editandoWodId) {
                 const { error } = await supabaseClient.from('wods_cf').update({ nombre, tipo, tipo2, descripcion: desc }).eq('id', editandoWodId);
-                if(!error) { alert("WOD Actualizado"); cancelarEdicionWod(); await cargarWods(); }
+                if(!error) { alert("WOD Actualizado"); cancelarEdicionWod(); await cargarWods(); renderAuditTable(); }
                 else { alert("Error al actualizar"); }
             } else {
                 const { error } = await supabaseClient.from('wods_cf').insert([{ nombre, tipo, tipo2, descripcion: desc }]);

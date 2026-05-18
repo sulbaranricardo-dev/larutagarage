@@ -11,7 +11,7 @@
         :root { --cf: #ff4444; --bg: #0a0a0a; --sidebar: #111; --card: #1a1a1a; --text: #eee; }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
         
-        /* HEADER MÓVIL (Oculto en Desktop) */
+        /* HEADER MÓVIL */
         .mobile-header { display: none; background: #000; padding: 15px 20px; border-bottom: 2px solid var(--cf); align-items: center; justify-content: space-between; z-index: 100; }
         .mobile-header h1 { margin: 0; font-size: 1.2rem; font-weight: 900; color: white; text-transform: uppercase; }
         
@@ -26,13 +26,18 @@
         .nav-item:hover { color: white; background: rgba(255, 68, 68, 0.05); }
         .nav-item.active { color: white; background: rgba(255, 68, 68, 0.1); border-left-color: var(--cf); }
         .nav-item i { font-size: 1.2rem; width: 25px; text-align: center; }
+        
+        /* CLASES DE BLOQUEO */
         .locked { display: none !important; }
+        .coach-action { display: none; } /* Oculto por defecto para Jueces */
+        body.coach-mode .coach-action { display: flex; } /* Se muestra solo al ser Coach */
+        body.coach-mode .coach-action-inline { display: inline-block; }
 
         .coach-lock-area { padding: 20px; border-top: 1px solid #222; }
         .btn-lock { width: 100%; background: transparent; border: 1px solid #444; color: #888; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; }
         .btn-lock.unlocked { background: rgba(255, 215, 0, 0.1); color: #ffd700; border-color: #ffd700; }
 
-        /* NAVEGACIÓN INFERIOR MÓVIL (Oculta en Desktop) */
+        /* NAVEGACIÓN INFERIOR MÓVIL */
         .bottom-nav { display: none; position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #333; z-index: 1000; }
         .nav-item-mob { flex: 1; padding: 10px 0; text-align: center; color: #666; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; cursor: pointer; }
         .nav-item-mob i { display: block; font-size: 1.2rem; margin-bottom: 4px; }
@@ -58,7 +63,7 @@
         .btn-primary { background: var(--cf); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-family: 'Montserrat'; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-gold { background: #ffd700; color: black; }
 
-        /* TABLA JUECES */
+        /* TABLAS */
         .table-wrap { background: var(--card); border: 1px solid #333; border-radius: 12px; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 700px; }
         th { background: rgba(0,0,0,0.5); padding: 15px; text-align: left; font-size: 0.8rem; color: #aaa; text-transform: uppercase; border-bottom: 2px solid #333; }
@@ -70,6 +75,8 @@
         
         .btn-save-row { background: #222; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 900; transition: 0.3s; width: 100%; }
         .btn-save-row:hover { background: var(--cf); border-color: var(--cf); }
+        .btn-action-small { background: transparent; border: 1px solid #444; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
+        .btn-action-small:hover { border-color: var(--cf); color: var(--cf); }
         .dorsal-tag { background: #000; padding: 5px 10px; border-radius: 6px; font-weight: 900; color: var(--cf); border: 1px solid #333; }
 
         /* GRILLA DE HEATS */
@@ -95,7 +102,7 @@
             .sidebar { display: none; }
             .mobile-header { display: flex; }
             .bottom-nav { display: flex; }
-            .main-content { padding: 20px 15px 90px 15px; } /* Espacio para el bottom nav */
+            .main-content { padding: 20px 15px 90px 15px; } 
             .section-header h2 { font-size: 1.4rem; }
             .panel-controls { flex-direction: column; gap: 15px; padding: 15px; }
             .form-group { width: 100%; }
@@ -116,7 +123,7 @@
         </div>
         <nav class="nav-menu">
             <div class="nav-item active" onclick="switchTab('scores')"><i class="fas fa-edit"></i> Juez (Scores)</div>
-            <div class="nav-item locked coach-only" onclick="switchTab('heats')"><i class="fas fa-users"></i> Gestión Heats</div>
+            <div class="nav-item" onclick="switchTab('heats')"><i class="fas fa-users"></i> Ver Heats</div>
             <div class="nav-item locked coach-only" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i> Gestión WODs</div>
         </nav>
         <div class="coach-lock-area">
@@ -130,7 +137,6 @@
             <div class="section-header">
                 <div><h2>Panel de Puntuación</h2><p>Selecciona WOD y Heat para evaluar</p></div>
             </div>
-
             <div class="panel-controls">
                 <div class="form-group">
                     <label>Seleccionar WOD</label>
@@ -141,7 +147,6 @@
                     <select id="judgeHeatSelect" class="form-control" onchange="renderJudgeTable()"></select>
                 </div>
             </div>
-
             <div id="judgeTableContainer" class="table-wrap" style="display:none;">
                 <table>
                     <thead>
@@ -161,15 +166,15 @@
 
         <section id="sec-heats" class="section">
             <div class="section-header">
-                <div><h2>Gestión de Heats</h2><p>Heats globales de la competencia</p></div>
-                <button class="btn-primary btn-gold" onclick="autogenerarHeats()"><i class="fas fa-magic"></i> Autogenerar</button>
+                <div><h2>Organización de Heats</h2><p>Grupos globales de la competencia</p></div>
+                <button class="btn-primary btn-gold coach-action" onclick="autogenerarHeats()"><i class="fas fa-magic"></i> Autogenerar</button>
             </div>
             <div class="heats-grid" id="heatsGridContainer"></div>
         </section>
 
         <section id="sec-wods" class="section">
             <div class="section-header">
-                <div><h2>Gestión de WODs</h2><p>Crea las pruebas de la competencia</p></div>
+                <div><h2>Gestión de WODs</h2><p>Crea, edita o elimina las pruebas</p></div>
             </div>
 
             <div class="panel-controls">
@@ -199,13 +204,14 @@
                     <input type="text" id="newWodDesc" class="form-control" placeholder="Ej: Time Cap 10 min...">
                 </div>
                 <div class="form-group" style="flex: 0; justify-content:flex-end;">
-                    <button class="btn-primary" onclick="crearWod()"><i class="fas fa-plus"></i> Guardar</button>
+                    <button id="btnGuardarWod" class="btn-primary" onclick="guardarOActualizarWod()"><i class="fas fa-save"></i> Guardar</button>
+                    <button id="btnCancelarEdicion" class="btn-primary" style="display:none; background:#444;" onclick="cancelarEdicionWod()"><i class="fas fa-times"></i></button>
                 </div>
             </div>
 
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th style="width:50px;">ID</th><th>Nombre del WOD</th><th>S1</th><th>S2</th><th>Descripción</th></tr></thead>
+                    <thead><tr><th style="width:50px;">ID</th><th>Nombre del WOD</th><th>S1</th><th>S2</th><th>Descripción</th><th style="text-align:right;">Acciones</th></tr></thead>
                     <tbody id="wodsTableBody"></tbody>
                 </table>
             </div>
@@ -214,7 +220,7 @@
 
     <div class="bottom-nav">
         <div class="nav-item-mob active" onclick="switchTab('scores')"><i class="fas fa-edit"></i>Scores</div>
-        <div class="nav-item-mob locked coach-only" onclick="switchTab('heats')"><i class="fas fa-fire"></i>Heats</div>
+        <div class="nav-item-mob" onclick="switchTab('heats')"><i class="fas fa-users"></i>Heats</div>
         <div class="nav-item-mob locked coach-only" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i>WODs</div>
     </div>
 
@@ -223,7 +229,7 @@
             <i class="fas fa-times close-modal" onclick="cerrarModal()"></i>
             <h2 style="margin-top:0; color:white;">Editar Heat <span id="modalHeatNumber" style="color:var(--cf);"></span></h2>
             <div id="modalAthletesList" style="display:flex; flex-direction:column; gap:10px; margin-top:20px;"></div>
-            <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="guardarCambiosHeat()">Guardar Cambios</button>
+            <button class="btn-primary" style="width:100%; margin-top:20px; justify-content:center;" onclick="guardarCambiosHeat()">Guardar Cambios</button>
         </div>
     </div>
 
@@ -232,22 +238,19 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eXdwanp2bHZkeHNjZ3RlYnZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNjI0OTQsImV4cCI6MjA5NDYzODQ5NH0.L7gdDpxOD7N1gpSoCVI0FEiwxR44sG8XwAORYm16sEM';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let atletas = []; let wods = []; let isCoach = false;
+        let atletas = []; let wods = []; let isCoach = false; let editandoWodId = null;
 
         async function init() {
             await cargarWods();
             await cargarAtletas();
         }
 
-        // --- NAVEGACIÓN Y RESPONSIVIDAD ---
         function switchTab(tabId) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.querySelectorAll('.nav-item-mob').forEach(n => n.classList.remove('active'));
             
             document.getElementById(`sec-${tabId}`).classList.add('active');
-            
-            // Activar visualmente en Desktop y Mobile
             event.currentTarget.classList.add('active');
 
             if(tabId === 'scores') { actualizarSelectHeatsJuez(); renderJudgeTable(); }
@@ -259,6 +262,9 @@
             let pin = prompt("Ingresa el PIN de Head Coach:");
             if(pin === "1234") {
                 isCoach = true;
+                // Truco de CSS para mostrar los botones de editar heats y autogenerar
+                document.body.classList.add('coach-mode'); 
+                
                 document.getElementById('btnLockDesk').classList.add('unlocked');
                 document.getElementById('btnLockDesk').innerHTML = '<i class="fas fa-unlock"></i> Coach Activo';
                 document.getElementById('btnLockMob').classList.add('unlocked');
@@ -281,18 +287,14 @@
 
         async function cargarAtletas() {
             const { data, error } = await supabaseClient.from('atletas').select('*').ilike('modalidad', '%CrossFit%').order('dorsal', { ascending: true });
-            if(data) {
-                atletas = data;
-                actualizarSelectHeatsJuez();
-            }
+            if(data) { atletas = data; actualizarSelectHeatsJuez(); }
         }
 
-        // --- SCORES (DOBLE SCORE SOPORTADO) ---
+        // --- SCORES ---
         function actualizarSelectHeatsJuez() {
             let heatsSet = new Set();
             atletas.forEach(a => { if(a.heat && a.heat !== 'Sin Asignar') heatsSet.add(a.heat); });
             let heatsArray = Array.from(heatsSet).sort((a,b) => a - b);
-            
             document.getElementById('judgeHeatSelect').innerHTML = '<option value="">-- Selecciona Heat --</option>' + 
                 heatsArray.map(h => `<option value="${h}">Heat ${h}</option>`).join('');
         }
@@ -309,30 +311,17 @@
             let atletasEnHeat = atletas.filter(a => a.heat == heatSelected);
             if(atletasEnHeat.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Vacio</td></tr>'; return; }
 
-            // Buscamos la configuración del WOD para saber si tiene 1 o 2 Scores
             let wodActual = wods.find(w => w.id == wodId);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
 
             atletasEnHeat.forEach(a => {
-                let wData = a.wods_data || {};
-                let cWod = wData[wodId] || {};
-                
-                // Lógica UI para 1 o 2 scores
+                let wData = a.wods_data || {}; let cWod = wData[wodId] || {};
                 let inputsScoreHTML = `
                     <div class="score-stack">
-                        <div>
-                            <span class="score-label">${wodActual.tipo}</span>
-                            <input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="Score 1">
-                        </div>
+                        <div><span class="score-label">${wodActual.tipo}</span><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="Score 1"></div>
                 `;
-                
                 if(tieneDobleScore) {
-                    inputsScoreHTML += `
-                        <div>
-                            <span class="score-label">${wodActual.tipo2}</span>
-                            <input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="Score 2">
-                        </div>
-                    `;
+                    inputsScoreHTML += `<div><span class="score-label">${wodActual.tipo2}</span><input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="Score 2"></div>`;
                 }
                 inputsScoreHTML += `</div>`;
 
@@ -353,7 +342,7 @@
             let btn = document.getElementById(`j_btn_${idAtleta}`);
             let score1 = document.getElementById(`j_score_${idAtleta}`).value;
             let score2El = document.getElementById(`j_score2_${idAtleta}`);
-            let score2 = score2El ? score2El.value : null; // Si existe el input 2, lo guardamos
+            let score2 = score2El ? score2El.value : null;
             let pen = document.getElementById(`j_pen_${idAtleta}`).value;
             let nota = document.getElementById(`j_nota_${idAtleta}`).value;
 
@@ -384,10 +373,12 @@
                 let grupo = heatsMap[hKey];
                 let tituloCat = grupo.length > 0 ? `${grupo[0].categoria} | ${grupo[0].sexo}` : 'Mixto';
                 let card = document.createElement('div'); card.className = 'heat-card';
+                
+                // NOTA: El botón "Editar Heat" ahora tiene la clase 'coach-action' para ocultarse al juez
                 card.innerHTML = `
                     <div class="heat-header"><h3>Heat ${hKey}</h3><span>${tituloCat}</span></div>
                     <div style="flex:1;">${grupo.map(a => `<div class="heat-athlete"><strong>${a.nombre}</strong><span class="dorsal-tag" style="background:transparent; border-color:#444;">#${a.dorsal}</span></div>`).join('')}</div>
-                    <div class="heat-footer"><button class="btn-edit-heat" onclick="abrirModalHeat('${hKey}')"><i class="fas fa-edit"></i> Editar Heat</button></div>
+                    <div class="heat-footer coach-action"><button class="btn-edit-heat" onclick="abrirModalHeat('${hKey}')"><i class="fas fa-edit"></i> Editar Heat</button></div>
                 `;
                 container.appendChild(card);
             });
@@ -440,7 +431,7 @@
             btn.innerHTML = 'Guardar Cambios'; btn.disabled = false;
         }
 
-        // --- WODS (Doble Score Creador) ---
+        // --- WODS: CREAR, EDITAR Y BORRAR ---
         function renderWodsManager() {
             let tbody = document.getElementById('wodsTableBody');
             tbody.innerHTML = wods.map(w => `
@@ -450,29 +441,68 @@
                     <td><span style="color:var(--cf); font-size:0.7rem; border:1px solid var(--cf); padding:3px 8px; border-radius:4px;">${w.tipo}</span></td>
                     <td>${w.tipo2 ? `<span style="color:#ffd700; font-size:0.7rem; border:1px solid #ffd700; padding:3px 8px; border-radius:4px;">${w.tipo2}</span>` : '<span style="color:#444;">-</span>'}</td>
                     <td style="color:#aaa;">${w.descripcion || '-'}</td>
+                    <td style="text-align:right;">
+                        <button class="btn-action-small" onclick="prepararEdicionWod('${w.id}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn-action-small" style="color:var(--cf); border-color:var(--cf);" onclick="borrarWod('${w.id}')"><i class="fas fa-trash"></i></button>
+                    </td>
                 </tr>
             `).join('');
         }
 
-        async function crearWod() {
+        async function guardarOActualizarWod() {
             let nombre = document.getElementById('newWodName').value.trim();
             let tipo = document.getElementById('newWodType').value;
-            let tipo2 = document.getElementById('newWodType2').value; // El opcional
+            let tipo2 = document.getElementById('newWodType2').value;
             let desc = document.getElementById('newWodDesc').value.trim();
             
             if(!nombre) return alert("Escribe el nombre del WOD");
-            let btn = event.target; btn.innerHTML = 'Guardando...'; btn.disabled = true;
+            let btn = document.getElementById('btnGuardarWod'); btn.innerHTML = 'Guardando...'; btn.disabled = true;
 
-            // Inserta tipo2 en Supabase
-            const { data, error } = await supabaseClient.from('wods_cf').insert([{ nombre, tipo, tipo2: tipo2, descripcion: desc }]).select();
+            if (editandoWodId) {
+                // Modo Edición
+                const { error } = await supabaseClient.from('wods_cf').update({ nombre, tipo, tipo2, descripcion: desc }).eq('id', editandoWodId);
+                if(!error) { alert("WOD Actualizado"); cancelarEdicionWod(); await cargarWods(); }
+                else { alert("Error al actualizar"); }
+            } else {
+                // Modo Creación
+                const { error } = await supabaseClient.from('wods_cf').insert([{ nombre, tipo, tipo2, descripcion: desc }]);
+                if(!error) {
+                    document.getElementById('newWodName').value = ''; document.getElementById('newWodDesc').value = ''; document.getElementById('newWodType2').value = '';
+                    alert("WOD Creado"); await cargarWods();
+                } else { alert("Error al crear"); }
+            }
+            btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.disabled = false;
+        }
+
+        function prepararEdicionWod(id) {
+            let w = wods.find(x => x.id == id);
+            if(!w) return;
+            document.getElementById('newWodName').value = w.nombre;
+            document.getElementById('newWodType').value = w.tipo;
+            document.getElementById('newWodType2').value = w.tipo2 || "";
+            document.getElementById('newWodDesc').value = w.descripcion || "";
             
-            if(!error) {
-                document.getElementById('newWodName').value = ''; document.getElementById('newWodDesc').value = '';
-                document.getElementById('newWodType2').value = '';
-                await cargarWods(); alert("WOD Creado");
-            } else { alert("Error al crear. Asegúrate de haber agregado la columna 'tipo2' en Supabase."); }
-            
-            btn.innerHTML = '<i class="fas fa-plus"></i> Guardar'; btn.disabled = false;
+            editandoWodId = id;
+            document.getElementById('btnGuardarWod').innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar';
+            document.getElementById('btnGuardarWod').classList.add('btn-gold');
+            document.getElementById('btnCancelarEdicion').style.display = 'inline-block';
+        }
+
+        function cancelarEdicionWod() {
+            editandoWodId = null;
+            document.getElementById('newWodName').value = '';
+            document.getElementById('newWodDesc').value = '';
+            document.getElementById('newWodType2').value = '';
+            document.getElementById('btnGuardarWod').innerHTML = '<i class="fas fa-save"></i> Guardar';
+            document.getElementById('btnGuardarWod').classList.remove('btn-gold');
+            document.getElementById('btnCancelarEdicion').style.display = 'none';
+        }
+
+        async function borrarWod(id) {
+            if(!confirm("¿Estás 100% seguro de borrar este WOD? Los scores que los atletas tengan registrados bajo este WOD no se perderán, pero ya no tendrán a qué evento pertenecer.")) return;
+            const { error } = await supabaseClient.from('wods_cf').delete().eq('id', id);
+            if(!error) { alert("WOD Eliminado"); await cargarWods(); }
+            else { alert("Error al eliminar"); }
         }
 
         window.onload = init;

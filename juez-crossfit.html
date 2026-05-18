@@ -8,49 +8,105 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --neon: #d8ff5e; --bg: #0a0a0a; --card: #151515; }
+        :root { --neon: #d8ff5e; --cf: #ff4444; --bg: #0a0a0a; --card: #151515; }
         body { background-color: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px; min-height: 100vh; }
+        
+        /* HEADER */
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
         .header-title-box { display: flex; flex-direction: column; gap: 5px; }
-        .header h1 { font-weight: 900; color: var(--neon); font-size: 1.2rem; margin: 0; text-transform: uppercase; }
-        .badge-cf { background: #ff4444; color: white; padding: 3px 10px; border-radius: 50px; font-weight: 900; font-size: 0.65rem; text-transform: uppercase; display: inline-block; width: fit-content; }
-        .btn-admin { background: rgba(255, 255, 255, 0.05); color: #ccc; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; text-decoration: none; text-transform: uppercase; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-admin:hover { background: white; color: black; }
-        .search-container { position: relative; margin-bottom: 20px; }
-        .search-container i { position: absolute; left: 20px; top: 15px; color: #888; }
-        #searchInput { width: 100%; padding: 15px 20px 15px 50px; background: var(--card); border: 1px solid #333; color: white; border-radius: 50px; box-sizing: border-box; font-family: 'Montserrat'; font-size: 0.9rem; transition: 0.3s; }
-        #searchInput:focus { outline: none; border-color: var(--neon); }
+        .header h1 { font-weight: 900; color: white; font-size: 1.2rem; margin: 0; text-transform: uppercase; }
+        .badge-cf { background: var(--cf); color: white; padding: 3px 10px; border-radius: 50px; font-weight: 900; font-size: 0.65rem; text-transform: uppercase; display: inline-block; width: fit-content; }
+        
+        .btn-coach { background: transparent; color: #aaa; border: 1px solid #444; padding: 8px 15px; border-radius: 50px; font-weight: 900; font-size: 0.7rem; cursor: pointer; transition: 0.3s; }
+        .btn-coach.active { background: #ffd700; color: black; border-color: #ffd700; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+
+        /* PANEL DE FILTROS AVANZADOS */
+        .filters-panel { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        .filter-group label { font-size: 0.65rem; color: #888; text-transform: uppercase; font-weight: 900; }
+        .filter-group select { background: #000; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-family: 'Montserrat'; font-size: 0.85rem; outline: none; }
+        .filter-group select:focus { border-color: var(--cf); }
+        .filter-full { grid-column: span 2; }
+        
+        .search-box { position: relative; margin-top: 5px; }
+        .search-box i { position: absolute; left: 15px; top: 12px; color: #888; }
+        .search-box input { width: 100%; padding: 10px 10px 10px 40px; background: #000; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat'; }
+
+        /* TARJETAS DE ATLETAS */
         .athlete-list { display: flex; flex-direction: column; gap: 15px; }
-        .athlete-card { background: var(--card); border: 1px solid #222; border-left: 4px solid #ff4444; border-radius: 12px; padding: 20px; transition: 0.3s; }
-        .athlete-header { display: flex; justify-content: space-between; align-items: center; }
-        .athlete-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; font-weight: 900; }
-        .athlete-info p { margin: 0; color: #aaa; font-size: 0.8rem; }
-        .athlete-header-right { display: flex; align-items: center; gap: 12px; }
-        .dorsal-tag { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 8px; font-weight: 900; color: #ff4444; font-size: 1.2rem; }
-        .athlete-card.completed { border-left-color: #25D366; background: rgba(20, 20, 20, 0.3); opacity: 0.6; }
+        .athlete-card { background: var(--card); border: 1px solid #222; border-left: 4px solid var(--cf); border-radius: 12px; padding: 20px; transition: 0.3s; }
+        .athlete-card.completed { border-left-color: #25D366; background: rgba(20, 20, 20, 0.3); opacity: 0.7; }
         .athlete-card.completed .scoring-form { display: none !important; }
-        .btn-toggle-card { background: transparent; border: 1px solid #444; color: #aaa; padding: 6px 12px; border-radius: 6px; font-family: 'Montserrat'; font-size: 0.7rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+        
+        .athlete-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .athlete-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; font-weight: 900; }
+        .athlete-info p { margin: 0; color: #aaa; font-size: 0.75rem; }
+        .heat-badge { display: inline-block; background: #222; color: #fff; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 900; border: 1px solid #444; margin-top: 5px; }
+        
+        .athlete-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .dorsal-tag { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 8px; font-weight: 900; color: white; font-size: 1.2rem; }
+        .btn-toggle-card { background: transparent; border: 1px solid #444; color: #aaa; padding: 4px 10px; border-radius: 6px; font-family: 'Montserrat'; font-size: 0.7rem; font-weight: 600; cursor: pointer; }
+        
+        /* FORMULARIO JUEZ */
         .scoring-form { display: grid; grid-template-columns: 1fr; gap: 12px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px solid #222; margin-top: 15px; }
         .input-group label { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
         .input-group input { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat'; font-size: 1rem; }
-        .input-group input:focus { outline: none; border-color: #ff4444; }
-        .btn-save { background: #ff4444; color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; }
-        .btn-save:disabled { background: #444; color: #888; }
-        .loader { text-align: center; color: var(--neon); font-weight: 900; padding: 40px; font-size: 0.9rem; letter-spacing: 2px; }
+        .btn-save { background: var(--cf); color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; }
+        
+        /* PANEL HEAD COACH */
+        .coach-panel { background: rgba(255, 215, 0, 0.1); border: 1px solid #ffd700; padding: 12px; border-radius: 8px; margin-top: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .coach-panel input { width: 60px; padding: 8px; text-align: center; border-radius: 6px; border: 1px solid #ffd700; background: #000; color: #ffd700; font-weight: 900; }
+        .btn-coach-save { background: #ffd700; color: black; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 900; cursor: pointer; flex: 1; text-transform: uppercase; font-size: 0.75rem; }
+
+        .loader { text-align: center; color: var(--cf); font-weight: 900; padding: 40px; font-size: 0.9rem; letter-spacing: 2px; }
     </style>
 </head>
 <body>
+
     <div class="header">
         <div class="header-title-box">
-            <h1>Juez Panel</h1>
+            <h1>Panel Jueces CF</h1>
             <span class="badge-cf">Ruta CrossFit</span>
         </div>
-        <a href="admin-crossfit.html" class="btn-admin"><i class="fas fa-chart-line"></i> Auditoría</a>
+        <button id="btnCoach" class="btn-coach" onclick="toggleCoachMode()"><i class="fas fa-crown"></i> Head Coach</button>
     </div>
 
-    <div class="search-container">
-        <i class="fas fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Buscar por Dorsal o Nombre..." onkeyup="filtrarAtletas()">
+    <div class="filters-panel">
+        <div class="filter-group filter-full">
+            <label>WOD Actual</label>
+            <select id="wodSelect" onchange="ejecutarFiltros()" style="border-color: var(--cf); font-weight: 900; font-size: 1rem;">
+                <option value="wod1">WOD 1</option>
+                <option value="wod2">WOD 2</option>
+                <option value="wod3">WOD 3</option>
+                <option value="final">WOD FINAL</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Género</label>
+            <select id="sexSelect" onchange="ejecutarFiltros()">
+                <option value="todos">M & F</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Heat</label>
+            <select id="heatSelect" onchange="ejecutarFiltros()">
+                <option value="todos">Todos</option>
+                <option value="1">Heat 1</option>
+                <option value="2">Heat 2</option>
+                <option value="3">Heat 3</option>
+                <option value="4">Heat 4</option>
+                <option value="5">Heat 5</option>
+                <option value="Sin Asignar">Sin Asignar</option>
+            </select>
+        </div>
+        <div class="filter-group filter-full">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar atleta por nombre o dorsal..." onkeyup="ejecutarFiltros()">
+            </div>
+        </div>
     </div>
 
     <div id="loading" class="loader"><i class="fas fa-circle-notch fa-spin"></i> CARGANDO ATLETAS...</div>
@@ -62,12 +118,13 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let todosLosAtletas = [];
+        let currentWod = 'wod1';
+        let isCoachMode = false;
 
         async function cargarDatos() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('listaAtletas').style.display = 'none';
 
-            // AQUÍ ESTÁ EL FILTRO PARA CROSSFIT
             const { data, error } = await supabaseClient
                 .from('atletas')
                 .select('*')
@@ -76,53 +133,119 @@
 
             if (error) return;
             todosLosAtletas = data;
-            renderizarAtletas(todosLosAtletas);
+            ejecutarFiltros();
+            
             document.getElementById('loading').style.display = 'none';
             document.getElementById('listaAtletas').style.display = 'flex';
+        }
+
+        function toggleCoachMode() {
+            if(isCoachMode) {
+                isCoachMode = false;
+                document.getElementById('btnCoach').classList.remove('active');
+                ejecutarFiltros();
+                return;
+            }
+            
+            let pin = prompt("Ingrese el PIN de Head Coach:");
+            // El PIN por defecto es 1234
+            if(pin === "1234") {
+                isCoachMode = true;
+                document.getElementById('btnCoach').classList.add('active');
+                alert("Modo Coach Activado: Ahora puedes reasignar los Heats.");
+                ejecutarFiltros();
+            } else {
+                alert("PIN Incorrecto.");
+            }
+        }
+
+        function ejecutarFiltros() {
+            currentWod = document.getElementById('wodSelect').value;
+            let sex = document.getElementById('sexSelect').value;
+            let heat = document.getElementById('heatSelect').value;
+            let search = document.getElementById('searchInput').value.toLowerCase();
+
+            let filtrados = todosLosAtletas.filter(a => {
+                // Filtro Sexo
+                if (sex !== 'todos' && a.sexo !== sex) return false;
+                
+                // Filtro Búsqueda
+                if (search && !a.nombre.toLowerCase().includes(search) && !a.dorsal.toLowerCase().includes(search)) return false;
+
+                // Filtro de HEAT (Leyendo la columna mágica JSONB)
+                let wodsData = a.wods_data || {};
+                let currentWodData = wodsData[currentWod] || {};
+                let heatAtleta = currentWodData.heat || 'Sin Asignar';
+                
+                if (heat !== 'todos' && heatAtleta !== heat) return false;
+
+                return true;
+            });
+
+            renderizarAtletas(filtrados);
         }
 
         function renderizarAtletas(lista) {
             const contenedor = document.getElementById('listaAtletas');
             contenedor.innerHTML = '';
-            if(lista.length === 0) return contenedor.innerHTML = '<p style="text-align:center;">No hay atletas de CrossFit.</p>';
+            if(lista.length === 0) return contenedor.innerHTML = '<p style="text-align:center; color:#888;">No hay atletas en este Heat/Filtro.</p>';
 
             lista.forEach(atleta => {
-                let tieneScore = atleta.score && atleta.score.trim() !== "";
+                let wodsData = atleta.wods_data || {};
+                let currentWodData = wodsData[currentWod] || {};
+                
+                let sVal = currentWodData.score || '';
+                let pVal = currentWodData.penalizacion || '';
+                let nVal = currentWodData.notas || '';
+                let hVal = currentWodData.heat || 'Sin Asignar';
+
+                let tieneScore = sVal.trim() !== "";
                 const card = document.createElement('div');
                 card.id = `card_${atleta.id}`;
                 card.className = `athlete-card ${tieneScore ? 'completed' : ''}`;
                 
+                let coachHtml = isCoachMode ? `
+                    <div class="coach-panel">
+                        <label style="color:#ffd700; font-size:0.6rem; font-weight:900;">HEAT ACTUAL</label>
+                        <input type="text" id="heat_in_${atleta.id}" value="${hVal === 'Sin Asignar' ? '' : hVal}" placeholder="#">
+                        <button class="btn-coach-save" onclick="guardarHeat('${atleta.id}')">Asignar Heat</button>
+                    </div>
+                ` : '';
+
                 card.innerHTML = `
                     <div class="athlete-header">
                         <div class="athlete-info">
                             <h3>${atleta.nombre}</h3>
                             <p>${atleta.categoria} | ${atleta.sexo}</p>
+                            <span class="heat-badge"><i class="fas fa-fire"></i> Heat: ${hVal}</span>
                         </div>
                         <div class="athlete-header-right">
-                            <button class="btn-toggle-card" onclick="toggleCard('${atleta.id}')">
-                                <i class="fas fa-edit"></i> <span id="text_btn_${atleta.id}">${tieneScore ? 'Abrir' : 'Minimizar'}</span>
-                            </button>
                             <div class="dorsal-tag">${atleta.dorsal}</div>
+                            <button class="btn-toggle-card" onclick="toggleCard('${atleta.id}')">
+                                <i class="fas fa-edit"></i> <span id="text_btn_${atleta.id}">${tieneScore ? 'Abrir' : 'Ocultar'}</span>
+                            </button>
                         </div>
                     </div>
                     
+                    ${coachHtml}
+
                     <div class="scoring-form">
                         <div class="input-group">
                             <label>Score (Ej: 12:30 para tiempo, o 155 para libras/reps)</label>
-                            <input type="text" id="score_${atleta.id}" placeholder="Tiempo, Peso o Reps" value="${atleta.score || ''}">
+                            <input type="text" id="score_${atleta.id}" placeholder="Escribe el score final" value="${sVal}">
                         </div>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
                             <div class="input-group">
                                 <label>Penalización</label>
-                                <input type="text" id="pen_${atleta.id}" placeholder="Opcional" value="${atleta.penalizacion || ''}">
+                                <input type="text" id="pen_${atleta.id}" placeholder="Opcional" value="${pVal}">
                             </div>
                             <div class="input-group">
                                 <label>Notas</label>
-                                <input type="text" id="nota_${atleta.id}" placeholder="Opcional" value="${atleta.notas || ''}">
+                                <input type="text" id="nota_${atleta.id}" placeholder="Opcional" value="${nVal}">
                             </div>
                         </div>
                         <button id="btn_${atleta.id}" class="btn-save" onclick="guardarScore('${atleta.id}')">
-                            <i class="fas fa-save"></i> GUARDAR SCORE
+                            <i class="fas fa-save"></i> GUARDAR SCORE WOD
                         </button>
                     </div>
                 `;
@@ -134,14 +257,10 @@
             const card = document.getElementById(`card_${id}`);
             const btn = document.getElementById(`text_btn_${id}`);
             card.classList.toggle('completed');
-            btn.innerText = card.classList.contains('completed') ? 'Abrir' : 'Minimizar';
+            btn.innerText = card.classList.contains('completed') ? 'Abrir' : 'Ocultar';
         }
 
-        function filtrarAtletas() {
-            const t = document.getElementById('searchInput').value.toLowerCase();
-            renderizarAtletas(todosLosAtletas.filter(a => a.nombre.toLowerCase().includes(t) || a.dorsal.toLowerCase().includes(t)));
-        }
-
+        // GUARDAR EL SCORE EN EL WOD CORRESPONDIENTE
         async function guardarScore(idAtleta) {
             const btn = document.getElementById(`btn_${idAtleta}`);
             const sVal = document.getElementById(`score_${idAtleta}`).value;
@@ -150,21 +269,61 @@
 
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GUARDANDO...';
 
-            const { data, error } = await supabaseClient.from('atletas').update({ score: sVal, penalizacion: pVal, notas: nVal }).eq('id', idAtleta);
+            // Rescatamos los datos viejos
+            let atletaIndex = todosLosAtletas.findIndex(a => a.id === idAtleta);
+            let wodsData = todosLosAtletas[atletaIndex].wods_data || {};
+            let currentWodData = wodsData[currentWod] || {};
+
+            // Actualizamos solo el WOD seleccionado
+            wodsData[currentWod] = {
+                ...currentWodData,
+                score: sVal,
+                penalizacion: pVal,
+                notas: nVal
+            };
+
+            const { error } = await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
 
             if (!error) {
                 btn.innerHTML = '<i class="fas fa-check"></i> ¡GUARDADO!';
                 btn.style.background = '#25D366';
-                const idx = todosLosAtletas.findIndex(a => a.id === idAtleta);
-                if(idx !== -1) { todosLosAtletas[idx].score = sVal; todosLosAtletas[idx].penalizacion = pVal; todosLosAtletas[idx].notas = nVal; }
+                todosLosAtletas[atletaIndex].wods_data = wodsData; // Actualizar memoria
                 
                 setTimeout(() => {
-                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> GUARDAR SCORE'; btn.style.background = '#ff4444';
+                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> GUARDAR SCORE WOD'; btn.style.background = 'var(--cf)';
                     const card = document.getElementById(`card_${idAtleta}`);
                     if (!card.classList.contains('completed')) { card.classList.add('completed'); document.getElementById(`text_btn_${idAtleta}`).innerText = 'Abrir'; }
                 }, 1000);
+            } else {
+                alert("Error al guardar. Intenta de nuevo.");
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> GUARDAR SCORE WOD';
             }
         }
+
+        // GUARDAR EL HEAT (SOLO HEAD COACH)
+        async function guardarHeat(idAtleta) {
+            let hVal = document.getElementById(`heat_in_${idAtleta}`).value;
+            if(hVal.trim() === '') hVal = 'Sin Asignar';
+
+            let atletaIndex = todosLosAtletas.findIndex(a => a.id === idAtleta);
+            let wodsData = todosLosAtletas[atletaIndex].wods_data || {};
+            let currentWodData = wodsData[currentWod] || {};
+
+            wodsData[currentWod] = {
+                ...currentWodData,
+                heat: hVal
+            };
+
+            const { error } = await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
+            if(!error) {
+                todosLosAtletas[atletaIndex].wods_data = wodsData;
+                alert("Heat asignado correctamente.");
+                ejecutarFiltros(); // Refresca la vista
+            } else {
+                alert("Error al asignar Heat.");
+            }
+        }
+
         window.onload = cargarDatos;
     </script>
 </body>

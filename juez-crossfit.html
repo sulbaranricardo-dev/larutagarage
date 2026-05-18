@@ -29,8 +29,8 @@
         
         /* CLASES DE BLOQUEO */
         .locked { display: none !important; }
-        .coach-action { display: none; } /* Oculto por defecto para Jueces */
-        body.coach-mode .coach-action { display: flex; } /* Se muestra solo al ser Coach */
+        .coach-action { display: none; } 
+        body.coach-mode .coach-action { display: flex; } 
         body.coach-mode .coach-action-inline { display: inline-block; }
 
         .coach-lock-area { padding: 20px; border-top: 1px solid #222; }
@@ -262,7 +262,6 @@
             let pin = prompt("Ingresa el PIN de Head Coach:");
             if(pin === "1234") {
                 isCoach = true;
-                // Truco de CSS para mostrar los botones de editar heats y autogenerar
                 document.body.classList.add('coach-mode'); 
                 
                 document.getElementById('btnLockDesk').classList.add('unlocked');
@@ -272,6 +271,24 @@
                 
                 document.querySelectorAll('.coach-only').forEach(el => el.classList.remove('locked'));
             } else { alert("PIN Incorrecto"); }
+        }
+
+        // --- MÁSCARA DE TIEMPO INTELIGENTE ---
+        // Se ejecuta cada vez que el juez escribe, pero SOLO la inyectaremos si el WOD es por tiempo.
+        function maskTimeInput(input) {
+            let val = input.value.replace(/\D/g, ''); // Deja solo números
+            let formatted = "";
+            if (val.length <= 4) {
+                if (val.length > 0) {
+                    formatted += val.substring(0, 2);
+                    if (val.length > 2) formatted += ":" + val.substring(2, 4);
+                }
+            } else if (val.length <= 7) {
+                formatted += val.substring(0, 2) + ":" + val.substring(2, 4) + "." + val.substring(4, 7);
+            } else {
+                formatted += val.substring(0, 2) + ":" + val.substring(2, 4) + ":" + val.substring(4, 6) + "." + val.substring(6, 9);
+            }
+            input.value = formatted;
         }
 
         // --- CARGA DE DATOS ---
@@ -313,15 +330,32 @@
 
             let wodActual = wods.find(w => w.id == wodId);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
+            
+            // Detectar inteligente: ¿Es por tiempo?
+            let isTime1 = wodActual && wodActual.tipo && wodActual.tipo.toLowerCase().includes('time');
+            let isTime2 = wodActual && wodActual.tipo2 && wodActual.tipo2.toLowerCase().includes('time');
+
+            let maskAttr1 = isTime1 ? `oninput="maskTimeInput(this)"` : '';
+            let maskAttr2 = isTime2 ? `oninput="maskTimeInput(this)"` : '';
+            let place1 = isTime1 ? "MM:SS" : "Score 1";
+            let place2 = isTime2 ? "MM:SS" : "Score 2";
 
             atletasEnHeat.forEach(a => {
                 let wData = a.wods_data || {}; let cWod = wData[wodId] || {};
                 let inputsScoreHTML = `
                     <div class="score-stack">
-                        <div><span class="score-label">${wodActual.tipo}</span><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="Score 1"></div>
+                        <div>
+                            <span class="score-label">${wodActual.tipo}</span>
+                            <input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="${place1}" ${maskAttr1}>
+                        </div>
                 `;
                 if(tieneDobleScore) {
-                    inputsScoreHTML += `<div><span class="score-label">${wodActual.tipo2}</span><input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="Score 2"></div>`;
+                    inputsScoreHTML += `
+                        <div>
+                            <span class="score-label">${wodActual.tipo2}</span>
+                            <input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="${place2}" ${maskAttr2}>
+                        </div>
+                    `;
                 }
                 inputsScoreHTML += `</div>`;
 
@@ -332,7 +366,7 @@
                     <td>${inputsScoreHTML}</td>
                     <td><input type="text" id="j_pen_${a.id}" class="form-control" value="${cWod.penalizacion || ''}" placeholder="Penal."></td>
                     <td><input type="text" id="j_nota_${a.id}" class="form-control" value="${cWod.notas || ''}" placeholder="Notas"></td>
-                    <td><button id="j_btn_${a.id}" class="btn-save-row" onclick="guardarScoreJuez('${a.id}', '${wodId}')"><i class="fas fa-save"></i></button></td>
+                    <td><button id="j_btn_${a.id}" class="btn-save-row" onclick="guardarScoreJuez('${a.id}', '${wodId}')"><i class="fas fa-save"></i> Guardar</button></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -348,7 +382,14 @@
 
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
 
-            let index = atletas.findIndex(a => a.id === idAtleta);
+            // SOLUCIÓN DEL BUG: Comparar los IDs como string para evitar fallos estrictos.
+            let index = atletas.findIndex(a => String(a.id) === String(idAtleta));
+            if (index === -1) {
+                alert("Error: Atleta no encontrado.");
+                btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.disabled = false;
+                return;
+            }
+
             let wodsData = atletas[index].wods_data || {};
             wodsData[wodId] = { score: score1, score2: score2, penalizacion: pen, notas: nota };
 
@@ -357,8 +398,8 @@
             if(!error) {
                 atletas[index].wods_data = wodsData;
                 btn.innerHTML = '<i class="fas fa-check"></i>'; btn.style.background = '#25D366';
-                setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i>'; btn.style.background = ''; btn.disabled = false; }, 1500);
-            } else { alert("Error"); btn.innerHTML = '<i class="fas fa-save"></i>'; btn.disabled = false; }
+                setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.style.background = ''; btn.disabled = false; }, 1500);
+            } else { alert("Error al guardar"); btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.disabled = false; }
         }
 
         // --- HEATS GLOBALES ---
@@ -374,7 +415,6 @@
                 let tituloCat = grupo.length > 0 ? `${grupo[0].categoria} | ${grupo[0].sexo}` : 'Mixto';
                 let card = document.createElement('div'); card.className = 'heat-card';
                 
-                // NOTA: El botón "Editar Heat" ahora tiene la clase 'coach-action' para ocultarse al juez
                 card.innerHTML = `
                     <div class="heat-header"><h3>Heat ${hKey}</h3><span>${tituloCat}</span></div>
                     <div style="flex:1;">${grupo.map(a => `<div class="heat-athlete"><strong>${a.nombre}</strong><span class="dorsal-tag" style="background:transparent; border-color:#444;">#${a.dorsal}</span></div>`).join('')}</div>
@@ -431,7 +471,7 @@
             btn.innerHTML = 'Guardar Cambios'; btn.disabled = false;
         }
 
-        // --- WODS: CREAR, EDITAR Y BORRAR ---
+        // --- WODS ---
         function renderWodsManager() {
             let tbody = document.getElementById('wodsTableBody');
             tbody.innerHTML = wods.map(w => `
@@ -459,12 +499,10 @@
             let btn = document.getElementById('btnGuardarWod'); btn.innerHTML = 'Guardando...'; btn.disabled = true;
 
             if (editandoWodId) {
-                // Modo Edición
                 const { error } = await supabaseClient.from('wods_cf').update({ nombre, tipo, tipo2, descripcion: desc }).eq('id', editandoWodId);
                 if(!error) { alert("WOD Actualizado"); cancelarEdicionWod(); await cargarWods(); }
                 else { alert("Error al actualizar"); }
             } else {
-                // Modo Creación
                 const { error } = await supabaseClient.from('wods_cf').insert([{ nombre, tipo, tipo2, descripcion: desc }]);
                 if(!error) {
                     document.getElementById('newWodName').value = ''; document.getElementById('newWodDesc').value = ''; document.getElementById('newWodType2').value = '';
@@ -490,19 +528,16 @@
 
         function cancelarEdicionWod() {
             editandoWodId = null;
-            document.getElementById('newWodName').value = '';
-            document.getElementById('newWodDesc').value = '';
-            document.getElementById('newWodType2').value = '';
+            document.getElementById('newWodName').value = ''; document.getElementById('newWodDesc').value = ''; document.getElementById('newWodType2').value = '';
             document.getElementById('btnGuardarWod').innerHTML = '<i class="fas fa-save"></i> Guardar';
             document.getElementById('btnGuardarWod').classList.remove('btn-gold');
             document.getElementById('btnCancelarEdicion').style.display = 'none';
         }
 
         async function borrarWod(id) {
-            if(!confirm("¿Estás 100% seguro de borrar este WOD? Los scores que los atletas tengan registrados bajo este WOD no se perderán, pero ya no tendrán a qué evento pertenecer.")) return;
+            if(!confirm("¿Estás seguro de borrar este WOD?")) return;
             const { error } = await supabaseClient.from('wods_cf').delete().eq('id', id);
             if(!error) { alert("WOD Eliminado"); await cargarWods(); }
-            else { alert("Error al eliminar"); }
         }
 
         window.onload = init;

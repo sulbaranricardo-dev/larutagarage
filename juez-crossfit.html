@@ -3,328 +3,426 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juez CrossFit | La Ruta Garage</title>
+    <title>Juez CF Pro | La Ruta Garage</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --neon: #d8ff5e; --cf: #ff4444; --bg: #0a0a0a; --card: #151515; }
-        body { background-color: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px; min-height: 100vh; }
+        :root { --cf: #ff4444; --bg: #0a0a0a; --card: #151515; --text: #eee; }
+        body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; margin: 0; padding: 0 0 70px 0; min-height: 100vh; }
         
         /* HEADER */
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        .header-title-box { display: flex; flex-direction: column; gap: 5px; }
-        .header h1 { font-weight: 900; color: white; font-size: 1.2rem; margin: 0; text-transform: uppercase; }
-        .badge-cf { background: var(--cf); color: white; padding: 3px 10px; border-radius: 50px; font-weight: 900; font-size: 0.65rem; text-transform: uppercase; display: inline-block; width: fit-content; }
-        
-        .btn-coach { background: transparent; color: #aaa; border: 1px solid #444; padding: 8px 15px; border-radius: 50px; font-weight: 900; font-size: 0.7rem; cursor: pointer; transition: 0.3s; }
-        .btn-coach.active { background: #ffd700; color: black; border-color: #ffd700; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        .top-bar { background: #000; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--cf); position: sticky; top: 0; z-index: 100; }
+        .top-bar h1 { margin: 0; font-size: 1.2rem; font-weight: 900; color: white; text-transform: uppercase; }
+        .badge { background: var(--cf); color: white; padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: 900; }
+        .btn-coach-lock { background: transparent; border: 1px solid #555; color: #888; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+        .btn-coach-lock.unlocked { color: #ffd700; border-color: #ffd700; }
 
-        /* PANEL DE FILTROS AVANZADOS */
-        .filters-panel { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .filter-group { display: flex; flex-direction: column; gap: 5px; }
-        .filter-group label { font-size: 0.65rem; color: #888; text-transform: uppercase; font-weight: 900; }
-        .filter-group select { background: #000; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px; font-family: 'Montserrat'; font-size: 0.85rem; outline: none; }
-        .filter-group select:focus { border-color: var(--cf); }
-        .filter-full { grid-column: span 2; }
-        
-        .search-box { position: relative; margin-top: 5px; }
-        .search-box i { position: absolute; left: 15px; top: 12px; color: #888; }
-        .search-box input { width: 100%; padding: 10px 10px 10px 40px; background: #000; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat'; }
+        /* TABS (Secciones) */
+        .section { display: none; padding: 20px; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* TARJETAS DE ATLETAS */
-        .athlete-list { display: flex; flex-direction: column; gap: 15px; }
-        .athlete-card { background: var(--card); border: 1px solid #222; border-left: 4px solid var(--cf); border-radius: 12px; padding: 20px; transition: 0.3s; }
-        .athlete-card.completed { border-left-color: #25D366; background: rgba(20, 20, 20, 0.3); opacity: 0.7; }
-        .athlete-card.completed .scoring-form { display: none !important; }
-        
-        .athlete-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .athlete-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; font-weight: 900; }
-        .athlete-info p { margin: 0; color: #aaa; font-size: 0.75rem; }
-        .heat-badge { display: inline-block; background: #222; color: #fff; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 900; border: 1px solid #444; margin-top: 5px; }
-        
-        .athlete-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-        .dorsal-tag { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 8px; font-weight: 900; color: white; font-size: 1.2rem; }
-        .btn-toggle-card { background: transparent; border: 1px solid #444; color: #aaa; padding: 4px 10px; border-radius: 6px; font-family: 'Montserrat'; font-size: 0.7rem; font-weight: 600; cursor: pointer; }
-        
-        /* FORMULARIO JUEZ */
-        .scoring-form { display: grid; grid-template-columns: 1fr; gap: 12px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px solid #222; margin-top: 15px; }
-        .input-group label { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
-        .input-group input { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat'; font-size: 1rem; }
-        .btn-save { background: var(--cf); color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; }
-        
-        /* PANEL HEAD COACH */
-        .coach-panel { background: rgba(255, 215, 0, 0.1); border: 1px solid #ffd700; padding: 12px; border-radius: 8px; margin-top: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .coach-panel input { width: 60px; padding: 8px; text-align: center; border-radius: 6px; border: 1px solid #ffd700; background: #000; color: #ffd700; font-weight: 900; }
-        .btn-coach-save { background: #ffd700; color: black; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 900; cursor: pointer; flex: 1; text-transform: uppercase; font-size: 0.75rem; }
+        /* NAVEGACIÓN INFERIOR */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; border-top: 1px solid #333; z-index: 100; }
+        .nav-item { flex: 1; padding: 15px 0; text-align: center; color: #666; cursor: pointer; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; transition: 0.3s; }
+        .nav-item i { display: block; font-size: 1.2rem; margin-bottom: 5px; }
+        .nav-item.active { color: var(--cf); border-top: 3px solid var(--cf); background: rgba(255, 68, 68, 0.1); }
+        .nav-item.locked { display: none; } /* Oculto hasta poner el PIN */
 
-        .loader { text-align: center; color: var(--cf); font-weight: 900; padding: 40px; font-size: 0.9rem; letter-spacing: 2px; }
+        /* DISEÑO DE TABLAS (Estilo Auditoría) */
+        .table-container { background: var(--card); border-radius: 12px; border: 1px solid #333; overflow-x: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: rgba(255, 68, 68, 0.1); color: var(--cf); padding: 12px; text-align: left; font-size: 0.75rem; text-transform: uppercase; border-bottom: 1px solid #444; }
+        td { padding: 12px; border-bottom: 1px solid #222; font-size: 0.85rem; vertical-align: middle; }
+        
+        .input-score { width: 90px; padding: 8px; background: #000; border: 1px solid #444; color: white; border-radius: 6px; font-family: 'Montserrat'; text-align: center; }
+        .input-score:focus { border-color: var(--cf); outline: none; }
+        .btn-save-row { background: var(--cf); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 900; font-size: 0.7rem; text-transform: uppercase; }
+        .btn-save-row.saved { background: #25D366; }
+
+        /* CONTROLES Y FILTROS */
+        .control-panel { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .control-group { flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 5px; }
+        .control-group label { font-size: 0.65rem; color: #888; font-weight: 900; text-transform: uppercase; }
+        .control-group select, .control-group input { padding: 10px; background: #000; color: white; border: 1px solid #444; border-radius: 6px; font-family: 'Montserrat'; font-size: 0.9rem; width: 100%; box-sizing: border-box; }
+        
+        .btn-action { background: #222; color: white; border: 1px solid #444; padding: 12px; border-radius: 6px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .btn-action:hover { background: #333; border-color: var(--cf); }
+        .btn-gold { background: #ffd700; color: black; border-color: #ffd700; }
+        
+        .dorsal-badge { background: #222; padding: 4px 8px; border-radius: 4px; font-weight: 900; color: #aaa; }
+        
+        /* ALERTAS */
+        .loader { text-align: center; padding: 30px; color: var(--cf); font-weight: 900; letter-spacing: 2px; }
+        .empty-state { text-align: center; padding: 30px; color: #666; font-style: italic; }
     </style>
 </head>
 <body>
 
-    <div class="header">
+    <div class="top-bar">
         <div class="header-title-box">
-            <h1>Panel Jueces CF</h1>
-            <span class="badge-cf">Ruta CrossFit</span>
+            <h1>Sistema CF</h1>
+            <span class="badge">Ruta CrossFit</span>
         </div>
-        <button id="btnCoach" class="btn-coach" onclick="toggleCoachMode()"><i class="fas fa-crown"></i> Head Coach</button>
+        <button id="btnLock" class="btn-coach-lock" onclick="unlockCoach()"><i class="fas fa-lock"></i> Head Coach</button>
     </div>
 
-    <div class="filters-panel">
-        <div class="filter-group filter-full">
-            <label>WOD Actual</label>
-            <select id="wodSelect" onchange="ejecutarFiltros()" style="border-color: var(--cf); font-weight: 900; font-size: 1rem;">
-                <option value="wod1">WOD 1</option>
-                <option value="wod2">WOD 2</option>
-                <option value="wod3">WOD 3</option>
-                <option value="final">WOD FINAL</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Género</label>
-            <select id="sexSelect" onchange="ejecutarFiltros()">
-                <option value="todos">M & F</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Femenino">Femenino</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Heat</label>
-            <select id="heatSelect" onchange="ejecutarFiltros()">
-                <option value="todos">Todos</option>
-                <option value="1">Heat 1</option>
-                <option value="2">Heat 2</option>
-                <option value="3">Heat 3</option>
-                <option value="4">Heat 4</option>
-                <option value="5">Heat 5</option>
-                <option value="Sin Asignar">Sin Asignar</option>
-            </select>
-        </div>
-        <div class="filter-group filter-full">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Buscar atleta por nombre o dorsal..." onkeyup="ejecutarFiltros()">
+    <div id="sec-scores" class="section active">
+        <div class="control-panel">
+            <div class="control-group">
+                <label>Seleccionar WOD</label>
+                <select id="judgeWodSelect" onchange="renderJudgeTable()"><option value="">Cargando WODs...</option></select>
+            </div>
+            <div class="control-group">
+                <label>Seleccionar Heat</label>
+                <select id="judgeHeatSelect" onchange="renderJudgeTable()">
+                    <option value="">Selecciona un Heat</option>
+                    </select>
             </div>
         </div>
+
+        <div id="judgeLoader" class="loader" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>
+        <div id="judgeTableContainer" class="table-container" style="display:none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">Dorsal</th>
+                        <th>Atleta / Categ</th>
+                        <th style="width: 110px;">Score</th>
+                        <th style="width: 100px;">Penalización</th>
+                        <th style="width: 120px;">Notas</th>
+                        <th style="width: 80px;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="judgeTableBody"></tbody>
+            </table>
+        </div>
     </div>
 
-    <div id="loading" class="loader"><i class="fas fa-circle-notch fa-spin"></i> CARGANDO ATLETAS...</div>
-    <div id="listaAtletas" class="athlete-list" style="display:none;"></div>
+    <div id="sec-heats" class="section">
+        <div class="control-panel">
+            <div class="control-group">
+                <label>WOD a organizar</label>
+                <select id="coachWodSelect" onchange="renderHeatsManager()"></select>
+            </div>
+            <div class="control-group" style="justify-content: flex-end;">
+                <button class="btn-action btn-gold" onclick="autogenerarHeats()"><i class="fas fa-magic"></i> Autogenerar Heats (Cat x 4)</button>
+            </div>
+        </div>
+        <p style="font-size:0.75rem; color:#aaa;"><i>Puedes editar el número de Heat manualmente en la tabla y presionar "Guardar".</i></p>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dorsal</th>
+                        <th>Atleta</th>
+                        <th>Categoría</th>
+                        <th>Heat Asignado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="heatsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="sec-wods" class="section">
+        <div class="control-panel">
+            <div class="control-group">
+                <label>Nombre del Nuevo WOD</label>
+                <input type="text" id="newWodName" placeholder="Ej: WOD 1 - Amanda">
+            </div>
+            <div class="control-group" style="justify-content: flex-end;">
+                <button class="btn-action" onclick="crearWod()"><i class="fas fa-plus"></i> Crear WOD</button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>ID Interno</th><th>Nombre del WOD</th></tr></thead>
+                <tbody id="wodsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('scores')"><i class="fas fa-edit"></i>Scores</div>
+        <div id="nav-heats" class="nav-item locked" onclick="switchTab('heats')"><i class="fas fa-fire"></i>Heats</div>
+        <div id="nav-wods" class="nav-item locked" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i>WODs</div>
+    </div>
 
     <script>
         const SUPABASE_URL = 'https://hzywpjzvlvdxscgtebvi.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eXdwanp2bHZkeHNjZ3RlYnZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNjI0OTQsImV4cCI6MjA5NDYzODQ5NH0.L7gdDpxOD7N1gpSoCVI0FEiwxR44sG8XwAORYm16sEM';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let todosLosAtletas = [];
-        let currentWod = 'wod1';
-        let isCoachMode = false;
+        let atletas = [];
+        let wods = [];
+        let isCoach = false;
 
-        async function cargarDatos() {
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('listaAtletas').style.display = 'none';
-
-            const { data, error } = await supabaseClient
-                .from('atletas')
-                .select('*')
-                .ilike('modalidad', '%CrossFit%')
-                .order('dorsal', { ascending: true });
-
-            if (error) return;
-            todosLosAtletas = data;
-            ejecutarFiltros();
-            
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('listaAtletas').style.display = 'flex';
+        async function init() {
+            await cargarWods();
+            await cargarAtletas();
         }
 
-        function toggleCoachMode() {
-            if(isCoachMode) {
-                isCoachMode = false;
-                document.getElementById('btnCoach').classList.remove('active');
-                ejecutarFiltros();
+        // --- SISTEMA DE TABS ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`sec-${tabId}`).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            if(tabId === 'scores') renderJudgeTable();
+            if(tabId === 'heats') renderHeatsManager();
+        }
+
+        function unlockCoach() {
+            if(isCoach) return; // Ya está desbloqueado
+            let pin = prompt("Ingresa el PIN de Head Coach:");
+            if(pin === "1234") {
+                isCoach = true;
+                document.getElementById('btnLock').classList.add('unlocked');
+                document.getElementById('btnLock').innerHTML = '<i class="fas fa-unlock"></i> Coach Activo';
+                document.getElementById('nav-heats').classList.remove('locked');
+                document.getElementById('nav-wods').classList.remove('locked');
+            } else { alert("PIN Incorrecto"); }
+        }
+
+        // --- CARGA DE DATOS ---
+        async function cargarWods() {
+            const { data, error } = await supabaseClient.from('wods_cf').select('*').order('id', { ascending: true });
+            if(!error && data) {
+                wods = data;
+                llenarSelectsWods();
+                renderWodsManager();
+            }
+        }
+
+        async function cargarAtletas() {
+            const { data, error } = await supabaseClient.from('atletas').select('*').ilike('modalidad', '%CrossFit%').order('dorsal', { ascending: true });
+            if(!error && data) {
+                atletas = data;
+                renderJudgeTable();
+            }
+        }
+
+        function llenarSelectsWods() {
+            let options = wods.map(w => `<option value="${w.id}">${w.nombre}</option>`).join('');
+            if(wods.length === 0) options = '<option value="">No hay WODs creados</option>';
+            document.getElementById('judgeWodSelect').innerHTML = options;
+            document.getElementById('coachWodSelect').innerHTML = options;
+        }
+
+        // --- SECCIÓN 1: JUEZ (SCORES) ---
+        function actualizarSelectHeats() {
+            let wodId = document.getElementById('judgeWodSelect').value;
+            if(!wodId) return;
+            
+            // Buscar qué heats existen para este WOD
+            let heatsUnicos = new Set();
+            atletas.forEach(a => {
+                let wData = a.wods_data || {};
+                let currentWod = wData[wodId] || {};
+                if(currentWod.heat && currentWod.heat !== "Sin Asignar") heatsUnicos.add(currentWod.heat);
+            });
+
+            let heatSelect = document.getElementById('judgeHeatSelect');
+            let heatsArray = Array.from(heatsUnicos).sort((a,b) => a - b); // Orden numérico
+            
+            heatSelect.innerHTML = '<option value="">Selecciona el Heat que vas a juecear</option>' + 
+                                   heatsArray.map(h => `<option value="${h}">Heat ${h}</option>`).join('');
+        }
+
+        function renderJudgeTable() {
+            let wodId = document.getElementById('judgeWodSelect').value;
+            let heatSelected = document.getElementById('judgeHeatSelect').value;
+            let container = document.getElementById('judgeTableContainer');
+            let tbody = document.getElementById('judgeTableBody');
+
+            // Si cambia el WOD, recalculamos los Heats disponibles
+            actualizarSelectHeats();
+            // Restauramos el valor seleccionado si aún existe
+            document.getElementById('judgeHeatSelect').value = heatSelected;
+
+            if(!wodId || !heatSelected) {
+                container.style.display = 'none';
                 return;
             }
-            
-            let pin = prompt("Ingrese el PIN de Head Coach:");
-            // El PIN por defecto es 1234
-            if(pin === "1234") {
-                isCoachMode = true;
-                document.getElementById('btnCoach').classList.add('active');
-                alert("Modo Coach Activado: Ahora puedes reasignar los Heats.");
-                ejecutarFiltros();
-            } else {
-                alert("PIN Incorrecto.");
-            }
-        }
 
-        function ejecutarFiltros() {
-            currentWod = document.getElementById('wodSelect').value;
-            let sex = document.getElementById('sexSelect').value;
-            let heat = document.getElementById('heatSelect').value;
-            let search = document.getElementById('searchInput').value.toLowerCase();
+            container.style.display = 'block';
+            tbody.innerHTML = '';
 
-            let filtrados = todosLosAtletas.filter(a => {
-                // Filtro Sexo
-                if (sex !== 'todos' && a.sexo !== sex) return false;
-                
-                // Filtro Búsqueda
-                if (search && !a.nombre.toLowerCase().includes(search) && !a.dorsal.toLowerCase().includes(search)) return false;
-
-                // Filtro de HEAT (Leyendo la columna mágica JSONB)
-                let wodsData = a.wods_data || {};
-                let currentWodData = wodsData[currentWod] || {};
-                let heatAtleta = currentWodData.heat || 'Sin Asignar';
-                
-                if (heat !== 'todos' && heatAtleta !== heat) return false;
-
-                return true;
+            let atletasEnHeat = atletas.filter(a => {
+                let wData = a.wods_data || {};
+                let currentWod = wData[wodId] || {};
+                return currentWod.heat == heatSelected;
             });
 
-            renderizarAtletas(filtrados);
-        }
+            if(atletasEnHeat.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No hay atletas asignados a este Heat.</td></tr>';
+                return;
+            }
 
-        function renderizarAtletas(lista) {
-            const contenedor = document.getElementById('listaAtletas');
-            contenedor.innerHTML = '';
-            if(lista.length === 0) return contenedor.innerHTML = '<p style="text-align:center; color:#888;">No hay atletas en este Heat/Filtro.</p>';
-
-            lista.forEach(atleta => {
-                let wodsData = atleta.wods_data || {};
-                let currentWodData = wodsData[currentWod] || {};
+            atletasEnHeat.forEach(a => {
+                let wData = a.wods_data || {};
+                let cWod = wData[wodId] || {};
                 
-                let sVal = currentWodData.score || '';
-                let pVal = currentWodData.penalizacion || '';
-                let nVal = currentWodData.notas || '';
-                let hVal = currentWodData.heat || 'Sin Asignar';
-
-                let tieneScore = sVal.trim() !== "";
-                const card = document.createElement('div');
-                card.id = `card_${atleta.id}`;
-                card.className = `athlete-card ${tieneScore ? 'completed' : ''}`;
-                
-                let coachHtml = isCoachMode ? `
-                    <div class="coach-panel">
-                        <label style="color:#ffd700; font-size:0.6rem; font-weight:900;">HEAT ACTUAL</label>
-                        <input type="text" id="heat_in_${atleta.id}" value="${hVal === 'Sin Asignar' ? '' : hVal}" placeholder="#">
-                        <button class="btn-coach-save" onclick="guardarHeat('${atleta.id}')">Asignar Heat</button>
-                    </div>
-                ` : '';
-
-                card.innerHTML = `
-                    <div class="athlete-header">
-                        <div class="athlete-info">
-                            <h3>${atleta.nombre}</h3>
-                            <p>${atleta.categoria} | ${atleta.sexo}</p>
-                            <span class="heat-badge"><i class="fas fa-fire"></i> Heat: ${hVal}</span>
-                        </div>
-                        <div class="athlete-header-right">
-                            <div class="dorsal-tag">${atleta.dorsal}</div>
-                            <button class="btn-toggle-card" onclick="toggleCard('${atleta.id}')">
-                                <i class="fas fa-edit"></i> <span id="text_btn_${atleta.id}">${tieneScore ? 'Abrir' : 'Ocultar'}</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    ${coachHtml}
-
-                    <div class="scoring-form">
-                        <div class="input-group">
-                            <label>Score (Ej: 12:30 para tiempo, o 155 para libras/reps)</label>
-                            <input type="text" id="score_${atleta.id}" placeholder="Escribe el score final" value="${sVal}">
-                        </div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                            <div class="input-group">
-                                <label>Penalización</label>
-                                <input type="text" id="pen_${atleta.id}" placeholder="Opcional" value="${pVal}">
-                            </div>
-                            <div class="input-group">
-                                <label>Notas</label>
-                                <input type="text" id="nota_${atleta.id}" placeholder="Opcional" value="${nVal}">
-                            </div>
-                        </div>
-                        <button id="btn_${atleta.id}" class="btn-save" onclick="guardarScore('${atleta.id}')">
-                            <i class="fas fa-save"></i> GUARDAR SCORE WOD
-                        </button>
-                    </div>
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="dorsal-badge">${a.dorsal}</span></td>
+                    <td><strong>${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
+                    <td><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="Score"></td>
+                    <td><input type="text" id="j_pen_${a.id}" class="input-score" value="${cWod.penalizacion || ''}" placeholder="Penal."></td>
+                    <td><input type="text" id="j_nota_${a.id}" class="input-score" value="${cWod.notas || ''}" placeholder="Notas" style="width:100%;"></td>
+                    <td><button id="j_btn_${a.id}" class="btn-save-row" onclick="guardarScoreJuez('${a.id}', '${wodId}')">Guardar</button></td>
                 `;
-                contenedor.appendChild(card);
+                tbody.appendChild(tr);
             });
         }
 
-        function toggleCard(id) {
-            const card = document.getElementById(`card_${id}`);
-            const btn = document.getElementById(`text_btn_${id}`);
-            card.classList.toggle('completed');
-            btn.innerText = card.classList.contains('completed') ? 'Abrir' : 'Ocultar';
-        }
+        async function guardarScoreJuez(idAtleta, wodId) {
+            let btn = document.getElementById(`j_btn_${idAtleta}`);
+            let score = document.getElementById(`j_score_${idAtleta}`).value;
+            let pen = document.getElementById(`j_pen_${idAtleta}`).value;
+            let nota = document.getElementById(`j_nota_${idAtleta}`).value;
 
-        // GUARDAR EL SCORE EN EL WOD CORRESPONDIENTE
-        async function guardarScore(idAtleta) {
-            const btn = document.getElementById(`btn_${idAtleta}`);
-            const sVal = document.getElementById(`score_${idAtleta}`).value;
-            const pVal = document.getElementById(`pen_${idAtleta}`).value;
-            const nVal = document.getElementById(`nota_${idAtleta}`).value;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
 
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GUARDANDO...';
-
-            // Rescatamos los datos viejos
-            let atletaIndex = todosLosAtletas.findIndex(a => a.id === idAtleta);
-            let wodsData = todosLosAtletas[atletaIndex].wods_data || {};
-            let currentWodData = wodsData[currentWod] || {};
-
-            // Actualizamos solo el WOD seleccionado
-            wodsData[currentWod] = {
-                ...currentWodData,
-                score: sVal,
-                penalizacion: pVal,
-                notas: nVal
-            };
+            let index = atletas.findIndex(a => a.id === idAtleta);
+            let wodsData = atletas[index].wods_data || {};
+            wodsData[wodId] = { ...wodsData[wodId], score: score, penalizacion: pen, notas: nota };
 
             const { error } = await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
 
-            if (!error) {
-                btn.innerHTML = '<i class="fas fa-check"></i> ¡GUARDADO!';
-                btn.style.background = '#25D366';
-                todosLosAtletas[atletaIndex].wods_data = wodsData; // Actualizar memoria
-                
-                setTimeout(() => {
-                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> GUARDAR SCORE WOD'; btn.style.background = 'var(--cf)';
-                    const card = document.getElementById(`card_${idAtleta}`);
-                    if (!card.classList.contains('completed')) { card.classList.add('completed'); document.getElementById(`text_btn_${idAtleta}`).innerText = 'Abrir'; }
-                }, 1000);
-            } else {
-                alert("Error al guardar. Intenta de nuevo.");
-                btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> GUARDAR SCORE WOD';
-            }
-        }
-
-        // GUARDAR EL HEAT (SOLO HEAD COACH)
-        async function guardarHeat(idAtleta) {
-            let hVal = document.getElementById(`heat_in_${idAtleta}`).value;
-            if(hVal.trim() === '') hVal = 'Sin Asignar';
-
-            let atletaIndex = todosLosAtletas.findIndex(a => a.id === idAtleta);
-            let wodsData = todosLosAtletas[atletaIndex].wods_data || {};
-            let currentWodData = wodsData[currentWod] || {};
-
-            wodsData[currentWod] = {
-                ...currentWodData,
-                heat: hVal
-            };
-
-            const { error } = await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
             if(!error) {
-                todosLosAtletas[atletaIndex].wods_data = wodsData;
-                alert("Heat asignado correctamente.");
-                ejecutarFiltros(); // Refresca la vista
+                atletas[index].wods_data = wodsData;
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                btn.classList.add('saved');
+                setTimeout(() => { btn.innerHTML = 'Guardar'; btn.classList.remove('saved'); btn.disabled = false; }, 2000);
             } else {
-                alert("Error al asignar Heat.");
+                alert("Error al guardar");
+                btn.innerHTML = 'Guardar'; btn.disabled = false;
             }
         }
 
-        window.onload = cargarDatos;
+        // --- SECCIÓN 2: HEATS (HEAD COACH) ---
+        function renderHeatsManager() {
+            let wodId = document.getElementById('coachWodSelect').value;
+            let tbody = document.getElementById('heatsTableBody');
+            tbody.innerHTML = '';
+
+            if(!wodId) return;
+
+            // Ordenamos a los atletas por categoría y luego por Heat para que se vea súper ordenado
+            let atletasOrdenados = [...atletas].sort((a,b) => {
+                if(a.categoria !== b.categoria) return a.categoria.localeCompare(b.categoria);
+                if(a.sexo !== b.sexo) return a.sexo.localeCompare(b.sexo);
+                let heatA = parseInt((a.wods_data || {})[wodId]?.heat) || 999;
+                let heatB = parseInt((b.wods_data || {})[wodId]?.heat) || 999;
+                return heatA - heatB;
+            });
+
+            atletasOrdenados.forEach(a => {
+                let wData = a.wods_data || {};
+                let heatVal = (wData[wodId] || {}).heat || 'Sin Asignar';
+                
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="dorsal-badge">${a.dorsal}</span></td>
+                    <td><strong>${a.nombre}</strong><br><small style="color:#aaa;">${a.sexo}</small></td>
+                    <td>${a.categoria}</td>
+                    <td><input type="text" id="c_heat_${a.id}" class="input-score" value="${heatVal === 'Sin Asignar' ? '' : heatVal}" placeholder="#"></td>
+                    <td><button id="c_btn_${a.id}" class="btn-save-row" onclick="guardarHeatManual('${a.id}', '${wodId}')">Actualizar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function guardarHeatManual(idAtleta, wodId) {
+            let btn = document.getElementById(`c_btn_${idAtleta}`);
+            let heatVal = document.getElementById(`c_heat_${idAtleta}`).value;
+            
+            btn.innerHTML = '...'; btn.disabled = true;
+
+            let index = atletas.findIndex(a => a.id === idAtleta);
+            let wodsData = atletas[index].wods_data || {};
+            wodsData[wodId] = { ...wodsData[wodId], heat: heatVal };
+
+            await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
+            atletas[index].wods_data = wodsData;
+            
+            btn.innerHTML = '<i class="fas fa-check"></i>'; btn.classList.add('saved');
+            setTimeout(() => { btn.innerHTML = 'Actualizar'; btn.classList.remove('saved'); btn.disabled = false; }, 1500);
+        }
+
+        // LA MAGIA: AUTOGENERADOR DE HEATS (Agrupa Cat + Sexo, máx 4)
+        async function autogenerarHeats() {
+            let wodId = document.getElementById('coachWodSelect').value;
+            if(!wodId) return alert("Selecciona un WOD primero.");
+            if(!confirm("¿Estás seguro? Esto sobrescribirá los Heats actuales de este WOD agrupando máximo 4 atletas por categoría.")) return;
+
+            // Agrupar atletas por (Categoria + Sexo)
+            let grupos = {};
+            atletas.forEach(a => {
+                let key = `${a.categoria}_${a.sexo}`;
+                if(!grupos[key]) grupos[key] = [];
+                grupos[key].push(a);
+            });
+
+            let currentHeatGlobal = 1;
+            let actualizaciones = [];
+
+            // Procesar cada grupo
+            for(let key in grupos) {
+                let grupoAtletas = grupos[key];
+                // Chunk de 4 en 4
+                for (let i = 0; i < grupoAtletas.length; i += 4) {
+                    let chunk = grupoAtletas.slice(i, i + 4);
+                    
+                    chunk.forEach(a => {
+                        let wData = a.wods_data || {};
+                        wData[wodId] = { ...wData[wodId], heat: currentHeatGlobal.toString() };
+                        actualizaciones.push({ id: a.id, wods_data: wData });
+                        
+                        // Actualizar variable en memoria
+                        let idx = atletas.findIndex(x => x.id === a.id);
+                        if(idx !== -1) atletas[idx].wods_data = wData;
+                    });
+                    currentHeatGlobal++; // Siguiente Heat para el próximo grupo de 4
+                }
+            }
+
+            // Guardar en Supabase uno por uno (o en batch si creamos una función RPC, pero así funciona bien para 42 atletas)
+            alert("Generando y guardando Heats... Espera unos segundos.");
+            for(let act of actualizaciones) {
+                await supabaseClient.from('atletas').update({ wods_data: act.wods_data }).eq('id', act.id);
+            }
+            
+            alert("¡Heats generados con éxito!");
+            renderHeatsManager();
+        }
+
+        // --- SECCIÓN 3: WODS (HEAD COACH) ---
+        function renderWodsManager() {
+            let tbody = document.getElementById('wodsTableBody');
+            tbody.innerHTML = wods.map(w => `<tr><td><small style="color:#666;">${w.id}</small></td><td><strong>${w.nombre}</strong></td></tr>`).join('');
+            if(wods.length === 0) tbody.innerHTML = '<tr><td colspan="2" class="empty-state">No hay WODs. Crea el primero.</td></tr>';
+        }
+
+        async function crearWod() {
+            let nombre = document.getElementById('newWodName').value.trim();
+            if(!nombre) return alert("Escribe un nombre para el WOD");
+
+            const { data, error } = await supabaseClient.from('wods_cf').insert([{ nombre: nombre }]).select();
+            if(!error) {
+                document.getElementById('newWodName').value = '';
+                await cargarWods();
+                alert("WOD Creado exitosamente");
+            } else { alert("Error creando WOD"); }
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>

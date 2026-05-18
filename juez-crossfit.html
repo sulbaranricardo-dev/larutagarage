@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juez CrossFit | La Ruta Garage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --neon: #d8ff5e; --bg: #0a0a0a; --card: #151515; }
+        body { background-color: var(--bg); color: white; font-family: 'Montserrat', sans-serif; margin: 0; padding: 20px; min-height: 100vh; }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .header-title-box { display: flex; flex-direction: column; gap: 5px; }
+        .header h1 { font-weight: 900; color: var(--neon); font-size: 1.2rem; margin: 0; text-transform: uppercase; }
+        .badge-cf { background: #ff4444; color: white; padding: 3px 10px; border-radius: 50px; font-weight: 900; font-size: 0.65rem; text-transform: uppercase; display: inline-block; width: fit-content; }
+        .btn-admin { background: rgba(255, 255, 255, 0.05); color: #ccc; border: 1px solid #333; padding: 10px 18px; border-radius: 50px; font-weight: 600; font-size: 0.75rem; text-decoration: none; text-transform: uppercase; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-admin:hover { background: white; color: black; }
+        .search-container { position: relative; margin-bottom: 20px; }
+        .search-container i { position: absolute; left: 20px; top: 15px; color: #888; }
+        #searchInput { width: 100%; padding: 15px 20px 15px 50px; background: var(--card); border: 1px solid #333; color: white; border-radius: 50px; box-sizing: border-box; font-family: 'Montserrat'; font-size: 0.9rem; transition: 0.3s; }
+        #searchInput:focus { outline: none; border-color: var(--neon); }
+        .athlete-list { display: flex; flex-direction: column; gap: 15px; }
+        .athlete-card { background: var(--card); border: 1px solid #222; border-left: 4px solid #ff4444; border-radius: 12px; padding: 20px; transition: 0.3s; }
+        .athlete-header { display: flex; justify-content: space-between; align-items: center; }
+        .athlete-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; font-weight: 900; }
+        .athlete-info p { margin: 0; color: #aaa; font-size: 0.8rem; }
+        .athlete-header-right { display: flex; align-items: center; gap: 12px; }
+        .dorsal-tag { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 8px; font-weight: 900; color: #ff4444; font-size: 1.2rem; }
+        .athlete-card.completed { border-left-color: #25D366; background: rgba(20, 20, 20, 0.3); opacity: 0.6; }
+        .athlete-card.completed .scoring-form { display: none !important; }
+        .btn-toggle-card { background: transparent; border: 1px solid #444; color: #aaa; padding: 6px 12px; border-radius: 6px; font-family: 'Montserrat'; font-size: 0.7rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+        .scoring-form { display: grid; grid-template-columns: 1fr; gap: 12px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px solid #222; margin-top: 15px; }
+        .input-group label { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat'; font-size: 1rem; }
+        .input-group input:focus { outline: none; border-color: #ff4444; }
+        .btn-save { background: #ff4444; color: white; border: none; padding: 15px; border-radius: 50px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; }
+        .btn-save:disabled { background: #444; color: #888; }
+        .loader { text-align: center; color: var(--neon); font-weight: 900; padding: 40px; font-size: 0.9rem; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title-box">
+            <h1>Juez Panel</h1>
+            <span class="badge-cf">Ruta CrossFit</span>
+        </div>
+        <a href="admin-crossfit.html" class="btn-admin"><i class="fas fa-chart-line"></i> Auditoría</a>
+    </div>
+
+    <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Buscar por Dorsal o Nombre..." onkeyup="filtrarAtletas()">
+    </div>
+
+    <div id="loading" class="loader"><i class="fas fa-circle-notch fa-spin"></i> CARGANDO ATLETAS...</div>
+    <div id="listaAtletas" class="athlete-list" style="display:none;"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://hzywpjzvlvdxscgtebvi.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eXdwanp2bHZkeHNjZ3RlYnZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNjI0OTQsImV4cCI6MjA5NDYzODQ5NH0.L7gdDpxOD7N1gpSoCVI0FEiwxR44sG8XwAORYm16sEM';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let todosLosAtletas = [];
+
+        async function cargarDatos() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('listaAtletas').style.display = 'none';
+
+            // AQUÍ ESTÁ EL FILTRO PARA CROSSFIT
+            const { data, error } = await supabaseClient
+                .from('atletas')
+                .select('*')
+                .ilike('modalidad', '%CrossFit%')
+                .order('dorsal', { ascending: true });
+
+            if (error) return;
+            todosLosAtletas = data;
+            renderizarAtletas(todosLosAtletas);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('listaAtletas').style.display = 'flex';
+        }
+
+        function renderizarAtletas(lista) {
+            const contenedor = document.getElementById('listaAtletas');
+            contenedor.innerHTML = '';
+            if(lista.length === 0) return contenedor.innerHTML = '<p style="text-align:center;">No hay atletas de CrossFit.</p>';
+
+            lista.forEach(atleta => {
+                let tieneScore = atleta.score && atleta.score.trim() !== "";
+                const card = document.createElement('div');
+                card.id = `card_${atleta.id}`;
+                card.className = `athlete-card ${tieneScore ? 'completed' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="athlete-header">
+                        <div class="athlete-info">
+                            <h3>${atleta.nombre}</h3>
+                            <p>${atleta.categoria} | ${atleta.sexo}</p>
+                        </div>
+                        <div class="athlete-header-right">
+                            <button class="btn-toggle-card" onclick="toggleCard('${atleta.id}')">
+                                <i class="fas fa-edit"></i> <span id="text_btn_${atleta.id}">${tieneScore ? 'Abrir' : 'Minimizar'}</span>
+                            </button>
+                            <div class="dorsal-tag">${atleta.dorsal}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="scoring-form">
+                        <div class="input-group">
+                            <label>Score (Ej: 12:30 para tiempo, o 155 para libras/reps)</label>
+                            <input type="text" id="score_${atleta.id}" placeholder="Tiempo, Peso o Reps" value="${atleta.score || ''}">
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                            <div class="input-group">
+                                <label>Penalización</label>
+                                <input type="text" id="pen_${atleta.id}" placeholder="Opcional" value="${atleta.penalizacion || ''}">
+                            </div>
+                            <div class="input-group">
+                                <label>Notas</label>
+                                <input type="text" id="nota_${atleta.id}" placeholder="Opcional" value="${atleta.notas || ''}">
+                            </div>
+                        </div>
+                        <button id="btn_${atleta.id}" class="btn-save" onclick="guardarScore('${atleta.id}')">
+                            <i class="fas fa-save"></i> GUARDAR SCORE
+                        </button>
+                    </div>
+                `;
+                contenedor.appendChild(card);
+            });
+        }
+
+        function toggleCard(id) {
+            const card = document.getElementById(`card_${id}`);
+            const btn = document.getElementById(`text_btn_${id}`);
+            card.classList.toggle('completed');
+            btn.innerText = card.classList.contains('completed') ? 'Abrir' : 'Minimizar';
+        }
+
+        function filtrarAtletas() {
+            const t = document.getElementById('searchInput').value.toLowerCase();
+            renderizarAtletas(todosLosAtletas.filter(a => a.nombre.toLowerCase().includes(t) || a.dorsal.toLowerCase().includes(t)));
+        }
+
+        async function guardarScore(idAtleta) {
+            const btn = document.getElementById(`btn_${idAtleta}`);
+            const sVal = document.getElementById(`score_${idAtleta}`).value;
+            const pVal = document.getElementById(`pen_${idAtleta}`).value;
+            const nVal = document.getElementById(`nota_${idAtleta}`).value;
+
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GUARDANDO...';
+
+            const { data, error } = await supabaseClient.from('atletas').update({ score: sVal, penalizacion: pVal, notas: nVal }).eq('id', idAtleta);
+
+            if (!error) {
+                btn.innerHTML = '<i class="fas fa-check"></i> ¡GUARDADO!';
+                btn.style.background = '#25D366';
+                const idx = todosLosAtletas.findIndex(a => a.id === idAtleta);
+                if(idx !== -1) { todosLosAtletas[idx].score = sVal; todosLosAtletas[idx].penalizacion = pVal; todosLosAtletas[idx].notas = nVal; }
+                
+                setTimeout(() => {
+                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> GUARDAR SCORE'; btn.style.background = '#ff4444';
+                    const card = document.getElementById(`card_${idAtleta}`);
+                    if (!card.classList.contains('completed')) { card.classList.add('completed'); document.getElementById(`text_btn_${idAtleta}`).innerText = 'Abrir'; }
+                }, 1000);
+            }
+        }
+        window.onload = cargarDatos;
+    </script>
+</body>
+</html>

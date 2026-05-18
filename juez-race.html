@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juez Race | La Ruta Garage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --neon: #d8ff5e; --bg: #0a0a0a; --card: #151515; }
+        body { 
+            background-color: var(--bg); color: white; 
+            font-family: 'Montserrat', sans-serif; 
+            margin: 0; padding: 20px; 
+            min-height: 100vh;
+        }
+
+        /* Encabezado */
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .header h1 { font-weight: 900; color: var(--neon); font-size: 1.2rem; margin: 0; text-transform: uppercase; }
+        .badge-race { background: var(--neon); color: black; padding: 5px 15px; border-radius: 50px; font-weight: 900; font-size: 0.7rem; text-transform: uppercase; }
+
+        /* Buscador Píldora */
+        .search-container { position: relative; margin-bottom: 20px; }
+        .search-container i { position: absolute; left: 20px; top: 15px; color: #888; }
+        #searchInput { 
+            width: 100%; padding: 15px 20px 15px 50px; 
+            background: var(--card); border: 1px solid #333; color: white; 
+            border-radius: 50px; box-sizing: border-box; 
+            font-family: 'Montserrat'; font-size: 0.9rem; transition: 0.3s;
+        }
+        #searchInput:focus { outline: none; border-color: var(--neon); box-shadow: 0 0 15px rgba(216, 255, 94, 0.2); }
+
+        /* Lista de Atletas (Alineada a la izquierda por comodidad visual) */
+        .athlete-list { display: flex; flex-direction: column; gap: 15px; }
+        .athlete-card { 
+            background: var(--card); border: 1px solid #222; border-left: 4px solid var(--neon);
+            border-radius: 12px; padding: 20px; transition: 0.3s;
+        }
+        .athlete-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .athlete-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; font-weight: 900; }
+        .athlete-info p { margin: 0; color: #aaa; font-size: 0.8rem; }
+        .dorsal-tag { background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 8px; font-weight: 900; color: var(--neon); font-size: 1.2rem; }
+
+        /* Formulario del Juez */
+        .scoring-form { display: grid; grid-template-columns: 1fr; gap: 12px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; border: 1px solid #222; }
+        .input-group label { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+        .input-group input { 
+            width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333; 
+            color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Montserrat'; font-size: 1rem;
+        }
+        .input-group input:focus { outline: none; border-color: var(--neon); }
+        
+        .btn-save { 
+            background: var(--neon); color: black; border: none; padding: 15px; 
+            border-radius: 50px; font-weight: 900; text-transform: uppercase; 
+            cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 5px;
+        }
+        .btn-save:hover { box-shadow: 0 5px 15px rgba(216, 255, 94, 0.3); }
+        .btn-save:disabled { background: #444; color: #888; cursor: not-allowed; }
+
+        .loader { text-align: center; color: var(--neon); font-weight: 900; padding: 40px; font-size: 0.9rem; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Juez Panel</h1>
+        <span class="badge-race">Ruta Race</span>
+    </div>
+
+    <div class="search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Buscar por Dorsal o Nombre..." onkeyup="filtrarAtletas()">
+    </div>
+
+    <div id="loading" class="loader"><i class="fas fa-circle-notch fa-spin"></i> CARGANDO ATLETAS...</div>
+    
+    <div id="listaAtletas" class="athlete-list" style="display:none;"></div>
+
+    <script>
+        // INICIALIZAR SUPABASE
+        const SUPABASE_URL = 'https://hzywpjzvlvdxscgtebvi.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eXdwanp2bHZkeHNjZ3RlYnZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNjI0OTQsImV4cCI6MjA5NDYzODQ5NH0.L7gdDpxOD7N1gpSoCVI0FEiwxR44sG8XwAORYm16sEM';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let todosLosAtletas = [];
+
+        // CARGAR ATLETAS DESDE SUPABASE
+        async function cargarDatos() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('listaAtletas').style.display = 'none';
+
+            // Filtrar directamente desde la base de datos para traer solo la modalidad RACE
+            const { data, error } = await supabase
+                .from('atletas')
+                .select('*')
+                .ilike('modalidad', '%Race%')
+                .order('dorsal', { ascending: true });
+
+            if (error) {
+                console.error("Error cargando:", error);
+                alert("Hubo un error cargando la base de datos.");
+                return;
+            }
+
+            todosLosAtletas = data;
+            renderizarAtletas(todosLosAtletas);
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('listaAtletas').style.display = 'flex';
+        }
+
+        // DIBUJAR TARJETAS
+        function renderizarAtletas(lista) {
+            const contenedor = document.getElementById('listaAtletas');
+            contenedor.innerHTML = '';
+
+            if(lista.length === 0) {
+                contenedor.innerHTML = '<p style="text-align:center; color:#888;">No se encontraron atletas.</p>';
+                return;
+            }
+
+            lista.forEach(atleta => {
+                const card = document.createElement('div');
+                card.className = 'athlete-card';
+                card.innerHTML = `
+                    <div class="athlete-header">
+                        <div class="athlete-info">
+                            <h3>${atleta.nombre}</h3>
+                            <p>${atleta.categoria} | ${atleta.sexo}</p>
+                        </div>
+                        <div class="dorsal-tag">${atleta.dorsal}</div>
+                    </div>
+                    
+                    <div class="scoring-form">
+                        <div class="input-group">
+                            <label>Tiempo (MM:SS) o Puntaje</label>
+                            <input type="text" id="score_${atleta.id}" placeholder="Ej: 14:35" value="${atleta.score || ''}">
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                            <div class="input-group">
+                                <label>Penalización</label>
+                                <input type="text" id="pen_${atleta.id}" placeholder="Opcional" value="${atleta.penalizacion || ''}">
+                            </div>
+                            <div class="input-group">
+                                <label>Notas / Juez</label>
+                                <input type="text" id="nota_${atleta.id}" placeholder="Opcional" value="${atleta.notas || ''}">
+                            </div>
+                        </div>
+                        <button id="btn_${atleta.id}" class="btn-save" onclick="guardarScore('${atleta.id}')">
+                            <i class="fas fa-save"></i> GUARDAR SCORE
+                        </button>
+                    </div>
+                `;
+                contenedor.appendChild(card);
+            });
+        }
+
+        // FILTRO DE BÚSQUEDA RÁPIDA
+        function filtrarAtletas() {
+            const texto = document.getElementById('searchInput').value.toLowerCase();
+            const filtrados = todosLosAtletas.filter(a => 
+                a.nombre.toLowerCase().includes(texto) || 
+                a.dorsal.toLowerCase().includes(texto)
+            );
+            renderizarAtletas(filtrados);
+        }
+
+        // GUARDAR DATOS EN SUPABASE
+        async function guardarScore(idAtleta) {
+            const btn = document.getElementById(`btn_${idAtleta}`);
+            const scoreVal = document.getElementById(`score_${idAtleta}`).value;
+            const penVal = document.getElementById(`pen_${idAtleta}`).value;
+            const notaVal = document.getElementById(`nota_${idAtleta}`).value;
+
+            // Feedback visual
+            const textoOriginal = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> GUARDANDO...';
+
+            const { data, error } = await supabase
+                .from('atletas')
+                .update({ 
+                    score: scoreVal, 
+                    penalizacion: penVal, 
+                    notas: notaVal 
+                })
+                .eq('id', idAtleta);
+
+            if (error) {
+                alert("Error al guardar. Verifica la conexión.");
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+            } else {
+                btn.innerHTML = '<i class="fas fa-check"></i> GUARDADO';
+                btn.style.background = '#25D366';
+                btn.style.color = 'white';
+                
+                // Actualizar el arreglo local para no perder el dato si filtra
+                const index = todosLosAtletas.findIndex(a => a.id === idAtleta);
+                if(index !== -1) {
+                    todosLosAtletas[index].score = scoreVal;
+                    todosLosAtletas[index].penalizacion = penVal;
+                    todosLosAtletas[index].notas = notaVal;
+                }
+
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = textoOriginal;
+                    btn.style.background = 'var(--neon)';
+                    btn.style.color = 'black';
+                }, 2000);
+            }
+        }
+
+        // Iniciar
+        window.onload = cargarDatos;
+    </script>
+</body>
+</html>

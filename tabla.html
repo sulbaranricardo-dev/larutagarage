@@ -19,35 +19,31 @@
         .header-public img { width: 100px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2)); }
         .header-public h1 { font-weight: 900; color: white; font-size: 1.5rem; text-transform: uppercase; margin: 0; letter-spacing: 1px; }
 
-        /* SELECTOR GIGANTE DE MODALIDAD */
         .modality-selector { display: flex; max-width: 900px; margin: 0 auto 25px auto; background: rgba(0,0,0,0.6); border-radius: 12px; padding: 6px; border: 1px solid #333; }
         .mod-btn { flex: 1; padding: 15px; background: transparent; border: none; color: #666; font-family: 'Montserrat'; font-weight: 900; font-size: 0.9rem; text-transform: uppercase; border-radius: 8px; cursor: pointer; transition: 0.3s; }
         .mod-btn.active-race { background: var(--neon); color: black; box-shadow: 0 0 15px rgba(216, 255, 94, 0.3); }
         .mod-btn.active-cf { background: var(--cf); color: white; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
 
-        /* CONTROLES / FILTROS */
         .controls { max-width: 900px; margin: 0 auto 20px auto; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; border: 1px solid #222; }
         .filter-group { margin-bottom: 15px; }
         .filter-group:last-child { margin-bottom: 0; }
         .filter-label { font-size: 0.65rem; color: #888; text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 8px; padding-left: 5px; }
-        .filter-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
-        .filter-row::-webkit-scrollbar { height: 0px; }
+        
+        /* CORRECCIÓN: flex-wrap: wrap permite que los botones bajen a la siguiente línea si no caben */
+        .filter-row { display: flex; gap: 8px; flex-wrap: wrap; padding-bottom: 6px; }
 
         .btn-pill { padding: 8px 16px; background: rgba(20,20,20,0.8); color: #aaa; border: 1px solid #333; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; font-family: 'Montserrat'; transition: 0.2s; white-space: nowrap; }
         
-        /* Colores dinámicos para los botones activos */
         .race-mode .btn-pill.active { background: var(--neon); color: black; border-color: var(--neon); font-weight: 900; }
         .cf-mode .btn-pill.active { background: white; color: black; border-color: white; font-weight: 900; }
         .cf-mode .btn-pill.active-wod { background: var(--cf); color: white; border-color: var(--cf); }
 
-        /* TABLA PRINCIPAL */
         .leaderboard-container { max-width: 900px; margin: 0 auto 40px auto; background: var(--card); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
         .table-wrapper { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 500px; }
         th { background: rgba(255, 255, 255, 0.03); color: #888; text-align: left; padding: 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-bottom: 2px solid #222; }
         td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.9rem; font-weight: 400; vertical-align: middle; }
         
-        /* TOP 3 DISEÑO */
         tr.top-1 { background: linear-gradient(90deg, rgba(255, 215, 0, 0.15) 0%, rgba(0,0,0,0) 100%); border-left: 4px solid #ffd700; }
         tr.top-2 { background: linear-gradient(90deg, rgba(192, 192, 192, 0.1) 0%, rgba(0,0,0,0) 100%); border-left: 4px solid #c0c0c0; }
         tr.top-3 { background: linear-gradient(90deg, rgba(205, 127, 50, 0.1) 0%, rgba(0,0,0,0) 100%); border-left: 4px solid #cd7f32; }
@@ -57,19 +53,20 @@
         .rank-2 { color: #c0c0c0; text-shadow: 0 0 10px rgba(192,192,192,0.4); font-size: 1.3rem; }
         .rank-3 { color: #cd7f32; text-shadow: 0 0 10px rgba(205,127,50,0.4); font-size: 1.2rem; }
 
-        /* PERFIL DEL ATLETA */
         .athlete-profile { display: flex; align-items: center; gap: 12px; }
         .avatar-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #333; background: #222; }
         .top-1 .avatar-img { border-color: #ffd700; box-shadow: 0 0 10px rgba(255,215,0,0.4); }
         .top-2 .avatar-img { border-color: #c0c0c0; }
         .top-3 .avatar-img { border-color: #cd7f32; }
         
-        .athlete-details { display: flex; flex-direction: column; }
+        .athlete-details { display: flex; flex-direction: column; align-items: flex-start; }
         .athlete-details strong { font-size: 1rem; color: white; }
         .athlete-details small { color: #aaa; font-size: 0.65rem; text-transform: uppercase; margin-top: 2px; }
         .athlete-box { font-weight: 600; display: flex; align-items: center; gap: 4px; }
         
-        /* Colores dinámicos de los textos según modalidad */
+        /* NUEVO: Etiqueta de Ganador de Heat */
+        .winner-heat-badge { background: var(--cf); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: 900; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 10px rgba(255,68,68,0.5); display: inline-block; }
+
         .race-mode .athlete-box { color: var(--neon); }
         .race-mode .badge-dorsal { color: var(--neon); border: 1px solid rgba(216, 255, 94, 0.2); background: rgba(216, 255, 94, 0.05); }
         .race-mode .score-display { color: var(--neon); }
@@ -122,13 +119,13 @@
             <span class="filter-label">Puntuación / Evento</span>
             <div class="filter-row" id="cf-wods-container">
                 <button class="btn-pill active-wod" id="cf-wod-general" onclick="setFilterCF('wod', 'general')"><i class="fas fa-trophy"></i> Overall (Puntos)</button>
-                </div>
+            </div>
         </div>
         <div class="filter-group">
             <span class="filter-label">Categoría</span>
             <div class="filter-row" id="cf-cat-container">
                 <button class="btn-pill active" id="cf-cat-todos" onclick="setFilterCF('cat', 'todos')">General</button>
-                </div>
+            </div>
         </div>
         <div class="filter-group">
             <span class="filter-label">Género & Heats</span>
@@ -136,10 +133,9 @@
                 <button class="btn-pill active" id="cf-sex-todos" onclick="setFilterCF('sex', 'todos')">M & F</button>
                 <button class="btn-pill" id="cf-sex-Masculino" onclick="setFilterCF('sex', 'Masculino')">Hombres</button>
                 <button class="btn-pill" id="cf-sex-Femenino" onclick="setFilterCF('sex', 'Femenino')">Mujeres</button>
-                <div style="width: 2px; background:#333; margin: 0 5px;"></div>
-                <div class="filter-row" id="cf-heat-container" style="padding-bottom:0;">
-                    <button class="btn-pill active" id="cf-heat-todos" onclick="setFilterCF('heat', 'todos')">Todos los Heats</button>
-                    </div>
+            </div>
+            <div class="filter-row" id="cf-heat-container" style="margin-top: 10px;">
+                <button class="btn-pill active" id="cf-heat-todos" onclick="setFilterCF('heat', 'todos')">Todos los Heats</button>
             </div>
         </div>
     </div>
@@ -149,10 +145,8 @@
     <div class="leaderboard-container">
         <div class="table-wrapper">
             <table>
-                <thead id="tablaHead">
-                    </thead>
-                <tbody id="tablaCuerpo">
-                    </tbody>
+                <thead id="tablaHead"></thead>
+                <tbody id="tablaCuerpo"></tbody>
             </table>
         </div>
     </div>
@@ -164,25 +158,15 @@
 
         let atletas = [];
         let wodsCF = [];
-        
         let modalidadActual = 'Race';
-        
-        // Estado Race
         let filtrosRace = { sex: 'todos', age: 'todos' };
-        
-        // Estado CF
         let filtrosCF = { wod: 'general', cat: 'todos', sex: 'todos', heat: 'todos' };
 
-        // ==========================================
-        // INICIALIZACIÓN
-        // ==========================================
         async function inicializar() {
-            // Cargar WODs primero
             const { data: dataWods } = await supabaseClient.from('wods_cf').select('*').order('id', { ascending: true });
             if(dataWods) wodsCF = dataWods;
             renderizarBotonesWodsCF();
 
-            // Cargar Atletas
             const { data: dataAtletas } = await supabaseClient.from('atletas').select('*');
             if(dataAtletas) atletas = dataAtletas;
             
@@ -190,7 +174,6 @@
             renderizarFiltrosDinamicosCF();
             procesarYRenderizar();
 
-            // Realtime
             supabaseClient.channel('public-leaderboard')
                 .on('postgres_changes', { event: 'UPDATE', scheme: 'public', table: 'atletas' }, payload => {
                     let idx = atletas.findIndex(a => a.id === payload.new.id);
@@ -199,16 +182,12 @@
                     procesarYRenderizar();
                 })
                 .on('postgres_changes', { event: '*', scheme: 'public', table: 'wods_cf' }, async payload => {
-                    // Si cambian los wods recargamos completo
                     const { data } = await supabaseClient.from('wods_cf').select('*').order('id', { ascending: true });
                     if(data) { wodsCF = data; renderizarBotonesWodsCF(); procesarYRenderizar(); }
                 })
                 .subscribe();
         }
 
-        // ==========================================
-        // UI & NAVEGACIÓN
-        // ==========================================
         function setModality(mod) {
             modalidadActual = mod;
             let body = document.getElementById('mainBody');
@@ -246,9 +225,7 @@
             return edad;
         }
 
-        // ==========================================
-        // LÓGICA DE RUTA RACE
-        // ==========================================
+        // ================= Race =================
         function setFilterRace(tipo, valor) {
             filtrosRace[tipo] = valor;
             document.querySelectorAll(`[id^="r-${tipo}-"]`).forEach(b => b.classList.remove('active'));
@@ -281,7 +258,6 @@
 
             filtrados.sort((a, b) => scoreToSecondsRace(a.score) - scoreToSecondsRace(b.score));
 
-            // Encabezado
             document.getElementById('tablaHead').innerHTML = `
                 <tr>
                     <th style="width: 50px; text-align: center;">Pos</th>
@@ -294,12 +270,10 @@
             dibujarFilas(filtrados, (a, isTop) => {
                 let scoreText = a.score || '--:--';
                 return `<td style="padding-right: 25px;"><span class="score-display" style="${isTop ? 'color:#ffd700;' : ''}">${scoreText}</span></td>`;
-            });
+            }, false, false, null); // false = use visual rank, false = no ganador heat
         }
 
-        // ==========================================
-        // LÓGICA DE RUTA CROSSFIT (MOTOR DE GAMES)
-        // ==========================================
+        // ================= CF =================
         function setFilterCF(tipo, valor) {
             filtrosCF[tipo] = valor;
             document.querySelectorAll(`[id^="cf-${tipo}-"]`).forEach(b => {
@@ -332,18 +306,15 @@
                 }
             });
             
-            // Categorías
             let htmlCat = `<button class="btn-pill active" id="cf-cat-todos" onclick="setFilterCF('cat', 'todos')">General</button>`;
             Array.from(cats).sort().forEach(c => htmlCat += `<button class="btn-pill" id="cf-cat-${c.replace(/\s+/g, '')}" onclick="setFilterCF('cat', '${c}')">${c}</button>`);
             document.getElementById('cf-cat-container').innerHTML = htmlCat;
 
-            // Heats
-            let htmlHeat = `<button class="btn-pill active" id="cf-heat-todos" onclick="setFilterCF('heat', 'todos')">Todos</button>`;
-            Array.from(heats).sort((a,b)=>a-b).forEach(h => htmlHeat += `<button class="btn-pill" id="cf-heat-${h}" onclick="setFilterCF('heat', '${h}')">H-${h}</button>`);
+            let htmlHeat = `<button class="btn-pill active" id="cf-heat-todos" onclick="setFilterCF('heat', 'todos')">Todos los Heats</button>`;
+            Array.from(heats).sort((a,b)=>a-b).forEach(h => htmlHeat += `<button class="btn-pill" id="cf-heat-${h}" onclick="setFilterCF('heat', '${h}')">Heat ${h}</button>`);
             document.getElementById('cf-heat-container').innerHTML = htmlHeat;
         }
 
-        // Parseador inteligente de CrossFit
         function parseScoreCF(scoreStr, isTime) {
             if (!scoreStr || scoreStr.trim() === "" || scoreStr.toLowerCase() === "dns" || scoreStr.toLowerCase() === "dnf") return isTime ? Infinity : -Infinity;
             if (isTime) {
@@ -355,33 +326,20 @@
             }
         }
 
-        // MOTOR MATEMÁTICO DE PUNTOS
         function calcularPuntosOverallCF(atletasBase) {
-            // Inicializar puntos en 0
             atletasBase.forEach(a => { a.tempTotalPts = 0; a.tempWodRanks = {}; });
-
             wodsCF.forEach(wod => {
                 let isTime = wod.tipo && wod.tipo.toLowerCase().includes('time');
-                
-                // Mapear scores de este WOD
                 let arrayWod = atletasBase.map(a => {
                     let wData = a.wods_data || {};
                     return { id: a.id, val: parseScoreCF((wData[wod.id] || {}).score, isTime) };
                 });
-
-                // Ordenar (Tiempo ascendente, Reps/Peso descendente)
                 arrayWod.sort((a, b) => isTime ? a.val - b.val : b.val - a.val);
 
-                // Asignar puntos (Manejando empates y vacíos)
                 let currentRank = 1;
                 for (let i = 0; i < arrayWod.length; i++) {
-                    if (i > 0 && arrayWod[i].val !== arrayWod[i-1].val) {
-                        currentRank = i + 1; // Salto matemático por empates
-                    }
-                    
-                    // Si no tiene score, se le dan puntos del último lugar posible + 1 (Castigo)
+                    if (i > 0 && arrayWod[i].val !== arrayWod[i-1].val) currentRank = i + 1;
                     let pts = (arrayWod[i].val === (isTime ? Infinity : -Infinity)) ? atletasBase.length + 1 : currentRank;
-                    
                     let atletaObj = atletasBase.find(a => a.id === arrayWod[i].id);
                     atletaObj.tempTotalPts += pts;
                     atletaObj.tempWodRanks[wod.id] = pts;
@@ -390,7 +348,6 @@
         }
 
         function renderizarCF() {
-            // 1. Filtrar el "Pool Competitivo" real (Los que compiten contra los que compiten)
             let competidores = atletas.filter(a => {
                 if (!a.modalidad || !a.modalidad.toLowerCase().includes('crossfit')) return false;
                 if (filtrosCF.cat !== 'todos' && a.categoria !== filtrosCF.cat) return false;
@@ -398,12 +355,9 @@
                 return true;
             });
 
-            // 2. Calcular matemáticas y ordenar globalmente en ese Pool
             if (filtrosCF.wod === 'general') {
                 calcularPuntosOverallCF(competidores);
-                // Gana el que tenga MENOS puntos
                 competidores.sort((a, b) => a.tempTotalPts - b.tempTotalPts);
-                
                 document.getElementById('tablaHead').innerHTML = `
                     <tr>
                         <th style="width: 50px; text-align: center;">Pos</th>
@@ -432,43 +386,41 @@
                 `;
             }
 
-            // A todos los competidores ya ordenados les inyectamos su "Posición Real"
             competidores.forEach((a, idx) => a.tempGlobalRank = idx + 1);
 
-            // 3. Filtrar visualmente por Heat (Solo oculta a los que no están corriendo ahora)
             let aMostrar = competidores.filter(a => {
                 if (filtrosCF.heat !== 'todos' && (a.heat || 'Sin Asignar') !== filtrosCF.heat) return false;
                 return true;
             });
 
-            // 4. Dibujar
+            // Lógica para detectar si hay que mostrar el "Ganador del Heat"
+            let mostrarGanadorHeat = (filtrosCF.wod !== 'general' && filtrosCF.heat !== 'todos');
+
             dibujarFilas(aMostrar, (a, isTop) => {
                 if(filtrosCF.wod === 'general') {
-                    // Mostrar puntos si tiene, si son 0 y no ha hecho nada, mostrar '--'
                     let text = a.tempTotalPts > 0 ? a.tempTotalPts : '--';
                     return `<td style="padding-right: 25px; text-align:right;">
                                 <span class="score-display" style="${isTop ? 'color:white;' : ''}">${text}</span>
                                 <span class="points-label">PUNTOS</span>
                             </td>`;
                 } else {
-                    let s1 = ((a.wods_data||{})[filtrosCF.wod]||{}).score || '--';
+                    let s1 = ((a.wods_data||{})[filtrosCF.wod]||{}).score;
+                    let text1 = (s1 && s1.trim() !== "") ? s1 : '--';
                     let s2 = ((a.wods_data||{})[filtrosCF.wod]||{}).score2;
-                    let out = `<span class="score-display" style="${isTop ? 'color:white;' : ''}">${s1}</span>`;
+                    let out = `<span class="score-display" style="${isTop ? 'color:white;' : ''}">${text1}</span>`;
                     if(s2) out += `<span class="points-label">TB: ${s2}</span>`;
                     return `<td style="padding-right: 25px; text-align:right;">${out}</td>`;
                 }
-            }, true); // true = usar tempGlobalRank
+            }, true, mostrarGanadorHeat, filtrosCF.wod);
         }
 
-        // ==========================================
-        // RENDERIZADO VISUAL COMÚN
-        // ==========================================
+        // ================= DIBUJAR =================
         function procesarYRenderizar() {
             if(modalidadActual === 'Race') renderizarRace();
             else renderizarCF();
         }
 
-        function dibujarFilas(array, funcScoreHTML, useTempRank = false) {
+        function dibujarFilas(array, funcScoreHTML, useTempRank = false, mostrarGanadorHeat = false, wodIdStr = null) {
             const tbody = document.getElementById('tablaCuerpo');
             tbody.innerHTML = '';
 
@@ -478,16 +430,26 @@
             }
 
             array.forEach((atleta, visualIndex) => {
-                // Si es CF, el rango es su rango matemático (así filtremos por heat). Si es Race, es su índice visual.
                 let rankNumber = useTempRank ? atleta.tempGlobalRank : (visualIndex + 1);
-                
                 let claseRank = ""; let contenidoRank = rankNumber; let claseRow = "";
                 let isTop = rankNumber <= 3;
 
-                // Estética de Top 3 solo para los 3 primeros rangos globales
                 if (rankNumber === 1) { claseRank = "rank-1"; contenidoRank = `<i class="fas fa-crown"></i>`; claseRow = "top-1"; }
                 else if (rankNumber === 2) { claseRank = "rank-2"; contenidoRank = `2`; claseRow = "top-2"; }
                 else if (rankNumber === 3) { claseRank = "rank-3"; contenidoRank = `3`; claseRow = "top-3"; }
+
+                // Lógica de Medalla de Ganador de Heat
+                let badgeHeat = "";
+                if (mostrarGanadorHeat && visualIndex === 0) {
+                    let tieneS = false;
+                    if(modalidadActual !== 'Race') {
+                         let s = ((atleta.wods_data||{})[wodIdStr]||{}).score;
+                         tieneS = s && s.trim() !== "";
+                    }
+                    if(tieneS) {
+                        badgeHeat = `<span class="winner-heat-badge"><i class="fas fa-fire"></i> Ganador de Heat</span>`;
+                    }
+                }
 
                 let tr = document.createElement('tr');
                 tr.className = claseRow;
@@ -503,6 +465,7 @@
                                 <strong>${atleta.nombre}</strong>
                                 <small>${atleta.categoria}</small>
                                 <small class="athlete-box"><i class="fas fa-map-marker-alt"></i> ${atleta.box || 'Independiente'}</small>
+                                ${badgeHeat}
                             </div>
                         </div>
                     </td>
@@ -513,7 +476,6 @@
             });
         }
 
-        // Ejecutar
         window.onload = inicializar;
     </script>
 </body>

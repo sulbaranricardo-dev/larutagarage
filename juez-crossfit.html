@@ -11,7 +11,11 @@
         :root { --cf: #ff4444; --bg: #0a0a0a; --sidebar: #111; --card: #1a1a1a; --text: #eee; }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
         
-        /* SIDEBAR (Barra Lateral) */
+        /* HEADER MÓVIL (Oculto en Desktop) */
+        .mobile-header { display: none; background: #000; padding: 15px 20px; border-bottom: 2px solid var(--cf); align-items: center; justify-content: space-between; z-index: 100; }
+        .mobile-header h1 { margin: 0; font-size: 1.2rem; font-weight: 900; color: white; text-transform: uppercase; }
+        
+        /* SIDEBAR DESKTOP */
         .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid #333; display: flex; flex-direction: column; }
         .logo-area { padding: 30px 20px; text-align: center; border-bottom: 1px solid #222; }
         .logo-area h1 { margin: 0; color: white; font-weight: 900; font-size: 1.4rem; text-transform: uppercase; }
@@ -22,12 +26,17 @@
         .nav-item:hover { color: white; background: rgba(255, 68, 68, 0.05); }
         .nav-item.active { color: white; background: rgba(255, 68, 68, 0.1); border-left-color: var(--cf); }
         .nav-item i { font-size: 1.2rem; width: 25px; text-align: center; }
-        .nav-item.locked { display: none; }
+        .locked { display: none !important; }
 
         .coach-lock-area { padding: 20px; border-top: 1px solid #222; }
         .btn-lock { width: 100%; background: transparent; border: 1px solid #444; color: #888; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; }
-        .btn-lock:hover { border-color: #ffd700; color: #ffd700; }
         .btn-lock.unlocked { background: rgba(255, 215, 0, 0.1); color: #ffd700; border-color: #ffd700; }
+
+        /* NAVEGACIÓN INFERIOR MÓVIL (Oculta en Desktop) */
+        .bottom-nav { display: none; position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #333; z-index: 1000; }
+        .nav-item-mob { flex: 1; padding: 10px 0; text-align: center; color: #666; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; cursor: pointer; }
+        .nav-item-mob i { display: block; font-size: 1.2rem; margin-bottom: 4px; }
+        .nav-item-mob.active { color: var(--cf); border-top: 3px solid var(--cf); background: rgba(255, 68, 68, 0.1); }
 
         /* MAIN CONTENT */
         .main-content { flex: 1; overflow-y: auto; padding: 40px; }
@@ -35,57 +44,70 @@
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .section-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .section-header h2 { margin: 0; font-size: 2rem; font-weight: 900; text-transform: uppercase; }
-        .section-header p { margin: 5px 0 0 0; color: #888; }
+        .section-header { margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; }
+        .section-header h2 { margin: 0; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; }
+        .section-header p { margin: 5px 0 0 0; color: #888; font-size: 0.9rem; }
 
         /* CONTROLES / FILTROS */
-        .panel-controls { background: var(--card); border: 1px solid #333; padding: 20px; border-radius: 12px; display: flex; gap: 20px; margin-bottom: 30px; align-items: flex-end; flex-wrap: wrap; }
+        .panel-controls { background: var(--card); border: 1px solid #333; padding: 20px; border-radius: 12px; display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: flex-end; }
         .form-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
         .form-group label { font-size: 0.75rem; color: #aaa; font-weight: 900; text-transform: uppercase; }
         .form-control { background: #000; border: 1px solid #444; color: white; padding: 12px 15px; border-radius: 8px; font-family: 'Montserrat'; font-size: 0.95rem; width: 100%; box-sizing: border-box; }
         .form-control:focus { border-color: var(--cf); outline: none; }
         
-        .btn-primary { background: var(--cf); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-family: 'Montserrat'; display: inline-flex; align-items: center; gap: 10px; }
-        .btn-primary:hover { box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
+        .btn-primary { background: var(--cf); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-family: 'Montserrat'; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-gold { background: #ffd700; color: black; }
-        .btn-gold:hover { box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
 
-        /* TABLA DE AUDITORÍA / JUECES */
-        .table-wrap { background: var(--card); border: 1px solid #333; border-radius: 12px; overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
+        /* TABLA JUECES */
+        .table-wrap { background: var(--card); border: 1px solid #333; border-radius: 12px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
         th { background: rgba(0,0,0,0.5); padding: 15px; text-align: left; font-size: 0.8rem; color: #aaa; text-transform: uppercase; border-bottom: 2px solid #333; }
-        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.9rem; }
-        tr:last-child td { border-bottom: none; }
+        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.9rem; vertical-align: middle; }
         
-        .input-score { width: 120px; padding: 10px; background: #000; border: 1px solid #444; color: white; border-radius: 6px; font-family: 'Montserrat'; font-weight: 600; text-align: center; }
-        .btn-save-row { background: #222; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 900; transition: 0.3s; }
+        .input-score { width: 100%; max-width: 130px; padding: 10px; background: #000; border: 1px solid #444; color: white; border-radius: 6px; font-family: 'Montserrat'; font-weight: 600; text-align: center; box-sizing: border-box; }
+        .score-stack { display: flex; flex-direction: column; gap: 8px; }
+        .score-label { font-size: 0.6rem; color: var(--cf); font-weight: 900; text-transform: uppercase; }
+        
+        .btn-save-row { background: #222; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 900; transition: 0.3s; width: 100%; }
         .btn-save-row:hover { background: var(--cf); border-color: var(--cf); }
         .dorsal-tag { background: #000; padding: 5px 10px; border-radius: 6px; font-weight: 900; color: var(--cf); border: 1px solid #333; }
 
-        /* GRILLA DE HEATS (3 COLUMNAS) */
-        .heats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        /* GRILLA DE HEATS */
+        .heats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .heat-card { background: var(--card); border: 1px solid #333; border-top: 4px solid var(--cf); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-        .heat-header { padding: 15px 20px; background: rgba(0,0,0,0.3); border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        .heat-header h3 { margin: 0; font-size: 1.2rem; font-weight: 900; color: white; }
-        .heat-header span { font-size: 0.7rem; color: #aaa; background: #222; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
-        .heat-body { padding: 0; flex: 1; }
-        .heat-athlete { padding: 12px 20px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
-        .heat-athlete:last-child { border-bottom: none; }
-        .heat-athlete strong { color: #fff; }
-        .heat-footer { padding: 15px 20px; background: rgba(0,0,0,0.3); border-top: 1px solid #222; }
-        .btn-edit-heat { width: 100%; background: #222; color: #ccc; border: 1px solid #444; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: 0.2s; }
-        .btn-edit-heat:hover { background: #333; color: white; border-color: #888; }
+        .heat-header { padding: 15px; background: rgba(0,0,0,0.3); border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .heat-header h3 { margin: 0; font-size: 1.1rem; font-weight: 900; color: white; }
+        .heat-header span { font-size: 0.65rem; color: #aaa; background: #222; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+        .heat-athlete { padding: 12px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+        .heat-footer { padding: 12px 15px; background: rgba(0,0,0,0.3); border-top: 1px solid #222; }
+        .btn-edit-heat { width: 100%; background: #222; color: #ccc; border: 1px solid #444; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 700; }
 
         /* MODAL */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card); border: 1px solid #444; border-radius: 12px; width: 500px; max-width: 90%; padding: 30px; position: relative; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .modal-content { background: var(--card); border: 1px solid #444; border-radius: 12px; width: 100%; max-width: 450px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; }
         .close-modal { position: absolute; top: 15px; right: 20px; color: #888; cursor: pointer; font-size: 1.5rem; }
 
         .loader { text-align: center; color: var(--cf); font-weight: 900; padding: 40px; letter-spacing: 2px; }
+
+        /* RESPONSIVIDAD MÓVIL */
+        @media (max-width: 800px) {
+            body { flex-direction: column; }
+            .sidebar { display: none; }
+            .mobile-header { display: flex; }
+            .bottom-nav { display: flex; }
+            .main-content { padding: 20px 15px 90px 15px; } /* Espacio para el bottom nav */
+            .section-header h2 { font-size: 1.4rem; }
+            .panel-controls { flex-direction: column; gap: 15px; padding: 15px; }
+            .form-group { width: 100%; }
+        }
     </style>
 </head>
 <body>
+
+    <div class="mobile-header">
+        <h1>Sistema CF</h1>
+        <button id="btnLockMob" class="btn-lock" style="width: auto; padding: 8px 12px;" onclick="unlockCoach()"><i class="fas fa-lock"></i></button>
+    </div>
 
     <aside class="sidebar">
         <div class="logo-area">
@@ -94,11 +116,11 @@
         </div>
         <nav class="nav-menu">
             <div class="nav-item active" onclick="switchTab('scores')"><i class="fas fa-edit"></i> Juez (Scores)</div>
-            <div id="nav-heats" class="nav-item locked" onclick="switchTab('heats')"><i class="fas fa-users"></i> Gestión Heats</div>
-            <div id="nav-wods" class="nav-item locked" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i> Gestión WODs</div>
+            <div class="nav-item locked coach-only" onclick="switchTab('heats')"><i class="fas fa-users"></i> Gestión Heats</div>
+            <div class="nav-item locked coach-only" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i> Gestión WODs</div>
         </nav>
         <div class="coach-lock-area">
-            <button id="btnLock" class="btn-lock" onclick="unlockCoach()"><i class="fas fa-lock"></i> Head Coach</button>
+            <button id="btnLockDesk" class="btn-lock" onclick="unlockCoach()"><i class="fas fa-lock"></i> Head Coach</button>
         </div>
     </aside>
 
@@ -106,10 +128,7 @@
         
         <section id="sec-scores" class="section active">
             <div class="section-header">
-                <div>
-                    <h2>Panel de Puntuación</h2>
-                    <p>Selecciona WOD y Heat para evaluar</p>
-                </div>
+                <div><h2>Panel de Puntuación</h2><p>Selecciona WOD y Heat para evaluar</p></div>
             </div>
 
             <div class="panel-controls">
@@ -123,16 +142,15 @@
                 </div>
             </div>
 
-            <div id="judgeLoader" class="loader" style="display:none;"><i class="fas fa-circle-notch fa-spin"></i> Cargando...</div>
             <div id="judgeTableContainer" class="table-wrap" style="display:none;">
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 80px;">Dorsal</th>
+                            <th style="width: 60px;">Dorsal</th>
                             <th>Atleta / Categ</th>
-                            <th style="width: 150px;">Score</th>
-                            <th style="width: 150px;">Penalización</th>
-                            <th>Notas del Juez</th>
+                            <th style="width: 160px;">Score(s)</th>
+                            <th style="width: 120px;">Penalización</th>
+                            <th>Notas</th>
                             <th style="width: 100px;">Acción</th>
                         </tr>
                     </thead>
@@ -143,23 +161,15 @@
 
         <section id="sec-heats" class="section">
             <div class="section-header">
-                <div>
-                    <h2>Gestión de Heats Globales</h2>
-                    <p>Organiza los heats para toda la competencia</p>
-                </div>
-                <button class="btn-primary btn-gold" onclick="autogenerarHeats()"><i class="fas fa-magic"></i> Autogenerar Heats</button>
+                <div><h2>Gestión de Heats</h2><p>Heats globales de la competencia</p></div>
+                <button class="btn-primary btn-gold" onclick="autogenerarHeats()"><i class="fas fa-magic"></i> Autogenerar</button>
             </div>
-
-            <div class="heats-grid" id="heatsGridContainer">
-                </div>
+            <div class="heats-grid" id="heatsGridContainer"></div>
         </section>
 
         <section id="sec-wods" class="section">
             <div class="section-header">
-                <div>
-                    <h2>Gestión de WODs</h2>
-                    <p>Crea las pruebas de la competencia</p>
-                </div>
+                <div><h2>Gestión de WODs</h2><p>Crea las pruebas de la competencia</p></div>
             </div>
 
             <div class="panel-controls">
@@ -168,42 +178,52 @@
                     <input type="text" id="newWodName" class="form-control" placeholder="Ej: Evento 1 - Amanda">
                 </div>
                 <div class="form-group">
-                    <label>Tipo de Score</label>
+                    <label>Tipo de Score 1</label>
                     <select id="newWodType" class="form-control">
-                        <option value="For Time">For Time (Menor tiempo gana)</option>
-                        <option value="AMRAP">AMRAP (Mayor reps gana)</option>
-                        <option value="RM">RM / Peso (Mayor peso gana)</option>
+                        <option value="For Time">For Time</option>
+                        <option value="AMRAP">AMRAP</option>
+                        <option value="RM">RM / Peso</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Score 2 <span style="color:var(--cf)">(Opcional)</span></label>
+                    <select id="newWodType2" class="form-control">
+                        <option value="">Ninguno (Solo 1 Score)</option>
+                        <option value="For Time">For Time</option>
+                        <option value="AMRAP">AMRAP</option>
+                        <option value="RM">RM / Peso</option>
                     </select>
                 </div>
                 <div class="form-group" style="flex: 2;">
-                    <label>Descripción / Detalles (Opcional)</label>
+                    <label>Descripción / Detalles</label>
                     <input type="text" id="newWodDesc" class="form-control" placeholder="Ej: Time Cap 10 min...">
                 </div>
-                <div class="form-group" style="flex: 0; min-width: auto;">
+                <div class="form-group" style="flex: 0; justify-content:flex-end;">
                     <button class="btn-primary" onclick="crearWod()"><i class="fas fa-plus"></i> Guardar</button>
                 </div>
             </div>
 
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th style="width:50px;">ID</th><th>Nombre del WOD</th><th>Tipo</th><th>Descripción</th></tr></thead>
+                    <thead><tr><th style="width:50px;">ID</th><th>Nombre del WOD</th><th>S1</th><th>S2</th><th>Descripción</th></tr></thead>
                     <tbody id="wodsTableBody"></tbody>
                 </table>
             </div>
         </section>
-
     </main>
+
+    <div class="bottom-nav">
+        <div class="nav-item-mob active" onclick="switchTab('scores')"><i class="fas fa-edit"></i>Scores</div>
+        <div class="nav-item-mob locked coach-only" onclick="switchTab('heats')"><i class="fas fa-fire"></i>Heats</div>
+        <div class="nav-item-mob locked coach-only" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i>WODs</div>
+    </div>
 
     <div id="modalEditHeat" class="modal-overlay">
         <div class="modal-content">
             <i class="fas fa-times close-modal" onclick="cerrarModal()"></i>
             <h2 style="margin-top:0; color:white;">Editar Heat <span id="modalHeatNumber" style="color:var(--cf);"></span></h2>
-            <p style="color:#aaa; font-size:0.85rem; margin-bottom:20px;">Edita el número de heat de estos atletas para moverlos a otro grupo.</p>
-            
-            <div id="modalAthletesList" style="display:flex; flex-direction:column; gap:10px;">
-                </div>
-            
-            <button class="btn-primary" style="width:100%; margin-top:20px; justify-content:center;" onclick="guardarCambiosHeat()">Guardar Cambios</button>
+            <div id="modalAthletesList" style="display:flex; flex-direction:column; gap:10px; margin-top:20px;"></div>
+            <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="guardarCambiosHeat()">Guardar Cambios</button>
         </div>
     </div>
 
@@ -212,20 +232,22 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eXdwanp2bHZkeHNjZ3RlYnZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNjI0OTQsImV4cCI6MjA5NDYzODQ5NH0.L7gdDpxOD7N1gpSoCVI0FEiwxR44sG8XwAORYm16sEM';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let atletas = [];
-        let wods = [];
-        let isCoach = false;
+        let atletas = []; let wods = []; let isCoach = false;
 
         async function init() {
             await cargarWods();
             await cargarAtletas();
         }
 
-        // --- NAVEGACIÓN ---
+        // --- NAVEGACIÓN Y RESPONSIVIDAD ---
         function switchTab(tabId) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-item-mob').forEach(n => n.classList.remove('active'));
+            
             document.getElementById(`sec-${tabId}`).classList.add('active');
+            
+            // Activar visualmente en Desktop y Mobile
             event.currentTarget.classList.add('active');
 
             if(tabId === 'scores') { actualizarSelectHeatsJuez(); renderJudgeTable(); }
@@ -237,20 +259,22 @@
             let pin = prompt("Ingresa el PIN de Head Coach:");
             if(pin === "1234") {
                 isCoach = true;
-                let btn = document.getElementById('btnLock');
-                btn.classList.add('unlocked');
-                btn.innerHTML = '<i class="fas fa-unlock"></i> Head Coach Activo';
-                document.querySelectorAll('.locked').forEach(el => el.classList.remove('locked'));
+                document.getElementById('btnLockDesk').classList.add('unlocked');
+                document.getElementById('btnLockDesk').innerHTML = '<i class="fas fa-unlock"></i> Coach Activo';
+                document.getElementById('btnLockMob').classList.add('unlocked');
+                document.getElementById('btnLockMob').innerHTML = '<i class="fas fa-unlock"></i>';
+                
+                document.querySelectorAll('.coach-only').forEach(el => el.classList.remove('locked'));
             } else { alert("PIN Incorrecto"); }
         }
 
-        // --- CARGA GENERAL ---
+        // --- CARGA DE DATOS ---
         async function cargarWods() {
             const { data, error } = await supabaseClient.from('wods_cf').select('*').order('id', { ascending: true });
             if(data) {
                 wods = data;
                 renderWodsManager();
-                let options = wods.map(w => `<option value="${w.id}">${w.nombre} (${w.tipo})</option>`).join('');
+                let options = wods.map(w => `<option value="${w.id}">${w.nombre}</option>`).join('');
                 document.getElementById('judgeWodSelect').innerHTML = '<option value="">-- Selecciona el WOD --</option>' + options;
             }
         }
@@ -263,7 +287,7 @@
             }
         }
 
-        // --- SECCIÓN 1: SCORES (JUEZ) ---
+        // --- SCORES (DOBLE SCORE SOPORTADO) ---
         function actualizarSelectHeatsJuez() {
             let heatsSet = new Set();
             atletas.forEach(a => { if(a.heat && a.heat !== 'Sin Asignar') heatsSet.add(a.heat); });
@@ -276,30 +300,50 @@
         function renderJudgeTable() {
             let wodId = document.getElementById('judgeWodSelect').value;
             let heatSelected = document.getElementById('judgeHeatSelect').value;
-            let container = document.getElementById('judgeTableContainer');
             let tbody = document.getElementById('judgeTableBody');
+            let container = document.getElementById('judgeTableContainer');
 
             if(!wodId || !heatSelected) { container.style.display = 'none'; return; }
             container.style.display = 'block'; tbody.innerHTML = '';
 
             let atletasEnHeat = atletas.filter(a => a.heat == heatSelected);
-            if(atletasEnHeat.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#666;">No hay atletas en este Heat.</td></tr>';
-                return;
-            }
+            if(atletasEnHeat.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Vacio</td></tr>'; return; }
+
+            // Buscamos la configuración del WOD para saber si tiene 1 o 2 Scores
+            let wodActual = wods.find(w => w.id == wodId);
+            let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
 
             atletasEnHeat.forEach(a => {
                 let wData = a.wods_data || {};
                 let cWod = wData[wodId] || {};
                 
+                // Lógica UI para 1 o 2 scores
+                let inputsScoreHTML = `
+                    <div class="score-stack">
+                        <div>
+                            <span class="score-label">${wodActual.tipo}</span>
+                            <input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="Score 1">
+                        </div>
+                `;
+                
+                if(tieneDobleScore) {
+                    inputsScoreHTML += `
+                        <div>
+                            <span class="score-label">${wodActual.tipo2}</span>
+                            <input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="Score 2">
+                        </div>
+                    `;
+                }
+                inputsScoreHTML += `</div>`;
+
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><span class="dorsal-tag">${a.dorsal}</span></td>
                     <td><strong style="color:white;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
-                    <td><input type="text" id="j_score_${a.id}" class="form-control" value="${cWod.score || ''}" placeholder="Ej: 10:30"></td>
-                    <td><input type="text" id="j_pen_${a.id}" class="form-control" value="${cWod.penalizacion || ''}" placeholder="Opcional"></td>
-                    <td><input type="text" id="j_nota_${a.id}" class="form-control" value="${cWod.notas || ''}" placeholder="Opcional"></td>
-                    <td><button id="j_btn_${a.id}" class="btn-save-row" onclick="guardarScoreJuez('${a.id}', '${wodId}')"><i class="fas fa-save"></i> Guardar</button></td>
+                    <td>${inputsScoreHTML}</td>
+                    <td><input type="text" id="j_pen_${a.id}" class="form-control" value="${cWod.penalizacion || ''}" placeholder="Penal."></td>
+                    <td><input type="text" id="j_nota_${a.id}" class="form-control" value="${cWod.notas || ''}" placeholder="Notas"></td>
+                    <td><button id="j_btn_${a.id}" class="btn-save-row" onclick="guardarScoreJuez('${a.id}', '${wodId}')"><i class="fas fa-save"></i></button></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -307,7 +351,9 @@
 
         async function guardarScoreJuez(idAtleta, wodId) {
             let btn = document.getElementById(`j_btn_${idAtleta}`);
-            let score = document.getElementById(`j_score_${idAtleta}`).value;
+            let score1 = document.getElementById(`j_score_${idAtleta}`).value;
+            let score2El = document.getElementById(`j_score2_${idAtleta}`);
+            let score2 = score2El ? score2El.value : null; // Si existe el input 2, lo guardamos
             let pen = document.getElementById(`j_pen_${idAtleta}`).value;
             let nota = document.getElementById(`j_nota_${idAtleta}`).value;
 
@@ -315,174 +361,116 @@
 
             let index = atletas.findIndex(a => a.id === idAtleta);
             let wodsData = atletas[index].wods_data || {};
-            wodsData[wodId] = { score, penalizacion: pen, notas: nota };
+            wodsData[wodId] = { score: score1, score2: score2, penalizacion: pen, notas: nota };
 
             const { error } = await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
 
             if(!error) {
                 atletas[index].wods_data = wodsData;
-                btn.innerHTML = '<i class="fas fa-check"></i> OK';
-                btn.style.background = '#25D366'; btn.style.borderColor = '#25D366';
-                setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.style.background = ''; btn.style.borderColor = ''; btn.disabled = false; }, 1500);
-            } else {
-                alert("Error al guardar"); btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.disabled = false;
-            }
+                btn.innerHTML = '<i class="fas fa-check"></i>'; btn.style.background = '#25D366';
+                setTimeout(() => { btn.innerHTML = '<i class="fas fa-save"></i>'; btn.style.background = ''; btn.disabled = false; }, 1500);
+            } else { alert("Error"); btn.innerHTML = '<i class="fas fa-save"></i>'; btn.disabled = false; }
         }
 
-        // --- SECCIÓN 2: HEATS GLOBALES ---
+        // --- HEATS GLOBALES ---
         function renderHeatsGrid() {
             let container = document.getElementById('heatsGridContainer');
             container.innerHTML = '';
-
-            // Agrupar por número de heat
             let heatsMap = {};
-            atletas.forEach(a => {
-                let h = a.heat || 'Sin Asignar';
-                if(!heatsMap[h]) heatsMap[h] = [];
-                heatsMap[h].push(a);
-            });
-
-            // Ordenar Heats
+            atletas.forEach(a => { let h = a.heat || 'Sin Asignar'; if(!heatsMap[h]) heatsMap[h] = []; heatsMap[h].push(a); });
             let heatsKeys = Object.keys(heatsMap).sort((a,b) => (a === 'Sin Asignar' ? 1 : b === 'Sin Asignar' ? -1 : a - b));
 
             heatsKeys.forEach(hKey => {
                 let grupo = heatsMap[hKey];
-                // Tomamos la categoría del primer atleta para ponerle título a la tarjeta
                 let tituloCat = grupo.length > 0 ? `${grupo[0].categoria} | ${grupo[0].sexo}` : 'Mixto';
-
-                let card = document.createElement('div');
-                card.className = 'heat-card';
+                let card = document.createElement('div'); card.className = 'heat-card';
                 card.innerHTML = `
-                    <div class="heat-header">
-                        <h3>Heat ${hKey}</h3>
-                        <span>${tituloCat}</span>
-                    </div>
-                    <div class="heat-body">
-                        ${grupo.map(a => `
-                            <div class="heat-athlete">
-                                <strong>${a.nombre}</strong>
-                                <span class="dorsal-tag" style="background:transparent; border-color:#444;">#${a.dorsal}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="heat-footer">
-                        <button class="btn-edit-heat" onclick="abrirModalHeat('${hKey}')"><i class="fas fa-edit"></i> Editar Atletas</button>
-                    </div>
+                    <div class="heat-header"><h3>Heat ${hKey}</h3><span>${tituloCat}</span></div>
+                    <div style="flex:1;">${grupo.map(a => `<div class="heat-athlete"><strong>${a.nombre}</strong><span class="dorsal-tag" style="background:transparent; border-color:#444;">#${a.dorsal}</span></div>`).join('')}</div>
+                    <div class="heat-footer"><button class="btn-edit-heat" onclick="abrirModalHeat('${hKey}')"><i class="fas fa-edit"></i> Editar Heat</button></div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // AUTOGENERADOR DE HEATS (Modifica la columna 'heat')
         async function autogenerarHeats() {
-            if(!confirm("¿Seguro? Esto organizará a todos los atletas de CrossFit por Categoría y Sexo, en grupos de 4.")) return;
-
+            if(!confirm("¿Seguro? Esto organizará a todos los atletas por Categoría y Sexo, en grupos de 4.")) return;
             let grupos = {};
-            atletas.forEach(a => {
-                let key = `${a.categoria}_${a.sexo}`;
-                if(!grupos[key]) grupos[key] = [];
-                grupos[key].push(a);
-            });
+            atletas.forEach(a => { let key = `${a.categoria}_${a.sexo}`; if(!grupos[key]) grupos[key] = []; grupos[key].push(a); });
 
-            let currentHeatGlobal = 1;
-            let actualizaciones = [];
-
+            let currentHeatGlobal = 1; let actualizaciones = [];
             for(let key in grupos) {
                 let grupoAtletas = grupos[key];
                 for (let i = 0; i < grupoAtletas.length; i += 4) {
                     let chunk = grupoAtletas.slice(i, i + 4);
-                    chunk.forEach(a => {
-                        actualizaciones.push({ id: a.id, heat: currentHeatGlobal.toString() });
-                        let idx = atletas.findIndex(x => x.id === a.id);
-                        if(idx !== -1) atletas[idx].heat = currentHeatGlobal.toString();
-                    });
+                    chunk.forEach(a => { actualizaciones.push({ id: a.id, heat: currentHeatGlobal.toString() }); let idx = atletas.findIndex(x => x.id === a.id); if(idx !== -1) atletas[idx].heat = currentHeatGlobal.toString(); });
                     currentHeatGlobal++;
                 }
             }
-
-            alert("Procesando... no cierres la ventana.");
-            for(let act of actualizaciones) {
-                await supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id);
-            }
-            
-            alert("¡Heats generados y guardados!");
-            renderHeatsGrid();
-            actualizarSelectHeatsJuez();
+            alert("Procesando...");
+            for(let act of actualizaciones) { await supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id); }
+            alert("Heats generados"); renderHeatsGrid(); actualizarSelectHeatsJuez();
         }
 
-        // --- MODAL DE EDICIÓN ---
         let atletasModalActual = [];
         function abrirModalHeat(heatStr) {
             document.getElementById('modalHeatNumber').innerText = heatStr;
             atletasModalActual = atletas.filter(a => (a.heat || 'Sin Asignar') === heatStr);
-            
-            let listHtml = atletasModalActual.map(a => `
+            document.getElementById('modalAthletesList').innerHTML = atletasModalActual.map(a => `
                 <div style="display:flex; align-items:center; gap:10px; background:#000; padding:10px; border-radius:8px; border:1px solid #333;">
                     <div style="flex:1;"><strong style="color:white; font-size:0.9rem;">${a.nombre}</strong></div>
-                    <div>
-                        <label style="font-size:0.6rem; color:#888;">NUEVO HEAT</label>
-                        <input type="text" id="modal_in_${a.id}" class="form-control" style="width:70px; text-align:center; padding:5px;" value="${a.heat || ''}">
-                    </div>
+                    <div><input type="text" id="modal_in_${a.id}" class="form-control" style="width:70px; text-align:center; padding:5px;" value="${a.heat || ''}"></div>
                 </div>
             `).join('');
-
-            document.getElementById('modalAthletesList').innerHTML = listHtml;
             document.getElementById('modalEditHeat').style.display = 'flex';
         }
-
         function cerrarModal() { document.getElementById('modalEditHeat').style.display = 'none'; }
 
         async function guardarCambiosHeat() {
             let btn = event.target; btn.innerHTML = 'Guardando...'; btn.disabled = true;
-            
             for(let a of atletasModalActual) {
                 let nuevoHeat = document.getElementById(`modal_in_${a.id}`).value.trim();
                 if(nuevoHeat === '') nuevoHeat = 'Sin Asignar';
-                
                 if(a.heat !== nuevoHeat) {
                     await supabaseClient.from('atletas').update({ heat: nuevoHeat }).eq('id', a.id);
-                    let idx = atletas.findIndex(x => x.id === a.id);
-                    if(idx !== -1) atletas[idx].heat = nuevoHeat;
+                    let idx = atletas.findIndex(x => x.id === a.id); if(idx !== -1) atletas[idx].heat = nuevoHeat;
                 }
             }
-            
-            cerrarModal();
-            renderHeatsGrid();
-            actualizarSelectHeatsJuez();
+            cerrarModal(); renderHeatsGrid(); actualizarSelectHeatsJuez();
             btn.innerHTML = 'Guardar Cambios'; btn.disabled = false;
         }
 
-        // --- SECCIÓN 3: WODS ---
+        // --- WODS (Doble Score Creador) ---
         function renderWodsManager() {
             let tbody = document.getElementById('wodsTableBody');
             tbody.innerHTML = wods.map(w => `
                 <tr>
                     <td><span class="dorsal-tag">${w.id}</span></td>
                     <td><strong style="color:white;">${w.nombre}</strong></td>
-                    <td><span style="color:var(--cf); font-weight:900; font-size:0.7rem; border:1px solid var(--cf); padding:3px 8px; border-radius:4px;">${w.tipo}</span></td>
+                    <td><span style="color:var(--cf); font-size:0.7rem; border:1px solid var(--cf); padding:3px 8px; border-radius:4px;">${w.tipo}</span></td>
+                    <td>${w.tipo2 ? `<span style="color:#ffd700; font-size:0.7rem; border:1px solid #ffd700; padding:3px 8px; border-radius:4px;">${w.tipo2}</span>` : '<span style="color:#444;">-</span>'}</td>
                     <td style="color:#aaa;">${w.descripcion || '-'}</td>
                 </tr>
             `).join('');
-            if(wods.length === 0) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#666;">No hay WODs creados aún.</td></tr>';
         }
 
         async function crearWod() {
             let nombre = document.getElementById('newWodName').value.trim();
             let tipo = document.getElementById('newWodType').value;
+            let tipo2 = document.getElementById('newWodType2').value; // El opcional
             let desc = document.getElementById('newWodDesc').value.trim();
             
             if(!nombre) return alert("Escribe el nombre del WOD");
-
             let btn = event.target; btn.innerHTML = 'Guardando...'; btn.disabled = true;
 
-            const { data, error } = await supabaseClient.from('wods_cf').insert([{ nombre, tipo, descripcion: desc }]).select();
+            // Inserta tipo2 en Supabase
+            const { data, error } = await supabaseClient.from('wods_cf').insert([{ nombre, tipo, tipo2: tipo2, descripcion: desc }]).select();
             
             if(!error) {
-                document.getElementById('newWodName').value = '';
-                document.getElementById('newWodDesc').value = '';
-                await cargarWods();
-                alert("WOD Creado");
-            } else { alert("Error al crear"); }
+                document.getElementById('newWodName').value = ''; document.getElementById('newWodDesc').value = '';
+                document.getElementById('newWodType2').value = '';
+                await cargarWods(); alert("WOD Creado");
+            } else { alert("Error al crear. Asegúrate de haber agregado la columna 'tipo2' en Supabase."); }
             
             btn.innerHTML = '<i class="fas fa-plus"></i> Guardar'; btn.disabled = false;
         }

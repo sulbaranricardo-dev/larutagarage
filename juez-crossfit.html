@@ -18,12 +18,11 @@
         
         .top-header { background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); padding: 15px 30px; border-bottom: 1px solid rgba(255, 68, 68, 0.2); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .brand { display: flex; align-items: center; gap: 10px; }
-        .brand img { width: 35px; filter: drop-shadow(0 0 5px rgba(255,68,68,0.5)); }
         .brand h1 { margin: 0; font-size: 1.3rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 1px; }
-        .brand span { background: var(--cf); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; }
         
         .coach-only { display: none !important; } 
         body.coach-mode .coach-only { display: flex !important; } 
+        body.coach-mode .coach-inline { display: inline-block !important; }
 
         .btn-lock { background: transparent; border: 1px solid #444; color: #888; padding: 8px 16px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; font-size: 0.8rem; }
         .btn-lock.unlocked { background: rgba(255, 215, 0, 0.1); color: #ffd700; border-color: #ffd700; box-shadow: 0 0 10px rgba(255,215,0,0.2); }
@@ -52,15 +51,14 @@
         .btn-badge:hover { border-color: #666; color: white; }
         .btn-badge.active { background: var(--cf); color: white; border-color: var(--cf); font-weight: 900; box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3); }
 
-        .form-row { display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end; }
-        .form-group-input { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 8px; }
+        .form-row { display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end; width: 100%; }
+        .form-group-input { flex: 1 1 150px; display: flex; flex-direction: column; gap: 8px; }
         .form-control { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 14px 18px; border-radius: 12px; font-family: 'Montserrat'; font-size: 0.95rem; width: 100%; box-sizing: border-box; transition: 0.3s; }
         .form-control:focus { border-color: var(--cf); outline: none; background: rgba(0,0,0,0.8); }
         
         .btn-primary { background: var(--cf); color: white; border: none; padding: 14px 25px; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-family: 'Montserrat'; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.85rem; }
         .btn-primary:hover { box-shadow: 0 5px 15px rgba(255, 68, 68, 0.4); transform: translateY(-2px); }
         .btn-gold { background: #ffd700; color: black; }
-        .btn-gold:hover { box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
         .btn-blue { background: #007bff; color: white; }
 
         .table-wrap { background: var(--card); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; overflow-x: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
@@ -87,6 +85,7 @@
 
         .heats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
         .heat-card { background: var(--card); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); border-top: 4px solid var(--cf); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: 0.3s; }
+        .heat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
         .heat-header { padding: 18px 20px; background: rgba(0,0,0,0.4); border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
         .heat-header h3 { margin: 0; font-size: 1.3rem; font-weight: 900; color: white; }
         .heat-header span { font-size: 0.7rem; color: #ccc; background: #222; padding: 5px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
@@ -99,7 +98,6 @@
         .close-modal:hover { color: var(--cf); }
 
         .loader { text-align: center; color: var(--cf); font-weight: 900; padding: 60px; letter-spacing: 2px; font-size: 1.2rem; display: flex; flex-direction: column; gap: 15px; align-items: center; }
-        .loader i { font-size: 2.5rem; }
 
         @media (max-width: 800px) {
             .main-content { padding: 20px 15px; }
@@ -115,7 +113,6 @@
     <header class="top-header">
         <div class="brand">
             <h1 style="display:flex; align-items:center; gap:8px;">LA RUTA <span style="background:transparent; color:var(--cf); padding:0; font-size:1.5rem;">GARAGE</span></h1>
-            <span>CROSSFIT</span>
         </div>
         <button id="btnLock" class="btn-lock" onclick="unlockCoach()"><i class="fas fa-lock"></i> <span id="textLock">Head Coach</span></button>
     </header>
@@ -189,7 +186,7 @@
 
         <section id="sec-heats" class="section">
             <div class="section-header">
-                <div><h2>Organización de Heats</h2><p>Distribución de atletas y configuración de Horarios</p></div>
+                <div><h2>Organización de Heats</h2><p>Distribución de atletas y horarios</p></div>
                 <div class="coach-only" style="gap: 12px; flex-wrap: wrap;">
                     <button class="btn-primary" onclick="autogenerarHeatsBase()"><i class="fas fa-list-ol"></i> Heats Base</button>
                     <button class="btn-primary btn-blue" onclick="reordenarHeatsPorPuntaje()"><i class="fas fa-sort-amount-up"></i> Reseeding (Por Pts)</button>
@@ -208,7 +205,7 @@
 
         <section id="sec-atletas" class="section">
             <div class="section-header">
-                <div><h2>Gestión de Atletas</h2><p>Inscripciones, edición de dorsales y control general</p></div>
+                <div><h2>Gestión de Atletas</h2><p>Inscripciones y control general</p></div>
             </div>
             <div class="controls-glass form-row">
                 <div class="form-group-input">
@@ -234,16 +231,16 @@
                     <label>Box / Gym</label>
                     <input type="text" id="addAtlBox" class="form-control" placeholder="Box">
                 </div>
-                <div class="form-group-input" style="max-width: 100px;">
+                <div class="form-group-input" style="max-width: 120px;">
                     <label>Dorsal #</label>
-                    <input type="number" id="addAtlDorsal" class="form-control" placeholder="123">
+                    <input type="text" id="addAtlDorsal" class="form-control" placeholder="RC001">
                 </div>
                 <button class="btn-primary btn-gold" onclick="agregarAtleta()"><i class="fas fa-plus"></i> Añadir</button>
             </div>
 
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th style="width:60px;">Dorsal</th><th>Atleta</th><th>Categoría</th><th>Box</th><th style="text-align:right;">Acciones</th></tr></thead>
+                    <thead><tr><th style="width:80px;">Dorsal</th><th>Atleta</th><th>Categoría</th><th>Box</th><th style="text-align:right;">Acciones</th></tr></thead>
                     <tbody id="atletasTableBody"></tbody>
                 </table>
             </div>
@@ -258,7 +255,15 @@
                     <label>Nombre del WOD</label>
                     <input type="text" id="newWodName" class="form-control" placeholder="Ej: Evento 1 - Amanda">
                 </div>
-                <div class="form-group-input" style="min-width: 150px;">
+                <div class="form-group-input" style="max-width: 120px;">
+                    <label>Día</label>
+                    <select id="newWodDia" class="form-control">
+                        <option value="Día 1">Día 1</option>
+                        <option value="Día 2">Día 2</option>
+                        <option value="Día 3">Día 3</option>
+                    </select>
+                </div>
+                <div class="form-group-input">
                     <label>Tipo Score 1</label>
                     <select id="newWodType" class="form-control">
                         <option value="For Time">For Time</option>
@@ -266,8 +271,8 @@
                         <option value="RM">RM / Peso</option>
                     </select>
                 </div>
-                <div class="form-group-input" style="min-width: 150px;">
-                    <label>Tipo Score 2</label>
+                <div class="form-group-input">
+                    <label>Tipo Score 2 <span style="color:var(--cf)">(Opcional)</span></label>
                     <select id="newWodType2" class="form-control">
                         <option value="">Ninguno</option>
                         <option value="For Time">For Time</option>
@@ -275,11 +280,11 @@
                         <option value="RM">RM / Peso</option>
                     </select>
                 </div>
-                <div class="form-group-input" style="flex: 2;">
+                <div class="form-group-input" style="flex: 2; min-width: 100%;">
                     <label>Descripción / Detalles</label>
                     <input type="text" id="newWodDesc" class="form-control" placeholder="Ej: Time Cap 10 min...">
                 </div>
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 10px; width: 100%; justify-content: flex-end;">
                     <button id="btnCancelarEdicion" class="btn-primary" style="display:none; background:#444;" onclick="cancelarEdicionWod()"><i class="fas fa-times"></i></button>
                     <button id="btnGuardarWod" class="btn-primary btn-gold" onclick="guardarOActualizarWod()"><i class="fas fa-save"></i> Guardar</button>
                 </div>
@@ -287,7 +292,7 @@
 
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th style="width:60px;">ID</th><th>Nombre del WOD</th><th>S1</th><th>S2</th><th>Descripción</th><th style="text-align:right;">Acciones</th></tr></thead>
+                    <thead><tr><th style="width:60px;">ID</th><th>Día</th><th>Nombre del WOD</th><th>S1</th><th>S2</th><th>Descripción</th><th style="text-align:right;">Acciones</th></tr></thead>
                     <tbody id="wodsTableBody"></tbody>
                 </table>
             </div>
@@ -318,8 +323,8 @@
             <i class="fas fa-times close-modal" onclick="cerrarModal('modalEditDorsal')"></i>
             <h2 style="margin-top:0; color:white;">Editar Dorsal</h2>
             <p id="modalDorsalName" style="color:#aaa;"></p>
-            <input type="number" id="newDorsalInput" class="form-control" style="font-size:2rem; text-align:center; padding:15px; margin:20px 0;" placeholder="000">
-            <button class="btn-primary btn-gold" style="width:100%;" onclick="guardarNuevoDorsal()"><i class="fas fa-save"></i> Actualizar Dorsal</button>
+            <input type="text" id="newDorsalInput" class="form-control" style="font-size:2rem; text-align:center; padding:15px; margin:20px 0;" placeholder="RC001">
+            <button class="btn-primary btn-gold" style="width:100%; justify-content:center;" onclick="guardarNuevoDorsal()"><i class="fas fa-save"></i> Actualizar Dorsal</button>
         </div>
     </div>
 
@@ -404,7 +409,6 @@
                 wods = data;
                 renderWodsManager();
                 
-                // Llenar selector de WOD para Heats Config
                 let options = wods.map(w => `<option value="${w.id}">${w.nombre}</option>`).join('');
                 document.getElementById('heatsWodSelect').innerHTML = options;
 
@@ -489,7 +493,7 @@
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><span class="dorsal-tag">#${a.dorsal}</span></td>
+                    <td><span class="dorsal-tag">${a.dorsal}</span></td>
                     <td><strong style="color:white; font-size:1.05rem;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
                     <td>${inputsScoreHTML}</td>
                     <td><input type="text" id="j_pen_${a.id}" class="form-control" style="text-align:center;" value="${cWod.penalizacion || ''}" placeholder="Penal." oninput="habilitarGuardado('${a.id}')"></td>
@@ -598,7 +602,7 @@
             });
         }
 
-        // --- AUDITORÍA (ORDENADA 1ro a Último) ---
+        // --- AUDITORÍA ---
         function renderAuditTable() {
             let tbody = document.getElementById('auditTableBody');
             if(!f_auditWod) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
@@ -607,7 +611,6 @@
 
             let filtrados = atletas.filter(a => f_auditHeat === 'todos' || a.heat == f_auditHeat);
             
-            // Ordenar por Heat, luego por Puntos ganados en ESE Wod (De mayor a menor)
             filtrados.sort((a, b) => {
                 let hA = parseInt(a.heat) || 999; 
                 let hB = parseInt(b.heat) || 999;
@@ -615,9 +618,10 @@
                 
                 let ptsA = (a.puntosPorWod || {})[f_auditWod] || 0;
                 let ptsB = (b.puntosPorWod || {})[f_auditWod] || 0;
-                if(ptsA !== ptsB) return ptsB - ptsA; // Mayor puntaje primero
+                if(ptsA !== ptsB) return ptsB - ptsA; 
                 
-                return parseInt(a.dorsal) - parseInt(b.dorsal);
+                // ORDENAMIENTO ALFANUMÉRICO DE DORSALES
+                return a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true});
             });
 
             if(filtrados.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas</td></tr>'; return; }
@@ -640,7 +644,7 @@
                 return `
                     <tr>
                         <td><span class="heat-badge">H-${a.heat || '-'}</span></td>
-                        <td><span class="dorsal-tag">#${a.dorsal}</span></td>
+                        <td><span class="dorsal-tag">${a.dorsal}</span></td>
                         <td><strong style="color:white; font-size:1.05rem;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
                         <td><strong style="color:white; font-size:1.1rem; font-family:monospace;">${scoreText}</strong></td>
                         <td><strong style="color:#ffd700; font-size:1.1rem;">${ptsText}</strong></td>
@@ -657,7 +661,6 @@
             
             calcularPuntosAbsolutos();
 
-            // Leer Horarios del WOD seleccionado
             let wodId = document.getElementById('heatsWodSelect').value;
             let wodAct = wods.find(w => w.id == wodId);
             let horarios = (wodAct && wodAct.horarios) ? wodAct.horarios : {};
@@ -669,7 +672,6 @@
             heatsKeys.forEach(hKey => {
                 let grupo = heatsMap[hKey];
                 let tituloCat = grupo.length > 0 ? `${grupo[0].categoria} | ${grupo[0].sexo}` : 'Mixto';
-                
                 let valHorario = horarios[hKey] || '';
 
                 let card = document.createElement('div'); card.className = 'heat-card';
@@ -678,14 +680,14 @@
                     <div style="flex:1;">${grupo.map(a => `
                         <div class="heat-athlete">
                             <strong style="color:white;">${a.nombre} <span class="pts-badge">${a.totalPuntos} pts</span></strong>
-                            <span class="dorsal-tag" style="background:transparent; border-color:#444;">#${a.dorsal}</span>
+                            <span class="dorsal-tag" style="background:transparent; border-color:#444;">${a.dorsal}</span>
                         </div>
                     `).join('')}</div>
                     <div class="heat-footer coach-only">
                         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
                             <div style="display:flex; flex-direction:column; gap:4px;">
                                 <label style="font-size:0.6rem; color:var(--cf); font-weight:900;">HORARIO (WOD)</label>
-                                <input type="time" class="form-control" style="padding:6px 10px; width:auto; font-size:0.8rem;" value="${valHorario}" onchange="guardarHorarioHeat('${wodId}', '${hKey}', this.value)">
+                                <input type="text" class="form-control" style="padding:8px 12px; width:120px; font-size:0.8rem; text-align:center;" placeholder="Ej: 08:00 AM" value="${valHorario}" onchange="guardarHorarioHeat('${wodId}', '${hKey}', this.value)">
                             </div>
                             <button class="btn-action-small" onclick="abrirModalHeat('${hKey}')"><i class="fas fa-user-edit"></i> Mover</button>
                         </div>
@@ -702,7 +704,7 @@
             
             let horariosObj = wods[index].horarios || {};
             horariosObj[heatKey] = horaVal;
-            wods[index].horarios = horariosObj; // Actualizar memoria
+            wods[index].horarios = horariosObj; 
 
             await supabaseClient.from('wods_cf').update({ horarios: horariosObj }).eq('id', wodId);
         }
@@ -822,11 +824,12 @@
         function renderAtletasTable() {
             let tbody = document.getElementById('atletasTableBody');
             
-            let ordenados = [...atletas].sort((a,b) => parseInt(a.dorsal) - parseInt(b.dorsal));
+            // ORDENAMIENTO ALFANUMÉRICO DE DORSALES
+            let ordenados = [...atletas].sort((a,b) => a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true}));
             
             tbody.innerHTML = ordenados.map(a => `
                 <tr>
-                    <td><span class="dorsal-tag">#${a.dorsal}</span></td>
+                    <td><span class="dorsal-tag">${a.dorsal}</span></td>
                     <td><strong style="color:white; font-size:1.05rem;">${a.nombre}</strong><br><small style="color:#aaa;">${a.sexo}</small></td>
                     <td><span class="heat-badge">${a.categoria}</span></td>
                     <td style="color:#aaa;">${a.box || 'Independiente'}</td>
@@ -897,9 +900,17 @@
         // --- WODS ---
         function renderWodsManager() {
             let tbody = document.getElementById('wodsTableBody');
-            tbody.innerHTML = wods.map(w => `
+            
+            // Agrupar WODs por Día
+            let wodsOrdenados = [...wods].sort((a,b) => {
+                let diaA = a.dia || "Día 1"; let diaB = b.dia || "Día 1";
+                return diaA.localeCompare(diaB);
+            });
+
+            tbody.innerHTML = wodsOrdenados.map(w => `
                 <tr>
                     <td><span class="dorsal-tag">${w.id}</span></td>
+                    <td><strong style="color:var(--cf);">${w.dia || 'Día 1'}</strong></td>
                     <td><strong style="color:white; font-size:1.05rem;">${w.nombre}</strong></td>
                     <td><span class="heat-badge">${w.tipo}</span></td>
                     <td>${w.tipo2 ? `<span class="heat-badge" style="background:rgba(255,215,0,0.1); color:#ffd700; border-color:rgba(255,215,0,0.3);">${w.tipo2}</span>` : '<span style="color:#444;">-</span>'}</td>
@@ -914,6 +925,7 @@
 
         async function guardarOActualizarWod() {
             let nombre = document.getElementById('newWodName').value.trim();
+            let dia = document.getElementById('newWodDia').value;
             let tipo = document.getElementById('newWodType').value;
             let tipo2 = document.getElementById('newWodType2').value;
             let desc = document.getElementById('newWodDesc').value.trim();
@@ -922,10 +934,11 @@
             let btn = document.getElementById('btnGuardarWod'); btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
 
             if (editandoWodId) {
-                const { error } = await supabaseClient.from('wods_cf').update({ nombre, tipo, tipo2, descripcion: desc }).eq('id', editandoWodId);
+                const { error } = await supabaseClient.from('wods_cf').update({ nombre, dia, tipo, tipo2, descripcion: desc }).eq('id', editandoWodId);
                 if(!error) { cancelarEdicionWod(); await cargarWods(); renderAuditTable(); }
             } else {
-                const { error } = await supabaseClient.from('wods_cf').insert([{ nombre, tipo, tipo2, descripcion: desc }]);
+                // Al crear un WOD, los horarios nacen vacíos
+                const { error } = await supabaseClient.from('wods_cf').insert([{ nombre, dia, tipo, tipo2, descripcion: desc, horarios: {} }]);
                 if(!error) {
                     document.getElementById('newWodName').value = ''; document.getElementById('newWodDesc').value = ''; document.getElementById('newWodType2').value = '';
                     await cargarWods();
@@ -938,6 +951,7 @@
             let w = wods.find(x => x.id == id);
             if(!w) return;
             document.getElementById('newWodName').value = w.nombre;
+            document.getElementById('newWodDia').value = w.dia || "Día 1";
             document.getElementById('newWodType').value = w.tipo;
             document.getElementById('newWodType2').value = w.tipo2 || "";
             document.getElementById('newWodDesc').value = w.descripcion || "";

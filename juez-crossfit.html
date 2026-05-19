@@ -19,13 +19,12 @@
         .top-header { background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); padding: 15px 30px; border-bottom: 1px solid rgba(255, 68, 68, 0.2); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .brand { display: flex; align-items: center; gap: 10px; }
         .brand h1 { margin: 0; font-size: 1.3rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 1px; }
+        .brand span { background: var(--cf); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; }
         
-        .coach-only { display: none !important; } 
+        /* MODO ABIERTO: Todos ven todo */
+        .coach-only { display: flex !important; } 
         body.coach-mode .coach-only { display: flex !important; } 
         body.coach-mode .coach-inline { display: inline-block !important; }
-
-        .btn-lock { background: transparent; border: 1px solid #444; color: #888; padding: 8px 16px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; font-size: 0.8rem; }
-        .btn-lock.unlocked { background: rgba(255, 215, 0, 0.1); color: #ffd700; border-color: #ffd700; box-shadow: 0 0 10px rgba(255,215,0,0.2); }
 
         .bottom-pill-nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); display: flex; background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; padding: 8px 15px; gap: 5px; z-index: 2000; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
         .nav-item { padding: 10px 18px; text-align: center; color: #888; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; border-radius: 50px; display: flex; align-items: center; gap: 8px; }
@@ -108,13 +107,12 @@
         }
     </style>
 </head>
-<body>
+<body class="coach-mode">
 
     <header class="top-header">
         <div class="brand">
             <h1 style="display:flex; align-items:center; gap:8px;">LA RUTA <span style="background:transparent; color:var(--cf); padding:0; font-size:1.5rem;">GARAGE</span></h1>
         </div>
-        <button id="btnLock" class="btn-lock" onclick="unlockCoach()"><i class="fas fa-lock"></i> <span id="textLock">Head Coach</span></button>
     </header>
 
     <main class="main-content">
@@ -163,6 +161,14 @@
                 <div class="filter-group">
                     <span class="filter-label">Filtrar por Heat</span>
                     <div class="filter-row" id="auditHeatsRow"></div>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Filtrar por Categoría</span>
+                    <div class="filter-row" id="auditCatRow"></div>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Filtrar por Sexo</span>
+                    <div class="filter-row" id="auditSexRow"></div>
                 </div>
             </div>
             <div class="table-wrap">
@@ -333,9 +339,11 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eXdwanp2bHZkeHNjZ3RlYnZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNjI0OTQsImV4cCI6MjA5NDYzODQ5NH0.L7gdDpxOD7N1gpSoCVI0FEiwxR44sG8XwAORYm16sEM';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let atletas = []; let wods = []; let isCoach = false; let editandoWodId = null;
+        // Activamos Coach desde el inicio
+        let atletas = []; let wods = []; let isCoach = true; let editandoWodId = null;
         let f_juezWod = null; let f_juezHeat = null;
         let f_auditWod = null; let f_auditHeat = 'todos';
+        let f_auditCat = 'todas'; let f_auditSex = 'todos'; // NUEVOS FILTROS
         let idAtletaEditandoDorsal = null;
 
         function obtenerPesoCategoria(catStr) {
@@ -351,6 +359,7 @@
         }
 
         async function init() {
+            document.body.classList.add('coach-mode'); // Fuerza modo abierto
             await cargarWods();
             await cargarAtletas();
         }
@@ -368,14 +377,6 @@
             if(tabId === 'atletas') renderAtletasTable();
         }
 
-        function unlockCoach() {
-            if(isCoach) return; 
-            isCoach = true;
-            document.body.classList.add('coach-mode'); 
-            document.getElementById('btnLock').classList.add('unlocked');
-            document.getElementById('textLock').innerText = 'Head Coach';
-        }
-
         function habilitarGuardado(idAtleta) {
             let btn = document.getElementById(`j_btn_${idAtleta}`);
             if (btn && btn.disabled) {
@@ -387,13 +388,6 @@
         }
 
         function maskTimeInput(input, idAtleta) {
-            let capCheck = document.getElementById(`j_cap_${idAtleta}`);
-            if (capCheck && capCheck.checked) {
-                // Para CAP permitimos números y el signo +
-                input.value = input.value.replace(/[^0-9+]/g, ''); 
-                habilitarGuardado(idAtleta);
-                return;
-            }
             let val = input.value.replace(/\D/g, ''); 
             let formatted = "";
             if (val.length <= 4) {
@@ -408,14 +402,6 @@
             }
             input.value = formatted;
             habilitarGuardado(idAtleta); 
-        }
-
-        function toggleCapUi(idAtleta) {
-            let isCap = document.getElementById(`j_cap_${idAtleta}`).checked;
-            let input = document.getElementById(`j_score_${idAtleta}`);
-            input.placeholder = isCap ? "Ej: 3+12" : "MM:SS";
-            input.value = ""; 
-            habilitarGuardado(idAtleta);
         }
 
         async function cargarWods() {
@@ -450,7 +436,15 @@
             document.getElementById('auditWodsRow').innerHTML = htmlWodsAudit || '<span style="color:#666; font-size:0.8rem;">No hay WODs</span>';
 
             let heatsSet = new Set();
-            atletas.forEach(a => { if(a.heat && a.heat !== 'Sin Asignar') heatsSet.add(a.heat); });
+            let catsSet = new Set();
+            let sexsSet = new Set();
+            
+            atletas.forEach(a => { 
+                if(a.heat && a.heat !== 'Sin Asignar') heatsSet.add(a.heat); 
+                if(a.categoria) catsSet.add(a.categoria);
+                if(a.sexo) sexsSet.add(a.sexo);
+            });
+            
             let heatsArray = Array.from(heatsSet).sort((a,b) => a - b);
             
             let htmlHeatsJuez = heatsArray.map(h => `<button class="btn-badge ${f_juezHeat == h ? 'active' : ''}" onclick="setFiltro('juezHeat', '${h}')">H-${h}</button>`).join('');
@@ -459,6 +453,18 @@
             let htmlHeatsAudit = `<button class="btn-badge ${f_auditHeat === 'todos' ? 'active' : ''}" onclick="setFiltro('auditHeat', 'todos')">Todos</button>` + 
                                  heatsArray.map(h => `<button class="btn-badge ${f_auditHeat == h ? 'active' : ''}" onclick="setFiltro('auditHeat', '${h}')">H-${h}</button>`).join('');
             document.getElementById('auditHeatsRow').innerHTML = htmlHeatsAudit;
+
+            // GENERAR BADGES DE CATEGORÍA
+            let catsArray = Array.from(catsSet).sort();
+            let htmlCatAudit = `<button class="btn-badge ${f_auditCat === 'todas' ? 'active' : ''}" onclick="setFiltro('auditCat', 'todas')">Todas</button>` + 
+                               catsArray.map(c => `<button class="btn-badge ${f_auditCat == c ? 'active' : ''}" onclick="setFiltro('auditCat', '${c}')">${c}</button>`).join('');
+            document.getElementById('auditCatRow').innerHTML = htmlCatAudit;
+
+            // GENERAR BADGES DE SEXO
+            let sexsArray = Array.from(sexsSet).sort();
+            let htmlSexAudit = `<button class="btn-badge ${f_auditSex === 'todos' ? 'active' : ''}" onclick="setFiltro('auditSex', 'todos')">Todos</button>` + 
+                               sexsArray.map(s => `<button class="btn-badge ${f_auditSex == s ? 'active' : ''}" onclick="setFiltro('auditSex', '${s}')">${s}</button>`).join('');
+            document.getElementById('auditSexRow').innerHTML = htmlSexAudit;
         }
 
         function setFiltro(tipo, valor) {
@@ -466,7 +472,11 @@
             if(tipo === 'juezHeat') f_juezHeat = valor;
             if(tipo === 'auditWod') f_auditWod = valor;
             if(tipo === 'auditHeat') f_auditHeat = valor;
+            if(tipo === 'auditCat') f_auditCat = valor;
+            if(tipo === 'auditSex') f_auditSex = valor;
+            
             actualizarBadgesFiltros();
+            
             if(tipo.includes('juez')) renderJudgeTable();
             if(tipo.includes('audit')) renderAuditTable();
         }
@@ -480,28 +490,7 @@
             container.style.display = 'block'; tbody.innerHTML = '';
 
             let atletasEnHeat = atletas.filter(a => a.heat == f_juezHeat);
-            
-            // --- DETECTAR CATEGORÍA Y SEXO DEL HEAT (Punto 3) ---
-            let infoHeatEl = document.getElementById('infoHeatDetectado');
-            if(!infoHeatEl) {
-                // Si no existe el elemento visual en el HTML, lo creamos dinámicamente arriba de la tabla
-                infoHeatEl = document.createElement('div');
-                infoHeatEl.id = 'infoHeatDetectado';
-                infoHeatEl.style = 'margin: 10px 0 20px 0; padding: 12px; background: rgba(255,68,68,0.1); border-left: 4px solid var(--cf); font-weight: bold; color: white; border-radius: 4px;';
-                container.insertBefore(infoHeatEl, container.querySelector('.table-responsive') || container.childNodes[2]);
-            }
-
-            if(atletasEnHeat.length === 0) { 
-                infoHeatEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Heat ${f_juezHeat}: Sin atletas asignados todavía.`;
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas en este heat.</td></tr>'; 
-                return; 
-            }
-
-            // Agrupamos las categorías y sexos presentes en este heat
-            let catsPresentes = [...new Set(atletasEnHeat.map(a => a.categoria))];
-            let sexosPresentes = [...new Set(atletasEnHeat.map(a => a.sexo))];
-            infoHeatEl.innerHTML = `<i class="fas fa-info-circle" style="color:var(--cf);"></i> Heat ${f_juezHeat} correspondente a: <span style="color:var(--cf); font-size:1.1rem; ml-1">${catsPresentes.join(', ')} (${sexosPresentes.join(', ')})</span>`;
-            // ----------------------------------------------------
+            if(atletasEnHeat.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas en este heat.</td></tr>'; return; }
 
             let wodActual = wods.find(w => w.id == f_juezWod);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
@@ -517,12 +506,7 @@
                 let maskAttr1 = isTime1 ? `oninput="maskTimeInput(this, '${a.id}')"` : `oninput="habilitarGuardado('${a.id}')"`;
                 let maskAttr2 = isTime2 ? `oninput="maskTimeInput(this, '${a.id}')"` : `oninput="habilitarGuardado('${a.id}')"`;
                 
-                let isCapped1 = cWod.isCapped || false;
-                let capHTML = isTime1 ? `<label style="font-size:0.7rem; color:var(--cf); display:flex; align-items:center; gap:5px; margin-bottom:5px; cursor:pointer;"><input type="checkbox" id="j_cap_${a.id}" ${isCapped1 ? 'checked' : ''} onchange="toggleCapUi('${a.id}')"> TIME CAP</label>` : '';
-
-                let inputsScoreHTML = `<div class="score-stack">
-                    ${capHTML}
-                    <div><span class="score-label">${wodActual.tipo}</span><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="${isCapped1 ? 'Ej: 3+12' : place1}" ${maskAttr1}></div>`;
+                let inputsScoreHTML = `<div class="score-stack"><div><span class="score-label">${wodActual.tipo}</span><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="${place1}" ${maskAttr1}></div>`;
                 if(tieneDobleScore) {
                     inputsScoreHTML += `<div><span class="score-label">${wodActual.tipo2}</span><input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="${place2}" ${maskAttr2}></div>`;
                 }
@@ -534,7 +518,7 @@
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><span class="dorsal-tag">${a.dorsal}</span></td>
+                    <td><span class="dorsal-tag">#${a.dorsal}</span></td>
                     <td><strong style="color:white; font-size:1.05rem;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
                     <td>${inputsScoreHTML}</td>
                     <td><input type="text" id="j_pen_${a.id}" class="form-control" style="text-align:center;" value="${cWod.penalizacion || ''}" placeholder="Penal." oninput="habilitarGuardado('${a.id}')"></td>
@@ -552,7 +536,6 @@
 
         async function guardarScoreJuez(idAtleta, wodId) {
             let btn = document.getElementById(`j_btn_${idAtleta}`);
-            let isCap1 = document.getElementById(`j_cap_${idAtleta}`) ? document.getElementById(`j_cap_${idAtleta}`).checked : false;
             let score1 = document.getElementById(`j_score_${idAtleta}`).value;
             let score2El = document.getElementById(`j_score2_${idAtleta}`);
             let score2 = score2El ? score2El.value : null;
@@ -563,8 +546,7 @@
 
             let index = atletas.findIndex(a => String(a.id) === String(idAtleta));
             let wodsData = atletas[index].wods_data || {};
-            
-            wodsData[wodId] = { score: score1, score2: score2, penalizacion: pen, notas: nota, isCapped: isCap1 };
+            wodsData[wodId] = { score: score1, score2: score2, penalizacion: pen, notas: nota };
 
             const { error } = await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
 
@@ -582,7 +564,7 @@
 
             let index = atletas.findIndex(a => String(a.id) === String(idAtleta));
             let wodsData = atletas[index].wods_data || {};
-            wodsData[wodId] = { score: "", score2: "", penalizacion: "", notas: "", isCapped: false };
+            wodsData[wodId] = { score: "", score2: "", penalizacion: "", notas: "" };
 
             const { error } = await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
 
@@ -590,34 +572,20 @@
                 atletas[index].wods_data = wodsData;
                 let i1 = document.getElementById(`j_score_${idAtleta}`); if(i1) i1.value = "";
                 let i2 = document.getElementById(`j_score2_${idAtleta}`); if(i2) i2.value = "";
-                let cap = document.getElementById(`j_cap_${idAtleta}`); if(cap) cap.checked = false;
                 document.getElementById(`j_pen_${idAtleta}`).value = "";
                 document.getElementById(`j_nota_${idAtleta}`).value = "";
                 habilitarGuardado(idAtleta);
             } 
             btnDel.innerHTML = '<i class="fas fa-trash"></i>'; btnDel.disabled = false;
         }
-       
-            // --- SISTEMA MATEMÁTICO (100-95-90) ---
-        function parseScoreCF(scoreStr, isTime, isCapped) {
+
+        // --- SISTEMA MATEMÁTICO (100-95-90) ---
+        function parseScoreCF(scoreStr, isTime) {
             if (!scoreStr || scoreStr.trim() === "") return isTime ? Infinity : -Infinity;
             if (isTime) {
-                if (isCapped) {
-                    // Soporta formatos tipo "3+10" o repeticiones puras "150"
-                    let str = scoreStr.trim();
-                    if (str.includes('+')) {
-                        let partes = str.split('+');
-                        let rondas = parseFloat(partes[0]) || 0;
-                        let reps = parseFloat(partes[1]) || 0;
-                        // Usamos un multiplicador alto (1000) para que las rondas tengan peso absoluto en el ordenamiento
-                        return (rondas * 1000) + reps;
-                    }
-                    let num = parseFloat(str); return isNaN(num) ? -Infinity : num;
-                } else {
-                    let partes = scoreStr.split(':');
-                    if (partes.length === 2) return (parseInt(partes[0]) || 0) * 60 + parseFloat(partes[1] || 0);
-                    let num = parseFloat(scoreStr); return isNaN(num) ? Infinity : num;
-                }
+                let partes = scoreStr.split(':');
+                if (partes.length === 2) return (parseInt(partes[0]) || 0) * 60 + parseFloat(partes[1] || 0);
+                let num = parseFloat(scoreStr); return isNaN(num) ? Infinity : num;
             } else {
                 let num = parseFloat(scoreStr); return isNaN(num) ? -Infinity : num;
             }
@@ -633,35 +601,15 @@
                 atletas.forEach(a => {
                     let k = `${a.categoria}_${a.sexo}`;
                     if(!gruposCat[k]) gruposCat[k] = [];
-                    let cWod = (a.wods_data||{})[wod.id]||{};
-                    let s = cWod.score;
-                    let isCap = cWod.isCapped || false;
-                    
-                    gruposCat[k].push({ 
-                        id: a.id, 
-                        val: parseScoreCF(s, isTime, isCap), 
-                        tiene: (s && s.trim() !== ""),
-                        isCapped: isCap
-                    });
+                    let s = ((a.wods_data||{})[wod.id]||{}).score;
+                    gruposCat[k].push({ id: a.id, val: parseScoreCF(s, isTime), tiene: (s && s.trim() !== "") });
                 });
 
                 for(let k in gruposCat) {
                     let grupo = gruposCat[k];
                     let iniciado = grupo.some(x => x.tiene);
                     if(iniciado) {
-                        grupo.sort((a,b) => {
-                            if (isTime) {
-                                if (a.isCapped && !b.isCapped) return 1; 
-                                if (!a.isCapped && b.isCapped) return -1; 
-                                if (a.isCapped && b.isCapped) {
-                                    return b.val - a.val; // Mayor cantidad de rondas/reps va primero
-                                }
-                                return a.val - b.val;
-                            } else {
-                                return b.val - a.val;
-                            }
-                        });
-
+                        grupo.sort((a,b) => isTime ? a.val - b.val : b.val - a.val);
                         let rank = 1;
                         for(let i=0; i < grupo.length; i++) {
                             if(i > 0 && grupo[i].val !== grupo[i-1].val) rank = i + 1;
@@ -671,110 +619,41 @@
                                 if(pts < 0) pts = 0;
                             }
                             let aObj = atletas.find(x => x.id === grupo[i].id);
-                            if(aObj) {
-                                aObj.totalPuntos += pts;
-                                aObj.puntosPorWod[wod.id] = pts;
-                            }
+                            aObj.totalPuntos += pts;
+                            aObj.puntosPorWod[wod.id] = pts;
                         }
                     }
                 }
             });
         }
-        
-        // --- AUDITORÍA ---
-       // --- VARIABLES Y FUNCIÓN PARA BOTONES DE FILTRO (Punto 4) ---
-        let f_auditCat = 'todas';
-        let f_auditSexo = 'todos';
 
-        function setFiltroAudit(tipo, valor) {
-            if (tipo === 'cat') f_auditCat = valor;
-            if (tipo === 'sexo') f_auditSexo = valor;
-            renderAuditTable(); // Volvemos a dibujar la tabla para aplicar el filtro y pintar el botón activo
-        }
-        // ------------------------------------------------------------
-
+        // --- AUDITORÍA (MODIFICADA CON 3 FILTROS) ---
         function renderAuditTable() {
             let tbody = document.getElementById('auditTableBody');
-            let container = tbody.closest('.tab-content'); 
-
-            if(!f_auditWod) { 
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba</td></tr>'; 
-                return; 
-            }
-
-            // Eliminamos el selector viejo de listas desplegables si quedó por ahí
-            let oldDropdown = document.getElementById('wrapperFiltrosAudit');
-            if (oldDropdown) oldDropdown.remove();
-
-            // --- CREACIÓN DE BOTONES DE FILTRO VISUALES ---
-            let wrapperBotones = document.getElementById('wrapperFiltrosAuditBotones');
-            if (!wrapperBotones) {
-                wrapperBotones = document.createElement('div');
-                wrapperBotones.id = 'wrapperFiltrosAuditBotones';
-                wrapperBotones.style = 'margin-bottom: 20px; display:flex; flex-direction:column; gap:15px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border: 1px solid #222;';
-                
-                let tablaAudit = document.querySelector('.table-responsive');
-                if(tablaAudit) tablaAudit.parentNode.insertBefore(wrapperBotones, tablaAudit);
-            }
-
-            // Extraemos todas las categorías y sexos que existan en la tabla de atletas
-            let categorias = [...new Set(atletas.map(a => a.categoria))].filter(c => c);
-            let sexos = [...new Set(atletas.map(a => a.sexo))].filter(s => s);
-
-            // Estilos CSS para los botones (activos vs inactivos)
-            let btnBase = "padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; border: none; transition: 0.2s;";
-            let btnActivo = btnBase + " background: var(--cf); color: white; box-shadow: 0 0 10px rgba(255,68,68,0.4);";
-            let btnInactivo = btnBase + " background: #222; color: #888;";
-
-            // Construimos la fila de botones de Categoría
-            let htmlCat = `<div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-                <span style="color:#aaa; font-size:0.85rem; width:70px; font-weight:bold;">Categoría:</span>
-                <button onclick="setFiltroAudit('cat', 'todas')" style="${f_auditCat === 'todas' ? btnActivo : btnInactivo}">Todas</button>`;
-            categorias.forEach(c => {
-                htmlCat += `<button onclick="setFiltroAudit('cat', '${c}')" style="${f_auditCat === c ? btnActivo : btnInactivo}">${c}</button>`;
-            });
-            htmlCat += `</div>`;
-
-            // Construimos la fila de botones de Sexo
-            let htmlSexo = `<div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-                <span style="color:#aaa; font-size:0.85rem; width:70px; font-weight:bold;">Sexo:</span>
-                <button onclick="setFiltroAudit('sexo', 'todos')" style="${f_auditSexo === 'todos' ? btnActivo : btnInactivo}">Todos</button>`;
-            sexos.forEach(s => {
-                htmlSexo += `<button onclick="setFiltroAudit('sexo', '${s}')" style="${f_auditSexo === s ? btnActivo : btnInactivo}">${s}</button>`;
-            });
-            htmlSexo += `</div>`;
-
-            // Inyectamos los botones en la pantalla
-            wrapperBotones.innerHTML = htmlCat + htmlSexo;
-            // ----------------------------------------------
+            if(!f_auditWod) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
 
             calcularPuntosAbsolutos(); 
 
-            // Aplicamos los filtros seleccionados (Heat + Categoría + Sexo)
             let filtrados = atletas.filter(a => {
-                let cumpleHeat = (f_auditHeat === 'todos' || a.heat == f_auditHeat);
-                let cumpleCat = (f_auditCat === 'todas' || a.categoria === f_auditCat);
-                let cumpleSexo = (f_auditSexo === 'todos' || a.sexo === f_auditSexo);
-                return cumpleHeat && cumpleCat && cumpleSexo;
+                let pasaHeat = (f_auditHeat === 'todos' || a.heat == f_auditHeat);
+                let pasaCat  = (f_auditCat === 'todas' || a.categoria == f_auditCat);
+                let pasaSex  = (f_auditSex === 'todos' || a.sexo == f_auditSex);
+                return pasaHeat && pasaCat && pasaSex;
             });
             
-            // Ordenamos a los filtrados (Puntos > Heat > Dorsal)
             filtrados.sort((a, b) => {
-                let ptsA = (a.puntosPorWod || {})[f_auditWod] || 0;
-                let ptsB = (b.puntosPorWod || {})[f_auditWod] || 0;
-                if(ptsA !== ptsB) return ptsB - ptsA; 
-                
                 let hA = parseInt(a.heat) || 999; 
                 let hB = parseInt(b.heat) || 999;
                 if(hA !== hB) return hA - hB;
                 
+                let ptsA = (a.puntosPorWod || {})[f_auditWod] || 0;
+                let ptsB = (b.puntosPorWod || {})[f_auditWod] || 0;
+                if(ptsA !== ptsB) return ptsB - ptsA; 
+                
                 return a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true});
             });
 
-            if(filtrados.length === 0) { 
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;"><i class="fas fa-search" style="font-size:2rem; margin-bottom:10px;"></i><br>No hay atletas que coincidan con estos filtros.</td></tr>'; 
-                return; 
-            }
+            if(filtrados.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas</td></tr>'; return; }
 
             let wodActual = wods.find(w => w.id == f_auditWod);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
@@ -783,11 +662,6 @@
                 let wData = a.wods_data || {}; let cWod = wData[f_auditWod] || {};
                 let s1 = (cWod.score && cWod.score.trim() !== "") ? cWod.score : '--';
                 let scoreText = s1;
-                
-                if (cWod.isCapped && s1 !== '--') {
-                    scoreText = `CAP (${s1})`;
-                }
-
                 if(tieneDobleScore) {
                     let s2 = (cWod.score2 && cWod.score2.trim() !== "") ? cWod.score2 : '--';
                     scoreText += ` <span style="color:#888; font-size:0.8rem; margin: 0 5px;">|</span> <span style="color:#aaa; font-size:0.85rem;">TB: ${s2}</span>`;
@@ -977,8 +851,6 @@
         // --- GESTIÓN DE ATLETAS (CRUD) ---
         function renderAtletasTable() {
             let tbody = document.getElementById('atletasTableBody');
-            
-            // ORDENAMIENTO ALFANUMÉRICO DE DORSALES
             let ordenados = [...atletas].sort((a,b) => a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true}));
             
             tbody.innerHTML = ordenados.map(a => `
@@ -1055,7 +927,6 @@
         function renderWodsManager() {
             let tbody = document.getElementById('wodsTableBody');
             
-            // Agrupar WODs por Día
             let wodsOrdenados = [...wods].sort((a,b) => {
                 let diaA = a.dia || "Día 1"; let diaB = b.dia || "Día 1";
                 return diaA.localeCompare(diaB);
@@ -1091,7 +962,6 @@
                 const { error } = await supabaseClient.from('wods_cf').update({ nombre, dia, tipo, tipo2, descripcion: desc }).eq('id', editandoWodId);
                 if(!error) { cancelarEdicionWod(); await cargarWods(); renderAuditTable(); }
             } else {
-                // Al crear un WOD, los horarios nacen vacíos
                 const { error } = await supabaseClient.from('wods_cf').insert([{ nombre, dia, tipo, tipo2, descripcion: desc, horarios: {} }]);
                 if(!error) {
                     document.getElementById('newWodName').value = ''; document.getElementById('newWodDesc').value = ''; document.getElementById('newWodType2').value = '';

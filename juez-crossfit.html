@@ -33,7 +33,6 @@
         .btn-lock { width: 100%; background: transparent; border: 1px solid #444; color: #888; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; }
         .btn-lock.unlocked { background: rgba(255, 215, 0, 0.1); color: #ffd700; border-color: #ffd700; }
 
-        /* NAVEGACIÓN INFERIOR PÍLDORA */
         .bottom-nav { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px); border: 1px solid #333; border-radius: 50px; z-index: 1000; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .nav-item-mob { flex: 1; padding: 12px 0; text-align: center; color: #666; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
         .nav-item-mob i { display: block; font-size: 1.1rem; margin-bottom: 4px; }
@@ -76,6 +75,7 @@
 
         .dorsal-tag { background: #000; padding: 5px 10px; border-radius: 6px; font-weight: 900; color: var(--cf); border: 1px solid #333; }
         .heat-badge { background: #222; padding: 5px 10px; border-radius: 6px; font-weight: 900; color: white; border: 1px solid #444; font-size: 0.8rem; }
+        .pts-badge { color: #ffd700; font-size: 0.75rem; font-weight: 900; margin-left: 8px; background: rgba(255,215,0,0.1); padding: 2px 6px; border-radius: 4px; }
 
         .heats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .heat-card { background: var(--card); border: 1px solid #333; border-top: 4px solid var(--cf); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
@@ -89,8 +89,6 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
         .modal-content { background: var(--card); border: 1px solid #444; border-radius: 12px; width: 100%; max-width: 450px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; }
         .close-modal { position: absolute; top: 15px; right: 20px; color: #888; cursor: pointer; font-size: 1.5rem; }
-
-        .loader { text-align: center; color: var(--cf); font-weight: 900; padding: 40px; letter-spacing: 2px; }
 
         @media (max-width: 800px) {
             body { flex-direction: column; }
@@ -198,7 +196,7 @@
             <div class="section-header">
                 <div><h2>Organización de Heats</h2><p>Asignación de grupos para la competencia</p></div>
                 <div class="coach-action coach-action-btn-group" style="gap: 10px;">
-                    <button class="btn-primary" onclick="autogenerarHeats()"><i class="fas fa-list-ol"></i> Heats Base</button>
+                    <button class="btn-primary" onclick="autogenerarHeatsBase()"><i class="fas fa-list-ol"></i> Heats Base</button>
                     <button class="btn-primary btn-blue" onclick="reordenarHeatsPorPuntaje()"><i class="fas fa-sort-amount-up"></i> Reseeding (Por Puntos)</button>
                 </div>
             </div>
@@ -272,17 +270,6 @@
 
         let atletas = []; let wods = []; let isCoach = false; let editandoWodId = null;
 
-        // Orden de prioridad para los Heats Base
-        const ORDEN_CATEGORIAS = {
-            'Escalado Femenino': 1,
-            'Escalado Masculino': 2,
-            'Avanzado Femenino': 3,
-            'Avanzado Masculino': 4,
-            'RX Femenino': 5,
-            'RX Masculino': 6,
-            'RX': 7
-        };
-
         function obtenerPesoCategoria(catStr) {
             let catUpper = (catStr || "").toUpperCase();
             if (catUpper.includes('ESCALADO') && catUpper.includes('FEM')) return 1;
@@ -292,12 +279,17 @@
             if (catUpper.includes('RX') && catUpper.includes('FEM')) return 5;
             if (catUpper.includes('RX') && catUpper.includes('MASC')) return 6;
             if (catUpper.includes('RX')) return 7;
-            return 99; // Otras no definidas
+            return 99; 
         }
 
         async function init() {
             await cargarWods();
             await cargarAtletas();
+            // Auto-seleccionar primer WOD en auditoria para evitar vacio
+            if(wods.length > 0) {
+                document.getElementById('auditWodSelect').value = wods[0].id;
+                renderAuditTable();
+            }
         }
 
         function switchTab(tabId) {
@@ -313,7 +305,7 @@
             if(tabId === 'heats') renderHeatsGrid();
         }
 
-        // 1. ELIMINADA LA CLAVE
+        // Activación Instantánea
         function unlockCoach() {
             if(isCoach) return; 
             isCoach = true;
@@ -372,6 +364,7 @@
             }
         }
 
+        // --- SCORES ---
         function actualizarSelectHeatsJuez() {
             let heatsSet = new Set();
             atletas.forEach(a => { if(a.heat && a.heat !== 'Sin Asignar') heatsSet.add(a.heat); });
@@ -480,9 +473,7 @@
             btnDel.innerHTML = '<i class="fas fa-trash"></i>'; btnDel.disabled = false;
         }
 
-        // ==========================================
-        // MOTOR DE PUNTOS 100-95-90 PARA AUDITORÍA Y RESEEDING
-        // ==========================================
+        // --- SISTEMA MATEMÁTICO: PUNTOS 100-95-90 ---
         function parseScoreCF(scoreStr, isTime) {
             if (!scoreStr || scoreStr.trim() === "") return isTime ? Infinity : -Infinity;
             if (isTime) {
@@ -495,14 +486,12 @@
         }
 
         function calcularPuntosAbsolutos() {
-            // Reiniciar puntos
             atletas.forEach(a => { a.totalPuntos = 0; a.puntosPorWod = {}; });
 
             wods.forEach(wod => {
                 let isTime = wod.tipo && wod.tipo.toLowerCase().includes('time');
-                
-                // Separar por Categoría y Sexo para competir entre ellos
                 let gruposCat = {};
+                
                 atletas.forEach(a => {
                     let k = `${a.categoria}_${a.sexo}`;
                     if(!gruposCat[k]) gruposCat[k] = [];
@@ -510,7 +499,6 @@
                     gruposCat[k].push({ id: a.id, val: parseScoreCF(s, isTime), tiene: (s && s.trim() !== "") });
                 });
 
-                // Asignar puntos (100, 95, 90...)
                 for(let k in gruposCat) {
                     let grupo = gruposCat[k];
                     let iniciado = grupo.some(x => x.tiene);
@@ -519,14 +507,11 @@
                         let rank = 1;
                         for(let i=0; i < grupo.length; i++) {
                             if(i > 0 && grupo[i].val !== grupo[i-1].val) rank = i + 1;
-                            
-                            // Nueva Fórmula Puntos Positivos
                             let pts = 0;
                             if(grupo[i].tiene) {
                                 pts = 100 - ((rank - 1) * 5);
                                 if(pts < 0) pts = 0;
                             }
-                            
                             let aObj = atletas.find(x => x.id === grupo[i].id);
                             aObj.totalPuntos += pts;
                             aObj.puntosPorWod[wod.id] = pts;
@@ -536,6 +521,15 @@
             });
         }
 
+        // --- AUDITORÍA ---
+        function actualizarSelectHeatsAudit() {
+            let heatsSet = new Set();
+            atletas.forEach(a => { if(a.heat && a.heat !== 'Sin Asignar') heatsSet.add(a.heat); });
+            let heatsArray = Array.from(heatsSet).sort((a,b) => a - b);
+            document.getElementById('auditHeatSelect').innerHTML = '<option value="todos">Todos los Heats</option>' + 
+                heatsArray.map(h => `<option value="${h}">Heat ${h}</option>`).join('');
+        }
+
         function renderAuditTable() {
             let wodId = document.getElementById('auditWodSelect').value;
             let heatSelected = document.getElementById('auditHeatSelect').value;
@@ -543,7 +537,7 @@
 
             if(!wodId) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
 
-            calcularPuntosAbsolutos(); // Calcular para poder mostrarlos
+            calcularPuntosAbsolutos(); 
 
             let filtrados = atletas.filter(a => heatSelected === 'todos' || a.heat == heatSelected);
             filtrados.sort((a, b) => {
@@ -582,10 +576,13 @@
             }).join('');
         }
 
-        // --- HEATS GLOBALES Y RESEEDING ---
+        // --- HEATS GLOBALES Y RESEEDING MULTI-HILO ---
         function renderHeatsGrid() {
             let container = document.getElementById('heatsGridContainer');
             container.innerHTML = '';
+            
+            calcularPuntosAbsolutos(); // Calcula puntos para mostrarlos en la grilla
+
             let heatsMap = {};
             atletas.forEach(a => { let h = a.heat || 'Sin Asignar'; if(!heatsMap[h]) heatsMap[h] = []; heatsMap[h].push(a); });
             let heatsKeys = Object.keys(heatsMap).sort((a,b) => (a === 'Sin Asignar' ? 1 : b === 'Sin Asignar' ? -1 : a - b));
@@ -596,18 +593,27 @@
                 let card = document.createElement('div'); card.className = 'heat-card';
                 card.innerHTML = `
                     <div class="heat-header"><h3>Heat ${hKey}</h3><span>${tituloCat}</span></div>
-                    <div style="flex:1;">${grupo.map(a => `<div class="heat-athlete"><strong>${a.nombre}</strong><span class="dorsal-tag" style="background:transparent; border-color:#444;">#${a.dorsal}</span></div>`).join('')}</div>
+                    <div style="flex:1;">${grupo.map(a => `
+                        <div class="heat-athlete">
+                            <strong>${a.nombre} <span class="pts-badge">${a.totalPuntos} pts</span></strong>
+                            <span class="dorsal-tag" style="background:transparent; border-color:#444;">#${a.dorsal}</span>
+                        </div>
+                    `).join('')}</div>
                     <div class="heat-footer coach-action"><button class="btn-edit-heat" onclick="abrirModalHeat('${hKey}')"><i class="fas fa-edit"></i> Editar Heat</button></div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // 2. GENERACIÓN ORDENADA (ESCALADO A RX)
-        async function autogenerarHeats() {
+        // Generar Base
+        async function autogenerarHeatsBase() {
             if(!confirm("Esto agrupará a los atletas desde Escalado Femenino hasta RX en grupos de 4. ¿Continuar?")) return;
             
-            // Ordenar todos los atletas globalmente primero
+            let btn = event.target;
+            let btnText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+            btn.disabled = true;
+
             let atletasOrdenados = [...atletas].sort((a, b) => {
                 let pesoA = obtenerPesoCategoria(a.categoria + " " + a.sexo);
                 let pesoB = obtenerPesoCategoria(b.categoria + " " + b.sexo);
@@ -630,45 +636,84 @@
                     currentHeatGlobal++;
                 }
             }
-            alert("Guardando Heats...");
-            for(let act of actualizaciones) { await supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id); }
-            renderHeatsGrid(); actualizarSelectHeatsJuez();
+
+            // Ejecución Paralela Rápida
+            await Promise.all(actualizaciones.map(act => 
+                supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id)
+            ));
+
+            renderHeatsGrid(); actualizarSelectHeatsJuez(); actualizarSelectHeatsAudit();
+            btn.innerHTML = btnText; btn.disabled = false;
         }
 
-        // 3. RESEEDING DINÁMICO
+        // RESEEDING RESPETANDO CAPACIDAD EXACTA
         async function reordenarHeatsPorPuntaje() {
-            if(!confirm("RESEEDING: Esto reordenará los heats de forma que los que van perdiendo salen de primeros y los líderes salen de últimos en su categoría. ¿Continuar?")) return;
+            if(!confirm("RESEEDING: Esto reordenará los heats de forma que los que van perdiendo salen de primeros y los líderes salen de últimos en su categoría, RESPETANDO la cantidad de atletas que tenías en cada Heat. ¿Continuar?")) return;
             
+            let btn = event.target;
+            let btnText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reseeding...';
+            btn.disabled = true;
+
             calcularPuntosAbsolutos();
 
-            // Ordenar la base: Peso Categoría (Escalado->RX) -> Puntos (Ascendente: Peores primero)
+            // 1. Extraer la capacidad actual de los heats por categoría
+            let capacidades = {};
+            atletas.forEach(a => {
+                let key = `${a.categoria}_${a.sexo}`;
+                if(!capacidades[key]) capacidades[key] = {};
+                if(a.heat && a.heat !== 'Sin Asignar') {
+                    capacidades[key][a.heat] = (capacidades[key][a.heat] || 0) + 1;
+                }
+            });
+
+            // 2. Ordenar a los atletas (Peso Categoría -> Peores primero)
             let atletasOrdenados = [...atletas].sort((a, b) => {
                 let pesoA = obtenerPesoCategoria(a.categoria + " " + a.sexo);
                 let pesoB = obtenerPesoCategoria(b.categoria + " " + b.sexo);
                 if(pesoA !== pesoB) return pesoA - pesoB;
-                // Si es misma categoría, el que tiene MENOS puntos (peor) va primero.
-                return (a.totalPuntos || 0) - (b.totalPuntos || 0);
+                return (a.totalPuntos || 0) - (b.totalPuntos || 0); // Menos puntos primero
             });
 
-            let grupos = {};
-            atletasOrdenados.forEach(a => { let key = `${a.categoria}_${a.sexo}`; if(!grupos[key]) grupos[key] = []; grupos[key].push(a); });
+            let actualizaciones = [];
+            let atletasAgrupados = {};
+            atletasOrdenados.forEach(a => { let k = `${a.categoria}_${a.sexo}`; if(!atletasAgrupados[k]) atletasAgrupados[k] = []; atletasAgrupados[k].push(a); });
 
-            let currentHeatGlobal = 1; let actualizaciones = [];
-            for(let key in grupos) {
-                let grupoAtletas = grupos[key];
-                for (let i = 0; i < grupoAtletas.length; i += 4) {
-                    let chunk = grupoAtletas.slice(i, i + 4);
-                    chunk.forEach(a => { 
-                        actualizaciones.push({ id: a.id, heat: currentHeatGlobal.toString() }); 
-                        let idx = atletas.findIndex(x => String(x.id) === String(a.id)); 
-                        if(idx !== -1) atletas[idx].heat = currentHeatGlobal.toString(); 
-                    });
-                    currentHeatGlobal++;
+            // 3. Rellenar respetando los cupos exactos (ej: 4, 4, 3, 3)
+            for(let key in atletasAgrupados) {
+                let grupo = atletasAgrupados[key];
+                let caps = capacidades[key] || {};
+                let heatsNumericos = Object.keys(caps).sort((a,b) => parseInt(a) - parseInt(b));
+                
+                let indiceAtleta = 0;
+                for(let h of heatsNumericos) {
+                    let cupos = caps[h];
+                    for(let i=0; i<cupos; i++) {
+                        if(indiceAtleta < grupo.length) {
+                            let a = grupo[indiceAtleta];
+                            actualizaciones.push({ id: a.id, heat: h });
+                            let idx = atletas.findIndex(x => String(x.id) === String(a.id));
+                            if(idx !== -1) atletas[idx].heat = h;
+                            indiceAtleta++;
+                        }
+                    }
+                }
+                while(indiceAtleta < grupo.length) {
+                    let a = grupo[indiceAtleta];
+                    actualizaciones.push({ id: a.id, heat: 'Sin Asignar' });
+                    let idx = atletas.findIndex(x => String(x.id) === String(a.id));
+                    if(idx !== -1) atletas[idx].heat = 'Sin Asignar';
+                    indiceAtleta++;
                 }
             }
-            alert("Aplicando Reseeding...");
-            for(let act of actualizaciones) { await supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id); }
-            renderHeatsGrid(); actualizarSelectHeatsJuez();
+
+            // Ejecución Paralela Rápida
+            await Promise.all(actualizaciones.map(act => 
+                supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id)
+            ));
+
+            renderHeatsGrid(); actualizarSelectHeatsJuez(); actualizarSelectHeatsAudit();
+            btn.innerHTML = btnText; btn.disabled = false;
         }
 
         let atletasModalActual = [];
@@ -695,7 +740,7 @@
                     let idx = atletas.findIndex(x => String(x.id) === String(a.id)); if(idx !== -1) atletas[idx].heat = nuevoHeat;
                 }
             }
-            cerrarModal(); renderHeatsGrid(); actualizarSelectHeatsJuez();
+            cerrarModal(); renderHeatsGrid(); actualizarSelectHeatsJuez(); actualizarSelectHeatsAudit();
             btn.innerHTML = 'Guardar Cambios'; btn.disabled = false;
         }
 

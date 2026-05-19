@@ -389,7 +389,8 @@
         function maskTimeInput(input, idAtleta) {
             let capCheck = document.getElementById(`j_cap_${idAtleta}`);
             if (capCheck && capCheck.checked) {
-                input.value = input.value.replace(/\D/g, ''); 
+                // Para CAP permitimos números y el signo +
+                input.value = input.value.replace(/[^0-9+]/g, ''); 
                 habilitarGuardado(idAtleta);
                 return;
             }
@@ -412,7 +413,7 @@
         function toggleCapUi(idAtleta) {
             let isCap = document.getElementById(`j_cap_${idAtleta}`).checked;
             let input = document.getElementById(`j_score_${idAtleta}`);
-            input.placeholder = isCap ? "Total Reps" : "MM:SS";
+            input.placeholder = isCap ? "Ej: 3+12" : "MM:SS";
             input.value = ""; 
             habilitarGuardado(idAtleta);
         }
@@ -479,7 +480,28 @@
             container.style.display = 'block'; tbody.innerHTML = '';
 
             let atletasEnHeat = atletas.filter(a => a.heat == f_juezHeat);
-            if(atletasEnHeat.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas en este heat.</td></tr>'; return; }
+            
+            // --- DETECTAR CATEGORÍA Y SEXO DEL HEAT (Punto 3) ---
+            let infoHeatEl = document.getElementById('infoHeatDetectado');
+            if(!infoHeatEl) {
+                // Si no existe el elemento visual en el HTML, lo creamos dinámicamente arriba de la tabla
+                infoHeatEl = document.createElement('div');
+                infoHeatEl.id = 'infoHeatDetectado';
+                infoHeatEl.style = 'margin: 10px 0 20px 0; padding: 12px; background: rgba(255,68,68,0.1); border-left: 4px solid var(--cf); font-weight: bold; color: white; border-radius: 4px;';
+                container.insertBefore(infoHeatEl, container.querySelector('.table-responsive') || container.childNodes[2]);
+            }
+
+            if(atletasEnHeat.length === 0) { 
+                infoHeatEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Heat ${f_juezHeat}: Sin atletas asignados todavía.`;
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas en este heat.</td></tr>'; 
+                return; 
+            }
+
+            // Agrupamos las categorías y sexos presentes en este heat
+            let catsPresentes = [...new Set(atletasEnHeat.map(a => a.categoria))];
+            let sexosPresentes = [...new Set(atletasEnHeat.map(a => a.sexo))];
+            infoHeatEl.innerHTML = `<i class="fas fa-info-circle" style="color:var(--cf);"></i> Heat ${f_juezHeat} correspondente a: <span style="color:var(--cf); font-size:1.1rem; ml-1">${catsPresentes.join(', ')} (${sexosPresentes.join(', ')})</span>`;
+            // ----------------------------------------------------
 
             let wodActual = wods.find(w => w.id == f_juezWod);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
@@ -500,7 +522,7 @@
 
                 let inputsScoreHTML = `<div class="score-stack">
                     ${capHTML}
-                    <div><span class="score-label">${wodActual.tipo}</span><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="${isCapped1 ? 'Total Reps' : place1}" ${maskAttr1}></div>`;
+                    <div><span class="score-label">${wodActual.tipo}</span><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="${isCapped1 ? 'Ej: 3+12' : place1}" ${maskAttr1}></div>`;
                 if(tieneDobleScore) {
                     inputsScoreHTML += `<div><span class="score-label">${wodActual.tipo2}</span><input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="${place2}" ${maskAttr2}></div>`;
                 }
@@ -575,13 +597,22 @@
             } 
             btnDel.innerHTML = '<i class="fas fa-trash"></i>'; btnDel.disabled = false;
         }
-
-       // --- SISTEMA MATEMÁTICO (100-95-90) ---
+       
+            // --- SISTEMA MATEMÁTICO (100-95-90) ---
         function parseScoreCF(scoreStr, isTime, isCapped) {
             if (!scoreStr || scoreStr.trim() === "") return isTime ? Infinity : -Infinity;
             if (isTime) {
                 if (isCapped) {
-                    let num = parseFloat(scoreStr); return isNaN(num) ? -Infinity : num;
+                    // Soporta formatos tipo "3+10" o repeticiones puras "150"
+                    let str = scoreStr.trim();
+                    if (str.includes('+')) {
+                        let partes = str.split('+');
+                        let rondas = parseFloat(partes[0]) || 0;
+                        let reps = parseFloat(partes[1]) || 0;
+                        // Usamos un multiplicador alto (1000) para que las rondas tengan peso absoluto en el ordenamiento
+                        return (rondas * 1000) + reps;
+                    }
+                    let num = parseFloat(str); return isNaN(num) ? -Infinity : num;
                 } else {
                     let partes = scoreStr.split(':');
                     if (partes.length === 2) return (parseInt(partes[0]) || 0) * 60 + parseFloat(partes[1] || 0);
@@ -623,7 +654,7 @@
                                 if (a.isCapped && !b.isCapped) return 1; 
                                 if (!a.isCapped && b.isCapped) return -1; 
                                 if (a.isCapped && b.isCapped) {
-                                    return b.val - a.val;
+                                    return b.val - a.val; // Mayor cantidad de rondas/reps va primero
                                 }
                                 return a.val - b.val;
                             } else {
@@ -640,37 +671,83 @@
                                 if(pts < 0) pts = 0;
                             }
                             let aObj = atletas.find(x => x.id === grupo[i].id);
-                            aObj.totalPuntos += pts;
-                            aObj.puntosPorWod[wod.id] = pts;
+                            if(aObj) {
+                                aObj.totalPuntos += pts;
+                                aObj.puntosPorWod[wod.id] = pts;
+                            }
                         }
                     }
                 }
             });
         }
-       
-
+        
         // --- AUDITORÍA ---
         function renderAuditTable() {
             let tbody = document.getElementById('auditTableBody');
+            let container = tbody.closest('.tab-content'); // Buscamos el contenedor padre de la pestaña
+
             if(!f_auditWod) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
+
+            // --- AGREGAR FILTROS VISUALES SI NO EXISTEN (Punto 4) ---
+            let wrapperFiltros = document.getElementById('wrapperFiltrosAudit');
+            if (!wrapperFiltros) {
+                wrapperFiltros = document.createElement('div');
+                wrapperFiltros.id = 'wrapperFiltrosAudit';
+                wrapperFiltros.style = 'display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border: 1px solid #222;';
+                
+                // Creamos los selectores obteniendo dinámicamente los valores únicos de tus atletas
+                let categorias = [...new Set(atletas.map(a => a.categoria))];
+                let sexos = [...new Set(atletas.map(a => a.sexo))];
+
+                let optionCat = `<option value="todas">-- Todas las Categorías --</option>` + categorias.map(c => `<option value="${c}">${c}</option>`).join('');
+                let optionSexo = `<option value="todos">-- Todos los Sexos --</option>` + sexos.map(s => `<option value="${s}">${s}</option>`).join('');
+
+                wrapperFiltros.innerHTML = `
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="font-size: 0.8rem; color: #888; display: block; margin-bottom: 5px;">Filtrar por Categoría:</label>
+                        <select id="f_audit_cat" class="form-control" onchange="renderAuditTable()">${optionCat}</select>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label style="font-size: 0.8rem; color: #888; display: block; margin-bottom: 5px;">Filtrar por Sexo:</label>
+                        <select id="f_audit_sexo" class="form-control" onchange="renderAuditTable()">${optionSexo}</select>
+                    </div>
+                `;
+                // Lo insertamos justo antes de la tabla de auditoría
+                let tablaAudit = document.querySelector('.table-responsive');
+                if(tablaAudit) tablaAudit.parentNode.insertBefore(wrapperFiltros, tablaAudit);
+            }
+
+            // Capturamos los valores seleccionados en los filtros
+            let filtroCat = document.getElementById('f_audit_cat') ? document.getElementById('f_audit_cat').value : 'todas';
+            let filtroSexo = document.getElementById('f_audit_sexo') ? document.getElementById('f_audit_sexo').value : 'todos';
+            // --------------------------------------------------------
 
             calcularPuntosAbsolutos(); 
 
-            let filtrados = atletas.filter(a => f_auditHeat === 'todos' || a.heat == f_auditHeat);
+            // Aplicamos todos los filtros de forma combinada (Heat + Categoría + Sexo)
+            let filtrados = atletas.filter(a => {
+                let cumpleHeat = (f_auditHeat === 'todos' || a.heat == f_auditHeat);
+                let cumpleCat = (filtroCat === 'todas' || a.categoria === filtroCat);
+                let cumpleSexo = (filtroSexo === 'todos' || a.sexo === filtroSexo);
+                return cumpleHeat && cumpleCat && cumpleSexo;
+            });
             
+            // Ordenamos la lista de auditoría para reflejar quién va ganando
             filtrados.sort((a, b) => {
-                let hA = parseInt(a.heat) || 999; 
-                let hB = parseInt(b.heat) || 999;
-                if(hA !== hB) return hA - hB;
-                
+                // Primero ordenamos por los puntos obtenidos en este WOD específico de mayor a menor
                 let ptsA = (a.puntosPorWod || {})[f_auditWod] || 0;
                 let ptsB = (b.puntosPorWod || {})[f_auditWod] || 0;
                 if(ptsA !== ptsB) return ptsB - ptsA; 
                 
+                // Si empatan en puntos, los ordena por el Heat más bajo primero
+                let hA = parseInt(a.heat) || 999; 
+                let hB = parseInt(b.heat) || 999;
+                if(hA !== hB) return hA - hB;
+                
                 return a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true});
             });
 
-            if(filtrados.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas</td></tr>'; return; }
+            if(filtrados.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas que coincidan con los filtros seleccionados.</td></tr>'; return; }
 
             let wodActual = wods.find(w => w.id == f_auditWod);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
@@ -681,7 +758,7 @@
                 let scoreText = s1;
                 
                 if (cWod.isCapped && s1 !== '--') {
-                    scoreText = `CAP (${s1} reps)`;
+                    scoreText = `CAP (${s1})`;
                 }
 
                 if(tieneDobleScore) {

@@ -196,6 +196,7 @@
                 <div class="coach-only" style="gap: 12px; flex-wrap: wrap;">
                     <button class="btn-primary" onclick="autogenerarHeatsBase()"><i class="fas fa-list-ol"></i> Heats Base</button>
                     <button class="btn-primary btn-blue" onclick="reordenarHeatsPorPuntaje()"><i class="fas fa-sort-amount-up"></i> Reseeding (Por Pts)</button>
+                    <button class="btn-primary" style="background: #8e44ad; color: white;" onclick="generarHeatsFinal()"><i class="fas fa-trophy"></i> Heats FINAL</button>
                 </div>
             </div>
             
@@ -996,6 +997,71 @@
             if(!confirm("¿Estás seguro de borrar este WOD?")) return;
             await supabaseClient.from('wods_cf').delete().eq('id', id);
             await cargarWods();
+        }
+
+        async function generarHeatsFinal() {
+            if(!confirm("⚠️ ATENCIÓN: Esto es el CORTE FINAL. Enviará a los 4 mejores de cada categoría a sus Heats de Final y marcará al resto como 'No Clasificado'. ¿Estás 100% seguro?")) return;
+
+            let btn = event.target; let btnText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cortando...'; btn.disabled = true;
+
+            calcularPuntosAbsolutos(); // Asegurar puntos actualizados
+
+            // Categorías a buscar
+            let categoriasFinal = [
+                { idObj: 1, match: 'ESCALADO FEM', nombreHeat: 'Final - Esc Fem' },
+                { idObj: 2, match: 'ESCALADO MASC', nombreHeat: 'Final - Esc Masc' },
+                { idObj: 3, match: 'AVANZADO FEM', nombreHeat: 'Final - Ava Fem' },
+                { idObj: 4, match: 'AVANZADO MASC', nombreHeat: 'Final - Ava Masc' },
+                { idObj: 5, match: 'RX', nombreHeat: 'Final - RX' }
+            ];
+
+            let actualizaciones = [];
+
+            // 1. Por defecto marcamos a TODOS como No Clasificados
+            atletas.forEach(a => {
+                actualizaciones.push({ id: a.id, heat: 'No Clasificado' });
+            });
+
+            // 2. Buscamos a los mejores de cada grupo
+            categoriasFinal.forEach(cat => {
+                // Filtrar atletas de esta categoría
+                let atletasCat = atletas.filter(a => {
+                    let str = (a.categoria + " " + a.sexo).toUpperCase();
+                    if(cat.idObj === 5) return str.includes('RX');
+                    return str.includes(cat.match.split(' ')[0]) && str.includes(cat.match.split(' ')[1]);
+                });
+
+                // Ordenar por Puntos (De mayor a menor) y si hay empate, por Dorsal
+                atletasCat.sort((a, b) => {
+                    let ptsA = a.totalPuntos || 0;
+                    let ptsB = b.totalPuntos || 0;
+                    if(ptsA !== ptsB) return ptsB - ptsA;
+                    return a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true});
+                });
+
+                // Cortar a los Mejores 4
+                let top4 = atletasCat.slice(0, 4);
+
+                // Modificar la actualización de "No clasificado" a su Heat de Final
+                top4.forEach(ganador => {
+                    let act = actualizaciones.find(x => String(x.id) === String(ganador.id));
+                    if(act) act.heat = cat.nombreHeat;
+                });
+            });
+
+            // 3. Subir todos los cambios de golpe a Supabase
+            await Promise.all(actualizaciones.map(act => {
+                let idx = atletas.findIndex(x => String(x.id) === String(act.id));
+                if(idx !== -1) atletas[idx].heat = act.heat;
+                return supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id);
+            }));
+
+            renderHeatsGrid(); 
+            actualizarBadgesFiltros(); 
+            btn.innerHTML = btnText; 
+            btn.disabled = false;
+            alert("🏆 ¡Heats de la Final Generados con Éxito!");
         }
 
         window.onload = init;

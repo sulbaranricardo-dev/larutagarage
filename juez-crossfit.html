@@ -21,7 +21,7 @@
         .brand h1 { margin: 0; font-size: 1.3rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 1px; }
         .brand span { background: var(--cf); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; }
         
-        /* MODO ABIERTO: Todos ven todo */
+        /* MODO ABIERTO POR DEFECTO */
         .coach-only { display: flex !important; } 
         body.coach-mode .coach-only { display: flex !important; } 
         body.coach-mode .coach-inline { display: inline-block !important; }
@@ -59,6 +59,7 @@
         .btn-primary:hover { box-shadow: 0 5px 15px rgba(255, 68, 68, 0.4); transform: translateY(-2px); }
         .btn-gold { background: #ffd700; color: black; }
         .btn-blue { background: #007bff; color: white; }
+        .btn-pdf { background: #e74c3c; color: white; }
 
         .table-wrap { background: var(--card); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; overflow-x: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
@@ -152,6 +153,7 @@
         <section id="sec-audit" class="section">
             <div class="section-header">
                 <div><h2>Auditoría de Resultados</h2><p>Revisa puntajes ordenados por líder de Heat</p></div>
+                <button class="btn-primary btn-pdf" onclick="imprimirAuditoria()"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
             </div>
             <div class="controls-glass">
                 <div class="filter-group">
@@ -175,12 +177,12 @@
                 <table>
                     <thead>
                         <tr>
+                            <th style="width: 80px;">Pos</th>
                             <th style="width: 80px;">Heat</th>
                             <th style="width: 80px;">Dorsal</th>
                             <th>Atleta / Categoría</th>
                             <th>Score Ingresado</th>
                             <th>Puntos Oficiales</th>
-                            <th>Penalización</th>
                         </tr>
                     </thead>
                     <tbody id="auditTableBody">
@@ -195,8 +197,9 @@
                 <div><h2>Organización de Heats</h2><p>Distribución de atletas y horarios</p></div>
                 <div class="coach-only" style="gap: 12px; flex-wrap: wrap;">
                     <button class="btn-primary" onclick="autogenerarHeatsBase()"><i class="fas fa-list-ol"></i> Heats Base</button>
-                    <button class="btn-primary btn-blue" onclick="reordenarHeatsPorPuntaje()"><i class="fas fa-sort-amount-up"></i> Reseeding (Por Pts)</button>
+                    <button class="btn-primary btn-blue" onclick="reordenarHeatsPorPuntaje()"><i class="fas fa-sort-amount-up"></i> Reseeding</button>
                     <button class="btn-primary" style="background: #8e44ad; color: white;" onclick="generarHeatsFinal()"><i class="fas fa-trophy"></i> Heats FINAL</button>
+                    <button class="btn-primary btn-pdf" onclick="imprimirHeats()"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
                 </div>
             </div>
             
@@ -340,11 +343,10 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eXdwanp2bHZkeHNjZ3RlYnZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNjI0OTQsImV4cCI6MjA5NDYzODQ5NH0.L7gdDpxOD7N1gpSoCVI0FEiwxR44sG8XwAORYm16sEM';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Activamos Coach desde el inicio
         let atletas = []; let wods = []; let isCoach = true; let editandoWodId = null;
         let f_juezWod = null; let f_juezHeat = null;
         let f_auditWod = null; let f_auditHeat = 'todos';
-        let f_auditCat = 'todas'; let f_auditSex = 'todos'; // NUEVOS FILTROS
+        let f_auditCat = 'todas'; let f_auditSex = 'todos'; 
         let idAtletaEditandoDorsal = null;
 
         function obtenerPesoCategoria(catStr) {
@@ -360,7 +362,7 @@
         }
 
         async function init() {
-            document.body.classList.add('coach-mode'); // Fuerza modo abierto
+            document.body.classList.add('coach-mode'); 
             await cargarWods();
             await cargarAtletas();
         }
@@ -446,7 +448,10 @@
                 if(a.sexo) sexsSet.add(a.sexo);
             });
             
-            let heatsArray = Array.from(heatsSet).sort((a,b) => a - b);
+            let heatsArray = Array.from(heatsSet).sort((a,b) => {
+                let hA = parseInt(a) || 999; let hB = parseInt(b) || 999;
+                return hA - hB;
+            });
             
             let htmlHeatsJuez = heatsArray.map(h => `<button class="btn-badge ${f_juezHeat == h ? 'active' : ''}" onclick="setFiltro('juezHeat', '${h}')">H-${h}</button>`).join('');
             document.getElementById('judgeHeatsRow').innerHTML = htmlHeatsJuez || '<span style="color:#666; font-size:0.8rem;">Genera los heats primero</span>';
@@ -455,13 +460,11 @@
                                  heatsArray.map(h => `<button class="btn-badge ${f_auditHeat == h ? 'active' : ''}" onclick="setFiltro('auditHeat', '${h}')">H-${h}</button>`).join('');
             document.getElementById('auditHeatsRow').innerHTML = htmlHeatsAudit;
 
-            // GENERAR BADGES DE CATEGORÍA
             let catsArray = Array.from(catsSet).sort();
             let htmlCatAudit = `<button class="btn-badge ${f_auditCat === 'todas' ? 'active' : ''}" onclick="setFiltro('auditCat', 'todas')">Todas</button>` + 
                                catsArray.map(c => `<button class="btn-badge ${f_auditCat == c ? 'active' : ''}" onclick="setFiltro('auditCat', '${c}')">${c}</button>`).join('');
             document.getElementById('auditCatRow').innerHTML = htmlCatAudit;
 
-            // GENERAR BADGES DE SEXO
             let sexsArray = Array.from(sexsSet).sort();
             let htmlSexAudit = `<button class="btn-badge ${f_auditSex === 'todos' ? 'active' : ''}" onclick="setFiltro('auditSex', 'todos')">Todos</button>` + 
                                sexsArray.map(s => `<button class="btn-badge ${f_auditSex == s ? 'active' : ''}" onclick="setFiltro('auditSex', '${s}')">${s}</button>`).join('');
@@ -628,7 +631,7 @@
             });
         }
 
-        // --- AUDITORÍA (MODIFICADA CON 3 FILTROS) ---
+        // --- AUDITORÍA (CON EXPORTAR A PDF NATIVO) ---
         function renderAuditTable() {
             let tbody = document.getElementById('auditTableBody');
             if(!f_auditWod) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
@@ -659,7 +662,7 @@
             let wodActual = wods.find(w => w.id == f_auditWod);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
 
-            tbody.innerHTML = filtrados.map(a => {
+            tbody.innerHTML = filtrados.map((a, index) => {
                 let wData = a.wods_data || {}; let cWod = wData[f_auditWod] || {};
                 let s1 = (cWod.score && cWod.score.trim() !== "") ? cWod.score : '--';
                 let scoreText = s1;
@@ -673,8 +676,8 @@
 
                 return `
                     <tr>
-                        <td><span class="heat-badge">H-${a.heat || '-'}</span></td>
-                        <td><span class="dorsal-tag">${a.dorsal}</span></td>
+                        <td><strong style="color:var(--cf); font-size:1.1rem; margin-right:10px;">${index+1}</strong> <span class="heat-badge">H-${a.heat || '-'}</span></td>
+                        <td><span class="dorsal-tag">#${a.dorsal}</span></td>
                         <td><strong style="color:white; font-size:1.05rem;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
                         <td><strong style="color:white; font-size:1.1rem; font-family:monospace;">${scoreText}</strong></td>
                         <td><strong style="color:#ffd700; font-size:1.1rem;">${ptsText}</strong></td>
@@ -684,7 +687,97 @@
             }).join('');
         }
 
-        // --- HEATS GLOBALES Y HORARIOS ---
+        function imprimirAuditoria() {
+            if(!f_auditWod) { alert("Selecciona un WOD primero"); return; }
+            
+            let wodActual = wods.find(w => w.id == f_auditWod);
+            let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
+            
+            calcularPuntosAbsolutos(); 
+
+            let filtrados = atletas.filter(a => {
+                let pasaHeat = (f_auditHeat === 'todos' || a.heat == f_auditHeat);
+                let pasaCat  = (f_auditCat === 'todas' || a.categoria == f_auditCat);
+                let pasaSex  = (f_auditSex === 'todos' || a.sexo == f_auditSex);
+                return pasaHeat && pasaCat && pasaSex;
+            });
+            
+            filtrados.sort((a, b) => {
+                let hA = parseInt(a.heat) || 999; let hB = parseInt(b.heat) || 999;
+                if(hA !== hB) return hA - hB;
+                let ptsA = (a.puntosPorWod || {})[f_auditWod] || 0; let ptsB = (b.puntosPorWod || {})[f_auditWod] || 0;
+                if(ptsA !== ptsB) return ptsB - ptsA; 
+                return a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true});
+            });
+
+            let html = `
+                <html><head><title>Auditoria_${wodActual.nombre}</title>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700;900&display=swap');
+                    @page { size: A4; margin: 15mm; }
+                    body { font-family: 'Montserrat', sans-serif; color: #111; font-size: 11pt; }
+                    h1 { text-align: center; color: #ff4444; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; font-size: 18pt; }
+                    h3 { text-align: center; color: #555; margin-top: 0; font-weight: 700; font-size: 12pt; }
+                    .filtros { text-align: center; background: #eee; padding: 8px; border-radius: 6px; font-weight: bold; font-size: 9pt; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    th { background: #111; color: #fff; padding: 10px; text-align: left; font-size: 9pt; text-transform: uppercase; }
+                    td { padding: 10px; border-bottom: 1px solid #ddd; }
+                    tr:nth-child(even) { background: #f9f9f9; }
+                    .rank { font-weight: 900; color: #ff4444; font-size: 12pt; }
+                    .pts { font-weight: 900; color: #d35400; }
+                </style>
+                </head><body>
+                <h1>LA RUTA GARAGE</h1>
+                <h3>Auditoría de Resultados: ${wodActual.nombre}</h3>
+                <div class="filtros">FILTROS APLICADOS &rarr; Heat: ${f_auditHeat} | Categoría: ${f_auditCat} | Sexo: ${f_auditSex}</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Heat</th>
+                            <th>Dorsal</th>
+                            <th>Atleta</th>
+                            <th>Categoría</th>
+                            <th>Score Final</th>
+                            <th>Puntos</th>
+                            <th>Pen.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            filtrados.forEach((a, idx) => {
+                let wData = a.wods_data || {}; let cWod = wData[f_auditWod] || {};
+                let s1 = (cWod.score && cWod.score.trim() !== "") ? cWod.score : '--';
+                let scoreText = s1;
+                if(tieneDobleScore) {
+                    let s2 = (cWod.score2 && cWod.score2.trim() !== "") ? cWod.score2 : '--';
+                    scoreText += ` | TB: ${s2}`;
+                }
+                let ptsObtenidos = (a.puntosPorWod || {})[f_auditWod];
+                let ptsText = ptsObtenidos !== undefined ? `+${ptsObtenidos}` : '--';
+
+                html += `
+                    <tr>
+                        <td class="rank">${idx + 1}</td>
+                        <td><strong>H-${a.heat || '-'}</strong></td>
+                        <td>#${a.dorsal}</td>
+                        <td><strong>${a.nombre}</strong></td>
+                        <td>${a.categoria} | ${a.sexo}</td>
+                        <td><strong>${scoreText}</strong></td>
+                        <td class="pts">${ptsText}</td>
+                        <td style="color:#ff4444; font-size:8pt;">${cWod.penalizacion || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table><script>window.print();<\/script></body></html>`;
+            let win = window.open('', '', 'width=900,height=600');
+            win.document.write(html);
+            win.document.close();
+        }
+
+        // --- HEATS GLOBALES Y HORARIOS (CON PDF NATIVO) ---
         function renderHeatsGrid() {
             let container = document.getElementById('heatsGridContainer');
             container.innerHTML = '';
@@ -697,7 +790,12 @@
 
             let heatsMap = {};
             atletas.forEach(a => { let h = a.heat || 'Sin Asignar'; if(!heatsMap[h]) heatsMap[h] = []; heatsMap[h].push(a); });
-            let heatsKeys = Object.keys(heatsMap).sort((a,b) => (a === 'Sin Asignar' ? 1 : b === 'Sin Asignar' ? -1 : a - b));
+            let heatsKeys = Object.keys(heatsMap).sort((a,b) => {
+                // Ordenar correctamente asegurando que los heats con texto (Final) se comporten bien
+                let intA = parseInt(a); let intB = parseInt(b);
+                if (!isNaN(intA) && !isNaN(intB)) return intA - intB;
+                return a.localeCompare(b);
+            });
 
             heatsKeys.forEach(hKey => {
                 let grupo = heatsMap[hKey];
@@ -724,6 +822,67 @@
                 `;
                 container.appendChild(card);
             });
+        }
+
+        function imprimirHeats() {
+            let wodId = document.getElementById('heatsWodSelect').value;
+            let wodAct = wods.find(w => w.id == wodId);
+            let nombreWod = wodAct ? wodAct.nombre : 'General';
+            let horarios = (wodAct && wodAct.horarios) ? wodAct.horarios : {};
+
+            let heatsMap = {};
+            atletas.forEach(a => { let h = a.heat || 'Sin Asignar'; if(!heatsMap[h]) heatsMap[h] = []; heatsMap[h].push(a); });
+            let heatsKeys = Object.keys(heatsMap).sort((a,b) => {
+                let intA = parseInt(a); let intB = parseInt(b);
+                if (!isNaN(intA) && !isNaN(intB)) return intA - intB;
+                return a.localeCompare(b);
+            });
+
+            let html = `
+                <html><head><title>Heats_${nombreWod}</title>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700;900&display=swap');
+                    @page { size: A4; margin: 15mm; }
+                    body { font-family: 'Montserrat', sans-serif; color: #111; font-size: 11pt; }
+                    h1 { text-align: center; color: #ff4444; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; font-size: 18pt; }
+                    h3 { text-align: center; color: #555; margin-top: 0; font-weight: 700; font-size: 12pt; }
+                    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 25px; }
+                    .heat-box { border: 2px solid #111; border-radius: 8px; padding: 0; page-break-inside: avoid; overflow: hidden; }
+                    .heat-title { background: #111; color: #fff; font-size: 12pt; font-weight: 900; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
+                    .cat-label { font-size: 8pt; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px; font-weight: normal; text-transform: uppercase; }
+                    .time-label { color: #ff4444; font-weight: 900; font-size: 10pt; }
+                    .athlete { display: flex; justify-content: space-between; padding: 8px 15px; border-bottom: 1px solid #eee; font-size: 10pt; }
+                    .athlete:last-child { border-bottom: none; }
+                    .dorsal { font-family: monospace; font-weight: bold; color: #666; }
+                </style>
+                </head><body>
+                <h1>LA RUTA GARAGE</h1>
+                <h3>Distribución de Heats y Horarios: ${nombreWod}</h3>
+                <div class="grid">
+            `;
+
+            heatsKeys.forEach(hKey => {
+                let grupo = heatsMap[hKey];
+                let tituloCat = grupo.length > 0 ? `${grupo[0].categoria} | ${grupo[0].sexo}` : 'Mixto';
+                let valHorario = horarios[hKey] || '--:--';
+                
+                html += `
+                    <div class="heat-box">
+                        <div class="heat-title">
+                            <div>Heat ${hKey} <span class="cat-label">${tituloCat}</span></div>
+                            <span class="time-label">${valHorario}</span>
+                        </div>
+                `;
+                grupo.forEach(a => {
+                    html += `<div class="athlete"><strong>${a.nombre}</strong> <span class="dorsal">#${a.dorsal}</span></div>`;
+                });
+                html += `</div>`;
+            });
+
+            html += `</div><script>window.print();<\/script></body></html>`;
+            let win = window.open('', '', 'width=900,height=600');
+            win.document.write(html);
+            win.document.close();
         }
 
         async function guardarHorarioHeat(wodId, heatKey, horaVal) {
@@ -815,6 +974,59 @@
 
             await Promise.all(actualizaciones.map(act => supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id)));
             renderHeatsGrid(); actualizarBadgesFiltros(); btn.innerHTML = btnText; btn.disabled = false;
+        }
+
+        async function generarHeatsFinal() {
+            if(!confirm("⚠️ ATENCIÓN: Esto enviará a los 4 mejores de cada categoría a la Final y marcará al resto como 'No Clasificado'. ¿Estás seguro?")) return;
+
+            let btn = event.target; let btnText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cortando...'; btn.disabled = true;
+
+            calcularPuntosAbsolutos(); 
+
+            let categoriasFinal = [
+                { idObj: 1, match: 'ESCALADO FEM', nombreHeat: 'Final - Esc Fem' },
+                { idObj: 2, match: 'ESCALADO MASC', nombreHeat: 'Final - Esc Masc' },
+                { idObj: 3, match: 'AVANZADO FEM', nombreHeat: 'Final - Ava Fem' },
+                { idObj: 4, match: 'AVANZADO MASC', nombreHeat: 'Final - Ava Masc' },
+                { idObj: 5, match: 'RX', nombreHeat: 'Final - RX' }
+            ];
+
+            let actualizaciones = [];
+
+            atletas.forEach(a => { actualizaciones.push({ id: a.id, heat: 'No Clasificado' }); });
+
+            categoriasFinal.forEach(cat => {
+                let atletasCat = atletas.filter(a => {
+                    let str = (a.categoria + " " + a.sexo).toUpperCase();
+                    if(cat.idObj === 5) return str.includes('RX');
+                    return str.includes(cat.match.split(' ')[0]) && str.includes(cat.match.split(' ')[1]);
+                });
+
+                atletasCat.sort((a, b) => {
+                    let ptsA = a.totalPuntos || 0;
+                    let ptsB = b.totalPuntos || 0;
+                    if(ptsA !== ptsB) return ptsB - ptsA;
+                    return a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true});
+                });
+
+                let top4 = atletasCat.slice(0, 4);
+
+                top4.forEach(ganador => {
+                    let act = actualizaciones.find(x => String(x.id) === String(ganador.id));
+                    if(act) act.heat = cat.nombreHeat;
+                });
+            });
+
+            await Promise.all(actualizaciones.map(act => {
+                let idx = atletas.findIndex(x => String(x.id) === String(act.id));
+                if(idx !== -1) atletas[idx].heat = act.heat;
+                return supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id);
+            }));
+
+            renderHeatsGrid(); actualizarBadgesFiltros(); 
+            btn.innerHTML = btnText; btn.disabled = false;
+            alert("🏆 ¡Heats de la Final Generados con Éxito!");
         }
 
         let atletasModalActual = [];
@@ -927,7 +1139,6 @@
         // --- WODS ---
         function renderWodsManager() {
             let tbody = document.getElementById('wodsTableBody');
-            
             let wodsOrdenados = [...wods].sort((a,b) => {
                 let diaA = a.dia || "Día 1"; let diaB = b.dia || "Día 1";
                 return diaA.localeCompare(diaB);
@@ -997,71 +1208,6 @@
             if(!confirm("¿Estás seguro de borrar este WOD?")) return;
             await supabaseClient.from('wods_cf').delete().eq('id', id);
             await cargarWods();
-        }
-
-        async function generarHeatsFinal() {
-            if(!confirm("⚠️ ATENCIÓN: Esto es el CORTE FINAL. Enviará a los 4 mejores de cada categoría a sus Heats de Final y marcará al resto como 'No Clasificado'. ¿Estás 100% seguro?")) return;
-
-            let btn = event.target; let btnText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cortando...'; btn.disabled = true;
-
-            calcularPuntosAbsolutos(); // Asegurar puntos actualizados
-
-            // Categorías a buscar
-            let categoriasFinal = [
-                { idObj: 1, match: 'ESCALADO FEM', nombreHeat: 'Final - Esc Fem' },
-                { idObj: 2, match: 'ESCALADO MASC', nombreHeat: 'Final - Esc Masc' },
-                { idObj: 3, match: 'AVANZADO FEM', nombreHeat: 'Final - Ava Fem' },
-                { idObj: 4, match: 'AVANZADO MASC', nombreHeat: 'Final - Ava Masc' },
-                { idObj: 5, match: 'RX', nombreHeat: 'Final - RX' }
-            ];
-
-            let actualizaciones = [];
-
-            // 1. Por defecto marcamos a TODOS como No Clasificados
-            atletas.forEach(a => {
-                actualizaciones.push({ id: a.id, heat: 'No Clasificado' });
-            });
-
-            // 2. Buscamos a los mejores de cada grupo
-            categoriasFinal.forEach(cat => {
-                // Filtrar atletas de esta categoría
-                let atletasCat = atletas.filter(a => {
-                    let str = (a.categoria + " " + a.sexo).toUpperCase();
-                    if(cat.idObj === 5) return str.includes('RX');
-                    return str.includes(cat.match.split(' ')[0]) && str.includes(cat.match.split(' ')[1]);
-                });
-
-                // Ordenar por Puntos (De mayor a menor) y si hay empate, por Dorsal
-                atletasCat.sort((a, b) => {
-                    let ptsA = a.totalPuntos || 0;
-                    let ptsB = b.totalPuntos || 0;
-                    if(ptsA !== ptsB) return ptsB - ptsA;
-                    return a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true});
-                });
-
-                // Cortar a los Mejores 4
-                let top4 = atletasCat.slice(0, 4);
-
-                // Modificar la actualización de "No clasificado" a su Heat de Final
-                top4.forEach(ganador => {
-                    let act = actualizaciones.find(x => String(x.id) === String(ganador.id));
-                    if(act) act.heat = cat.nombreHeat;
-                });
-            });
-
-            // 3. Subir todos los cambios de golpe a Supabase
-            await Promise.all(actualizaciones.map(act => {
-                let idx = atletas.findIndex(x => String(x.id) === String(act.id));
-                if(idx !== -1) atletas[idx].heat = act.heat;
-                return supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id);
-            }));
-
-            renderHeatsGrid(); 
-            actualizarBadgesFiltros(); 
-            btn.innerHTML = btnText; 
-            btn.disabled = false;
-            alert("🏆 ¡Heats de la Final Generados con Éxito!");
         }
 
         window.onload = init;

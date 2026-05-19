@@ -177,16 +177,17 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 80px;">Pos</th>
+                            <th style="width: 60px; text-align: center;">Pos</th>
                             <th style="width: 80px;">Heat</th>
                             <th style="width: 80px;">Dorsal</th>
                             <th>Atleta / Categoría</th>
                             <th>Score Ingresado</th>
                             <th>Puntos Oficiales</th>
+                            <th style="width: 120px;">Penalización</th>
                         </tr>
                     </thead>
                     <tbody id="auditTableBody">
-                        <tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba para auditar</td></tr>
+                        <tr><td colspan="7" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba para auditar</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -391,6 +392,13 @@
         }
 
         function maskTimeInput(input, idAtleta) {
+            let capCheck = document.getElementById(`j_cap_${idAtleta}`);
+            if (capCheck && capCheck.checked) {
+                // Para CAP permitimos números y el signo +
+                input.value = input.value.replace(/[^0-9+]/g, ''); 
+                habilitarGuardado(idAtleta);
+                return;
+            }
             let val = input.value.replace(/\D/g, ''); 
             let formatted = "";
             if (val.length <= 4) {
@@ -405,6 +413,14 @@
             }
             input.value = formatted;
             habilitarGuardado(idAtleta); 
+        }
+
+        function toggleCapUi(idAtleta) {
+            let isCap = document.getElementById(`j_cap_${idAtleta}`).checked;
+            let input = document.getElementById(`j_score_${idAtleta}`);
+            input.placeholder = isCap ? "Ej: 3+12" : "MM:SS";
+            input.value = ""; 
+            habilitarGuardado(idAtleta);
         }
 
         async function cargarWods() {
@@ -486,7 +502,8 @@
         }
 
         // --- SCORES ---
-        function renderJudgeTable() {
+
+         function renderJudgeTable() {
             let container = document.getElementById('judgeTableContainer');
             let tbody = document.getElementById('judgeTableBody');
 
@@ -494,7 +511,24 @@
             container.style.display = 'block'; tbody.innerHTML = '';
 
             let atletasEnHeat = atletas.filter(a => a.heat == f_juezHeat);
-            if(atletasEnHeat.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas en este heat.</td></tr>'; return; }
+
+            // --- DETECTAR CATEGORÍA Y SEXO DEL HEAT ---
+            let infoHeatEl = document.getElementById('infoHeatDetectado');
+            if(!infoHeatEl) {
+                infoHeatEl = document.createElement('div');
+                infoHeatEl.id = 'infoHeatDetectado';
+                infoHeatEl.style = 'margin: 10px 0 20px 0; padding: 12px; background: rgba(255,68,68,0.1); border-left: 4px solid var(--cf); font-weight: bold; color: white; border-radius: 4px;';
+                container.insertBefore(infoHeatEl, container.querySelector('table'));
+            }
+
+            if(atletasEnHeat.length === 0) { 
+                infoHeatEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Heat ${f_juezHeat}: Sin atletas asignados todavía.`;
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas en este heat.</td></tr>'; return; 
+            }
+
+            let catsPresentes = [...new Set(atletasEnHeat.map(a => a.categoria))];
+            let sexosPresentes = [...new Set(atletasEnHeat.map(a => a.sexo))];
+            infoHeatEl.innerHTML = `<i class="fas fa-info-circle" style="color:var(--cf);"></i> Heat ${f_juezHeat} correspondente a: <span style="color:var(--cf); font-size:1.1rem; margin-left:5px;">${catsPresentes.join(', ')} (${sexosPresentes.join(', ')})</span>`;
 
             let wodActual = wods.find(w => w.id == f_juezWod);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
@@ -510,7 +544,12 @@
                 let maskAttr1 = isTime1 ? `oninput="maskTimeInput(this, '${a.id}')"` : `oninput="habilitarGuardado('${a.id}')"`;
                 let maskAttr2 = isTime2 ? `oninput="maskTimeInput(this, '${a.id}')"` : `oninput="habilitarGuardado('${a.id}')"`;
                 
-                let inputsScoreHTML = `<div class="score-stack"><div><span class="score-label">${wodActual.tipo}</span><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="${place1}" ${maskAttr1}></div>`;
+                let isCapped1 = cWod.isCapped || false;
+                let capHTML = isTime1 ? `<label style="font-size:0.7rem; color:var(--cf); display:flex; align-items:center; gap:5px; margin-bottom:5px; cursor:pointer;"><input type="checkbox" id="j_cap_${a.id}" ${isCapped1 ? 'checked' : ''} onchange="toggleCapUi('${a.id}')"> TIME CAP</label>` : '';
+
+                let inputsScoreHTML = `<div class="score-stack">
+                    ${capHTML}
+                    <div><span class="score-label">${wodActual.tipo}</span><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="${isCapped1 ? 'Ej: 3+12' : place1}" ${maskAttr1}></div>`;
                 if(tieneDobleScore) {
                     inputsScoreHTML += `<div><span class="score-label">${wodActual.tipo2}</span><input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="${place2}" ${maskAttr2}></div>`;
                 }
@@ -540,6 +579,7 @@
 
         async function guardarScoreJuez(idAtleta, wodId) {
             let btn = document.getElementById(`j_btn_${idAtleta}`);
+            let isCap1 = document.getElementById(`j_cap_${idAtleta}`) ? document.getElementById(`j_cap_${idAtleta}`).checked : false;
             let score1 = document.getElementById(`j_score_${idAtleta}`).value;
             let score2El = document.getElementById(`j_score2_${idAtleta}`);
             let score2 = score2El ? score2El.value : null;
@@ -550,7 +590,7 @@
 
             let index = atletas.findIndex(a => String(a.id) === String(idAtleta));
             let wodsData = atletas[index].wods_data || {};
-            wodsData[wodId] = { score: score1, score2: score2, penalizacion: pen, notas: nota };
+            wodsData[wodId] = { score: score1, score2: score2, penalizacion: pen, notas: nota, isCapped: isCap1 };
 
             const { error } = await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
 
@@ -568,7 +608,7 @@
 
             let index = atletas.findIndex(a => String(a.id) === String(idAtleta));
             let wodsData = atletas[index].wods_data || {};
-            wodsData[wodId] = { score: "", score2: "", penalizacion: "", notas: "" };
+            wodsData[wodId] = { score: "", score2: "", penalizacion: "", notas: "", isCapped: false };
 
             const { error } = await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
 
@@ -576,20 +616,34 @@
                 atletas[index].wods_data = wodsData;
                 let i1 = document.getElementById(`j_score_${idAtleta}`); if(i1) i1.value = "";
                 let i2 = document.getElementById(`j_score2_${idAtleta}`); if(i2) i2.value = "";
+                let cap = document.getElementById(`j_cap_${idAtleta}`); if(cap) cap.checked = false;
                 document.getElementById(`j_pen_${idAtleta}`).value = "";
                 document.getElementById(`j_nota_${idAtleta}`).value = "";
                 habilitarGuardado(idAtleta);
             } 
             btnDel.innerHTML = '<i class="fas fa-trash"></i>'; btnDel.disabled = false;
-        }
+        }   
 
         // --- SISTEMA MATEMÁTICO (100-95-90) ---
-        function parseScoreCF(scoreStr, isTime) {
+        
+            // --- SISTEMA MATEMÁTICO (100-95-90) ---
+        function parseScoreCF(scoreStr, isTime, isCapped) {
             if (!scoreStr || scoreStr.trim() === "") return isTime ? Infinity : -Infinity;
             if (isTime) {
-                let partes = scoreStr.split(':');
-                if (partes.length === 2) return (parseInt(partes[0]) || 0) * 60 + parseFloat(partes[1] || 0);
-                let num = parseFloat(scoreStr); return isNaN(num) ? Infinity : num;
+                if (isCapped) {
+                    let str = scoreStr.trim();
+                    if (str.includes('+')) {
+                        let partes = str.split('+');
+                        let rondas = parseFloat(partes[0]) || 0;
+                        let reps = parseFloat(partes[1]) || 0;
+                        return (rondas * 1000) + reps;
+                    }
+                    let num = parseFloat(str); return isNaN(num) ? -Infinity : num;
+                } else {
+                    let partes = scoreStr.split(':');
+                    if (partes.length === 2) return (parseInt(partes[0]) || 0) * 60 + parseFloat(partes[1] || 0);
+                    let num = parseFloat(scoreStr); return isNaN(num) ? Infinity : num;
+                }
             } else {
                 let num = parseFloat(scoreStr); return isNaN(num) ? -Infinity : num;
             }
@@ -605,15 +659,35 @@
                 atletas.forEach(a => {
                     let k = `${a.categoria}_${a.sexo}`;
                     if(!gruposCat[k]) gruposCat[k] = [];
-                    let s = ((a.wods_data||{})[wod.id]||{}).score;
-                    gruposCat[k].push({ id: a.id, val: parseScoreCF(s, isTime), tiene: (s && s.trim() !== "") });
+                    let cWod = (a.wods_data||{})[wod.id]||{};
+                    let s = cWod.score;
+                    let isCap = cWod.isCapped || false;
+                    
+                    gruposCat[k].push({ 
+                        id: a.id, 
+                        val: parseScoreCF(s, isTime, isCap), 
+                        tiene: (s && s.trim() !== ""),
+                        isCapped: isCap
+                    });
                 });
 
                 for(let k in gruposCat) {
                     let grupo = gruposCat[k];
                     let iniciado = grupo.some(x => x.tiene);
                     if(iniciado) {
-                        grupo.sort((a,b) => isTime ? a.val - b.val : b.val - a.val);
+                        grupo.sort((a,b) => {
+                            if (isTime) {
+                                if (a.isCapped && !b.isCapped) return 1; 
+                                if (!a.isCapped && b.isCapped) return -1; 
+                                if (a.isCapped && b.isCapped) {
+                                    return b.val - a.val;
+                                }
+                                return a.val - b.val;
+                            } else {
+                                return b.val - a.val;
+                            }
+                        });
+
                         let rank = 1;
                         for(let i=0; i < grupo.length; i++) {
                             if(i > 0 && grupo[i].val !== grupo[i-1].val) rank = i + 1;
@@ -623,8 +697,10 @@
                                 if(pts < 0) pts = 0;
                             }
                             let aObj = atletas.find(x => x.id === grupo[i].id);
-                            aObj.totalPuntos += pts;
-                            aObj.puntosPorWod[wod.id] = pts;
+                            if (aObj) {
+                                aObj.totalPuntos += pts;
+                                aObj.puntosPorWod[wod.id] = pts;
+                            }
                         }
                     }
                 }
@@ -632,9 +708,11 @@
         }
 
         // --- AUDITORÍA (CON EXPORTAR A PDF NATIVO) ---
+
+              // --- AUDITORÍA (CON EXPORTAR A PDF NATIVO) ---
         function renderAuditTable() {
             let tbody = document.getElementById('auditTableBody');
-            if(!f_auditWod) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
+            if(!f_auditWod) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
 
             calcularPuntosAbsolutos(); 
 
@@ -657,7 +735,7 @@
                 return a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true});
             });
 
-            if(filtrados.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas</td></tr>'; return; }
+            if(filtrados.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:40px; color:#666;">No hay atletas</td></tr>'; return; }
 
             let wodActual = wods.find(w => w.id == f_auditWod);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
@@ -666,6 +744,11 @@
                 let wData = a.wods_data || {}; let cWod = wData[f_auditWod] || {};
                 let s1 = (cWod.score && cWod.score.trim() !== "") ? cWod.score : '--';
                 let scoreText = s1;
+                
+                if (cWod.isCapped && s1 !== '--') {
+                    scoreText = `CAP (${s1})`;
+                }
+
                 if(tieneDobleScore) {
                     let s2 = (cWod.score2 && cWod.score2.trim() !== "") ? cWod.score2 : '--';
                     scoreText += ` <span style="color:#888; font-size:0.8rem; margin: 0 5px;">|</span> <span style="color:#aaa; font-size:0.85rem;">TB: ${s2}</span>`;
@@ -674,9 +757,11 @@
                 let ptsObtenidos = (a.puntosPorWod || {})[f_auditWod];
                 let ptsText = ptsObtenidos !== undefined ? `+${ptsObtenidos} pts` : '--';
 
+                // CORRECCIÓN: Separamos la Posición y el Heat en diferentes <td>
                 return `
                     <tr>
-                        <td><strong style="color:var(--cf); font-size:1.1rem; margin-right:10px;">${index+1}</strong> <span class="heat-badge">H-${a.heat || '-'}</span></td>
+                        <td style="text-align: center;"><strong style="color:var(--cf); font-size:1.2rem;">${index+1}</strong></td>
+                        <td><span class="heat-badge">H-${a.heat || '-'}</span></td>
                         <td><span class="dorsal-tag">#${a.dorsal}</span></td>
                         <td><strong style="color:white; font-size:1.05rem;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
                         <td><strong style="color:white; font-size:1.1rem; font-family:monospace;">${scoreText}</strong></td>
@@ -750,6 +835,11 @@
                 let wData = a.wods_data || {}; let cWod = wData[f_auditWod] || {};
                 let s1 = (cWod.score && cWod.score.trim() !== "") ? cWod.score : '--';
                 let scoreText = s1;
+                
+                if (cWod.isCapped && s1 !== '--') {
+                    scoreText = `CAP (${s1})`;
+                }
+
                 if(tieneDobleScore) {
                     let s2 = (cWod.score2 && cWod.score2.trim() !== "") ? cWod.score2 : '--';
                     scoreText += ` | TB: ${s2}`;
@@ -757,6 +847,7 @@
                 let ptsObtenidos = (a.puntosPorWod || {})[f_auditWod];
                 let ptsText = ptsObtenidos !== undefined ? `+${ptsObtenidos}` : '--';
 
+                // CORRECCIÓN PARA PDF TAMBIÉN
                 html += `
                     <tr>
                         <td class="rank">${idx + 1}</td>
@@ -775,7 +866,7 @@
             let win = window.open('', '', 'width=900,height=600');
             win.document.write(html);
             win.document.close();
-        }
+        }  
 
         // --- HEATS GLOBALES Y HORARIOS (CON PDF NATIVO) ---
         function renderHeatsGrid() {

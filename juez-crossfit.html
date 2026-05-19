@@ -3,155 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blast Control CF | Jueces</title>
+    <title>Blast | Jueces</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --cf: #ff4444; --bg: #0a0a0a; --sidebar: #111; --card: #1a1a1a; --text: #eee; }
-        body { margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        :root { --cf: #ff4444; --bg: #050505; --card: rgba(20, 20, 20, 0.7); --text: #eee; }
+        body { 
+            margin: 0; font-family: 'Montserrat', sans-serif; color: var(--text); 
+            background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)), url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FbglarutawebsiteBlack.jpg?alt=media&token=8e8d0ddb-b8a4-43f0-8199-98d31beaf078');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            padding-bottom: 100px; /* Espacio para la píldora */
+        }
         
-        .mobile-header { display: none; background: #000; padding: 15px 20px; border-bottom: 2px solid var(--cf); align-items: center; justify-content: space-between; z-index: 100; }
-        .mobile-header h1 { margin: 0; font-size: 1.2rem; font-weight: 900; color: white; text-transform: uppercase; }
+        /* HEADER SUPERIOR */
+        .top-header { background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); padding: 15px 30px; border-bottom: 1px solid rgba(255, 68, 68, 0.2); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand h1 { margin: 0; font-size: 1.5rem; font-weight: 900; color: white; text-transform: uppercase; letter-spacing: 1px; }
+        .brand span { background: var(--cf); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; }
         
-        .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid #333; display: flex; flex-direction: column; }
-        .logo-area { padding: 30px 20px; text-align: center; border-bottom: 1px solid #222; }
-        .logo-area h1 { margin: 0; color: white; font-weight: 900; font-size: 1.4rem; text-transform: uppercase; }
-        .logo-area span { color: var(--cf); font-size: 0.75rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
-        
-        .nav-menu { flex: 1; padding: 20px 0; }
-        .nav-item { padding: 15px 30px; display: flex; align-items: center; gap: 15px; color: #888; text-decoration: none; font-weight: 700; cursor: pointer; transition: 0.3s; border-left: 4px solid transparent; }
-        .nav-item:hover { color: white; background: rgba(255, 68, 68, 0.05); }
-        .nav-item.active { color: white; background: rgba(255, 68, 68, 0.1); border-left-color: var(--cf); }
-        .nav-item i { font-size: 1.2rem; width: 25px; text-align: center; }
-        
-        .locked { display: none !important; }
-        .coach-action { display: none; } 
-        body.coach-mode .coach-action { display: flex; } 
+        /* CLASES DE BLOQUEO */
+        .coach-only { display: none; } 
+        body.coach-mode .coach-only { display: flex; } 
+        body.coach-mode .coach-inline { display: inline-block; }
 
-        .coach-lock-area { padding: 20px; border-top: 1px solid #222; }
-        .btn-lock { width: 100%; background: transparent; border: 1px solid #444; color: #888; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; }
-        .btn-lock.unlocked { background: rgba(255, 215, 0, 0.1); color: #ffd700; border-color: #ffd700; }
+        .btn-lock { background: transparent; border: 1px solid #444; color: #888; padding: 8px 16px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: 'Montserrat'; font-size: 0.8rem; }
+        .btn-lock.unlocked { background: rgba(255, 215, 0, 0.1); color: #ffd700; border-color: #ffd700; box-shadow: 0 0 10px rgba(255,215,0,0.2); }
 
-        .bottom-nav { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px); border: 1px solid #333; border-radius: 50px; z-index: 1000; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        .nav-item-mob { flex: 1; padding: 12px 0; text-align: center; color: #666; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-        .nav-item-mob i { display: block; font-size: 1.1rem; margin-bottom: 4px; }
-        .nav-item-mob.active { color: var(--cf); background: rgba(255, 68, 68, 0.1); }
+        /* NAVEGACIÓN INFERIOR PÍLDORA FLOTANTE */
+        .bottom-pill-nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); display: flex; background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; padding: 8px 15px; gap: 5px; z-index: 2000; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
+        .nav-item { padding: 10px 20px; text-align: center; color: #888; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; border-radius: 50px; display: flex; align-items: center; gap: 8px; }
+        .nav-item i { font-size: 1.1rem; }
+        .nav-item:hover { color: white; background: rgba(255,255,255,0.05); }
+        .nav-item.active { color: white; background: var(--cf); box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4); }
 
-        .main-content { flex: 1; overflow-y: auto; padding: 40px; }
+        /* CONTENEDOR PRINCIPAL FLUIDO */
+        .main-content { padding: 30px 5%; width: 100%; box-sizing: border-box; }
         .section { display: none; animation: fadeIn 0.4s ease; }
         .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
-        .section-header { margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px; }
-        .section-header h2 { margin: 0; font-size: 1.8rem; font-weight: 900; text-transform: uppercase; }
-        .section-header p { margin: 5px 0 0 0; color: #888; font-size: 0.9rem; }
+        .section-header { margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px; }
+        .section-header h2 { margin: 0; font-size: 2rem; font-weight: 900; text-transform: uppercase; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .section-header p { margin: 5px 0 0 0; color: #aaa; font-size: 0.95rem; }
 
-        .panel-controls { background: var(--card); border: 1px solid #333; padding: 20px; border-radius: 12px; display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: flex-end; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
-        .form-group label { font-size: 0.75rem; color: #aaa; font-weight: 900; text-transform: uppercase; }
-        .form-control { background: #000; border: 1px solid #444; color: white; padding: 12px 15px; border-radius: 8px; font-family: 'Montserrat'; font-size: 0.95rem; width: 100%; box-sizing: border-box; }
-        .form-control:focus { border-color: var(--cf); outline: none; }
+        /* PANELES DE FILTROS TIPO BADGES (GLASSMORPHISM) */
+        .controls-glass { background: var(--card); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; margin-bottom: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .filter-group { display: flex; flex-direction: column; gap: 8px; }
+        .filter-label { font-size: 0.7rem; color: #888; font-weight: 900; text-transform: uppercase; padding-left: 5px; }
+        .filter-row { display: flex; gap: 10px; flex-wrap: wrap; }
         
-        .btn-primary { background: var(--cf); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-family: 'Montserrat'; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; }
+        .btn-badge { padding: 10px 20px; background: rgba(0,0,0,0.6); color: #aaa; border: 1px solid #333; border-radius: 50px; cursor: pointer; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; font-family: 'Montserrat'; transition: 0.2s; }
+        .btn-badge:hover { border-color: #666; color: white; }
+        .btn-badge.active { background: var(--cf); color: white; border-color: var(--cf); font-weight: 900; box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3); }
+
+        /* FORMULARIOS Y BOTONES */
+        .form-row { display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end; }
+        .form-group-input { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 8px; }
+        .form-control { background: rgba(0,0,0,0.6); border: 1px solid #444; color: white; padding: 14px 18px; border-radius: 12px; font-family: 'Montserrat'; font-size: 0.95rem; width: 100%; box-sizing: border-box; transition: 0.3s; }
+        .form-control:focus { border-color: var(--cf); outline: none; background: rgba(0,0,0,0.8); }
+        
+        .btn-primary { background: var(--cf); color: white; border: none; padding: 14px 25px; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-family: 'Montserrat'; display: inline-flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.85rem; }
+        .btn-primary:hover { box-shadow: 0 5px 15px rgba(255, 68, 68, 0.4); transform: translateY(-2px); }
         .btn-gold { background: #ffd700; color: black; }
+        .btn-gold:hover { box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
         .btn-blue { background: #007bff; color: white; }
 
-        .table-wrap { background: var(--card); border: 1px solid #333; border-radius: 12px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th { background: rgba(0,0,0,0.5); padding: 15px; text-align: left; font-size: 0.8rem; color: #aaa; text-transform: uppercase; border-bottom: 2px solid #333; }
-        td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.9rem; vertical-align: middle; }
+        /* TABLAS ÉPICAS */
+        .table-wrap { background: var(--card); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; overflow-x: auto; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: rgba(0,0,0,0.4); padding: 18px 20px; text-align: left; font-size: 0.75rem; color: #888; text-transform: uppercase; border-bottom: 2px solid #222; font-weight: 900; letter-spacing: 1px; }
+        td { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.95rem; vertical-align: middle; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
         
-        .input-score { width: 100%; max-width: 130px; padding: 10px; background: #000; border: 1px solid #444; color: white; border-radius: 6px; font-family: 'Montserrat'; font-weight: 600; text-align: center; box-sizing: border-box; }
+        .input-score { width: 100%; max-width: 140px; padding: 12px; background: rgba(0,0,0,0.8); border: 1px solid #444; color: white; border-radius: 8px; font-family: 'Montserrat'; font-weight: 900; text-align: center; box-sizing: border-box; transition: 0.3s; font-size: 1rem; }
+        .input-score:focus { border-color: var(--cf); box-shadow: 0 0 10px rgba(255,68,68,0.2); outline: none; }
         .score-stack { display: flex; flex-direction: column; gap: 8px; }
-        .score-label { font-size: 0.6rem; color: var(--cf); font-weight: 900; text-transform: uppercase; }
+        .score-label { font-size: 0.65rem; color: var(--cf); font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
         
-        .btn-save-row { background: #222; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: 900; transition: 0.3s; width: 100%; }
+        .btn-save-row { background: #222; border: 1px solid #444; color: white; padding: 12px 18px; border-radius: 8px; cursor: pointer; font-weight: 900; transition: 0.3s; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-save-row:hover:not(:disabled) { background: var(--cf); border-color: var(--cf); }
         .btn-save-row:disabled { opacity: 0.9; cursor: default; }
 
-        .btn-action-small { background: transparent; border: 1px solid #444; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
+        .btn-action-small { background: rgba(0,0,0,0.5); border: 1px solid #444; color: white; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
         .btn-action-small:hover:not(:disabled) { border-color: var(--cf); color: var(--cf); background: rgba(255,68,68,0.1); }
 
-        .dorsal-tag { background: #000; padding: 5px 10px; border-radius: 6px; font-weight: 900; color: var(--cf); border: 1px solid #333; }
-        .heat-badge { background: #222; padding: 5px 10px; border-radius: 6px; font-weight: 900; color: white; border: 1px solid #444; font-size: 0.8rem; }
-        .pts-badge { color: #ffd700; font-size: 0.75rem; font-weight: 900; margin-left: 8px; background: rgba(255,215,0,0.1); padding: 2px 6px; border-radius: 4px; }
+        .dorsal-tag { background: rgba(0,0,0,0.8); padding: 6px 12px; border-radius: 6px; font-weight: 900; color: white; border: 1px solid #333; font-size: 0.9rem; font-family: monospace; }
+        .heat-badge { background: #111; padding: 6px 12px; border-radius: 6px; font-weight: 900; color: var(--cf); border: 1px solid rgba(255,68,68,0.3); font-size: 0.85rem; }
+        .pts-badge { color: #ffd700; font-size: 0.75rem; font-weight: 900; margin-left: 8px; background: rgba(255,215,0,0.1); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(255,215,0,0.2); }
 
-        .heats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .heat-card { background: var(--card); border: 1px solid #333; border-top: 4px solid var(--cf); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-        .heat-header { padding: 15px; background: rgba(0,0,0,0.3); border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        .heat-header h3 { margin: 0; font-size: 1.1rem; font-weight: 900; color: white; }
-        .heat-header span { font-size: 0.65rem; color: #aaa; background: #222; padding: 4px 8px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
-        .heat-athlete { padding: 12px 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
-        .heat-footer { padding: 12px 15px; background: rgba(0,0,0,0.3); border-top: 1px solid #222; }
-        .btn-edit-heat { width: 100%; background: #222; color: #ccc; border: 1px solid #444; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 700; }
+        /* GRILLA DE HEATS */
+        .heats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+        .heat-card { background: var(--card); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.05); border-top: 4px solid var(--cf); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: 0.3s; }
+        .heat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
+        .heat-header { padding: 18px 20px; background: rgba(0,0,0,0.4); border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .heat-header h3 { margin: 0; font-size: 1.3rem; font-weight: 900; color: white; }
+        .heat-header span { font-size: 0.7rem; color: #ccc; background: #222; padding: 5px 10px; border-radius: 6px; font-weight: 800; text-transform: uppercase; }
+        .heat-athlete { padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+        .heat-footer { padding: 15px 20px; background: rgba(0,0,0,0.4); border-top: 1px solid #222; }
+        .btn-edit-heat { width: 100%; background: #222; color: #ccc; border: 1px solid #444; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 900; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-edit-heat:hover { background: #333; color: white; border-color: #666; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
-        .modal-content { background: var(--card); border: 1px solid #444; border-radius: 12px; width: 100%; max-width: 450px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; }
-        .close-modal { position: absolute; top: 15px; right: 20px; color: #888; cursor: pointer; font-size: 1.5rem; }
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(5px); z-index: 3000; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .modal-content { background: #111; border: 1px solid #333; border-radius: 20px; width: 100%; max-width: 500px; padding: 30px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,1); }
+        .close-modal { position: absolute; top: 20px; right: 25px; color: #666; cursor: pointer; font-size: 1.5rem; transition: 0.2s; }
+        .close-modal:hover { color: var(--cf); }
+
+        .loader { text-align: center; color: var(--cf); font-weight: 900; padding: 60px; letter-spacing: 2px; font-size: 1.2rem; display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        .loader i { font-size: 2.5rem; }
 
         @media (max-width: 800px) {
-            body { flex-direction: column; }
-            .sidebar { display: none; }
-            .mobile-header { display: flex; }
-            .bottom-nav { display: flex; }
-            .main-content { padding: 20px 15px 100px 15px; } 
-            .section-header h2 { font-size: 1.4rem; }
-            .panel-controls { flex-direction: column; gap: 15px; padding: 15px; }
-            .form-group { width: 100%; }
-            .coach-action-btn-group { display: flex; flex-direction: column; width: 100%; gap: 10px; }
+            .main-content { padding: 20px 15px; }
+            .section-header h2 { font-size: 1.5rem; }
+            .bottom-pill-nav { width: 95%; max-width: none; border-radius: 20px; padding: 5px 10px; }
+            .nav-item { padding: 8px 10px; flex-direction: column; gap: 4px; font-size: 0.6rem; border-radius: 12px; }
+            .nav-item i { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="mobile-header">
-        <h1>Blast Control</h1>
-        <button id="btnLockMob" class="btn-lock" style="width: auto; padding: 8px 12px;" onclick="unlockCoach()"><i class="fas fa-lock"></i></button>
-    </div>
-
-    <aside class="sidebar">
-        <div class="logo-area">
-            <h1>Blast Control</h1>
-            <span>CrossFit System</span>
+    <header class="top-header">
+        <div class="brand">
+            <h1>Blast</h1>
+            <span>Control CF</span>
         </div>
-        <nav class="nav-menu">
-            <div class="nav-item active" onclick="switchTab('scores')"><i class="fas fa-edit"></i> Juez (Scores)</div>
-            <div class="nav-item" onclick="switchTab('audit')"><i class="fas fa-chart-line"></i> Auditoría</div>
-            <div class="nav-item" onclick="switchTab('heats')"><i class="fas fa-users"></i> Ver Heats</div>
-            <div class="nav-item locked coach-only" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i> Gestión WODs</div>
-        </nav>
-        <div class="coach-lock-area">
-            <button id="btnLockDesk" class="btn-lock" onclick="unlockCoach()"><i class="fas fa-lock"></i> Activar Head Coach</button>
-        </div>
-    </aside>
+        <button id="btnLock" class="btn-lock" onclick="unlockCoach()"><i class="fas fa-lock"></i> <span id="textLock">Coach</span></button>
+    </header>
 
     <main class="main-content">
         
         <section id="sec-scores" class="section active">
             <div class="section-header">
-                <div><h2>Panel de Puntuación</h2><p>Selecciona WOD y Heat para evaluar</p></div>
+                <div><h2>Panel de Jueces</h2><p>Selecciona WOD y Heat para evaluar</p></div>
             </div>
-            <div class="panel-controls">
-                <div class="form-group">
-                    <label>Seleccionar WOD</label>
-                    <select id="judgeWodSelect" class="form-control" onchange="renderJudgeTable()"></select>
+            
+            <div class="controls-glass">
+                <div class="filter-group">
+                    <span class="filter-label">WOD a Evaluar</span>
+                    <div class="filter-row" id="judgeWodsRow"></div>
                 </div>
-                <div class="form-group">
-                    <label>Seleccionar Heat</label>
-                    <select id="judgeHeatSelect" class="form-control" onchange="renderJudgeTable()"></select>
+                <div class="filter-group">
+                    <span class="filter-label">Selecciona el Heat</span>
+                    <div class="filter-row" id="judgeHeatsRow"></div>
                 </div>
             </div>
+
+            <div id="judgeLoader" class="loader" style="display:none;"><i class="fas fa-circle-notch fa-spin"></i> Cargando Atletas...</div>
+            
             <div id="judgeTableContainer" class="table-wrap" style="display:none;">
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 60px;">Dorsal</th>
+                            <th style="width: 80px;">Dorsal</th>
                             <th>Atleta / Categ</th>
-                            <th style="width: 160px;">Score(s)</th>
-                            <th style="width: 120px;">Penalización</th>
-                            <th>Notas</th>
-                            <th style="width: 140px;">Acción</th>
+                            <th style="width: 180px;">Score(s)</th>
+                            <th style="width: 140px;">Penalización</th>
+                            <th>Notas del Juez</th>
+                            <th style="width: 160px; text-align: center;">Acción</th>
                         </tr>
                     </thead>
                     <tbody id="judgeTableBody"></tbody>
@@ -161,32 +171,34 @@
 
         <section id="sec-audit" class="section">
             <div class="section-header">
-                <div><h2>Auditoría de Resultados</h2><p>Revisa todos los scores ingresados agrupados por Heat</p></div>
+                <div><h2>Auditoría de Resultados</h2><p>Revisa puntajes y posiciones en tiempo real</p></div>
             </div>
-            <div class="panel-controls">
-                <div class="form-group">
-                    <label>Seleccionar WOD</label>
-                    <select id="auditWodSelect" class="form-control" onchange="renderAuditTable()"></select>
+
+            <div class="controls-glass">
+                <div class="filter-group">
+                    <span class="filter-label">Revisar WOD</span>
+                    <div class="filter-row" id="auditWodsRow"></div>
                 </div>
-                <div class="form-group">
-                    <label>Seleccionar Heat</label>
-                    <select id="auditHeatSelect" class="form-control" onchange="renderAuditTable()"></select>
+                <div class="filter-group">
+                    <span class="filter-label">Filtrar por Heat</span>
+                    <div class="filter-row" id="auditHeatsRow"></div>
                 </div>
             </div>
+
             <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 60px;">Heat</th>
-                            <th style="width: 60px;">Dorsal</th>
-                            <th>Atleta / Categ</th>
-                            <th>Score(s) Ingresado</th>
-                            <th>Pts Ganados</th>
+                            <th style="width: 80px;">Heat</th>
+                            <th style="width: 80px;">Dorsal</th>
+                            <th>Atleta / Categoría</th>
+                            <th>Score Ingresado</th>
+                            <th>Puntos Oficiales</th>
                             <th>Penalización</th>
                         </tr>
                     </thead>
                     <tbody id="auditTableBody">
-                        <tr><td colspan="6" style="text-align:center; padding:30px; color:#666;">Selecciona un WOD arriba</td></tr>
+                        <tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba para auditar</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -194,10 +206,10 @@
 
         <section id="sec-heats" class="section">
             <div class="section-header">
-                <div><h2>Organización de Heats</h2><p>Asignación de grupos para la competencia</p></div>
-                <div class="coach-action coach-action-btn-group" style="gap: 10px;">
+                <div><h2>Organización de Heats</h2><p>Distribución de atletas en pista</p></div>
+                <div class="coach-only" style="gap: 12px; flex-wrap: wrap;">
                     <button class="btn-primary" onclick="autogenerarHeatsBase()"><i class="fas fa-list-ol"></i> Heats Base</button>
-                    <button class="btn-primary btn-blue" onclick="reordenarHeatsPorPuntaje()"><i class="fas fa-sort-amount-up"></i> Reseeding (Por Puntos)</button>
+                    <button class="btn-primary btn-blue" onclick="reordenarHeatsPorPuntaje()"><i class="fas fa-sort-amount-up"></i> Reseeding (Por Pts)</button>
                 </div>
             </div>
             <div class="heats-grid" id="heatsGridContainer"></div>
@@ -205,23 +217,24 @@
 
         <section id="sec-wods" class="section">
             <div class="section-header">
-                <div><h2>Gestión de WODs</h2><p>Crea, edita o elimina las pruebas</p></div>
+                <div><h2>Gestión de Pruebas</h2><p>Crea o edita los eventos de la competencia</p></div>
             </div>
-            <div class="panel-controls">
-                <div class="form-group">
+            
+            <div class="controls-glass form-row">
+                <div class="form-group-input">
                     <label>Nombre del WOD</label>
                     <input type="text" id="newWodName" class="form-control" placeholder="Ej: Evento 1 - Amanda">
                 </div>
-                <div class="form-group">
-                    <label>Tipo de Score 1</label>
+                <div class="form-group-input" style="min-width: 150px;">
+                    <label>Tipo Score 1</label>
                     <select id="newWodType" class="form-control">
                         <option value="For Time">For Time</option>
                         <option value="AMRAP">AMRAP</option>
                         <option value="RM">RM / Peso</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Tipo de Score 2 <span style="color:var(--cf)">(Opcional)</span></label>
+                <div class="form-group-input" style="min-width: 150px;">
+                    <label>Tipo Score 2</label>
                     <select id="newWodType2" class="form-control">
                         <option value="">Ninguno</option>
                         <option value="For Time">For Time</option>
@@ -229,37 +242,42 @@
                         <option value="RM">RM / Peso</option>
                     </select>
                 </div>
-                <div class="form-group" style="flex: 2;">
+                <div class="form-group-input" style="flex: 2;">
                     <label>Descripción / Detalles</label>
                     <input type="text" id="newWodDesc" class="form-control" placeholder="Ej: Time Cap 10 min...">
                 </div>
-                <div class="form-group" style="flex: 0; justify-content:flex-end;">
-                    <button id="btnGuardarWod" class="btn-primary btn-gold" onclick="guardarOActualizarWod()"><i class="fas fa-save"></i> Guardar</button>
+                <div style="display: flex; gap: 10px;">
                     <button id="btnCancelarEdicion" class="btn-primary" style="display:none; background:#444;" onclick="cancelarEdicionWod()"><i class="fas fa-times"></i></button>
+                    <button id="btnGuardarWod" class="btn-primary btn-gold" onclick="guardarOActualizarWod()"><i class="fas fa-save"></i> Guardar</button>
                 </div>
             </div>
+
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th style="width:50px;">ID</th><th>Nombre del WOD</th><th>S1</th><th>S2</th><th>Descripción</th><th style="text-align:right;">Acciones</th></tr></thead>
+                    <thead><tr><th style="width:60px;">ID</th><th>Nombre del WOD</th><th>S1</th><th>S2</th><th>Descripción</th><th style="text-align:right;">Acciones</th></tr></thead>
                     <tbody id="wodsTableBody"></tbody>
                 </table>
             </div>
         </section>
+
     </main>
 
-    <div class="bottom-nav">
-        <div class="nav-item-mob active" onclick="switchTab('scores')"><i class="fas fa-edit"></i>Scores</div>
-        <div class="nav-item-mob" onclick="switchTab('audit')"><i class="fas fa-chart-line"></i>Audit</div>
-        <div class="nav-item-mob" onclick="switchTab('heats')"><i class="fas fa-users"></i>Heats</div>
-        <div class="nav-item-mob locked coach-only" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i>WODs</div>
-    </div>
+    <nav class="bottom-pill-nav">
+        <div class="nav-item active" onclick="switchTab('scores')"><i class="fas fa-clipboard-check"></i> <span>Scores</span></div>
+        <div class="nav-item" onclick="switchTab('audit')"><i class="fas fa-chart-bar"></i> <span>Audit</span></div>
+        <div class="nav-item" onclick="switchTab('heats')"><i class="fas fa-users"></i> <span>Heats</span></div>
+        <div class="nav-item coach-only" onclick="switchTab('wods')"><i class="fas fa-dumbbell"></i> <span>WODs</span></div>
+    </nav>
 
     <div id="modalEditHeat" class="modal-overlay">
         <div class="modal-content">
             <i class="fas fa-times close-modal" onclick="cerrarModal()"></i>
-            <h2 style="margin-top:0; color:white;">Editar Heat <span id="modalHeatNumber" style="color:var(--cf);"></span></h2>
-            <div id="modalAthletesList" style="display:flex; flex-direction:column; gap:10px; margin-top:20px;"></div>
-            <button class="btn-primary btn-gold" style="width:100%; margin-top:20px; justify-content:center;" onclick="guardarCambiosHeat()">Guardar Cambios</button>
+            <h2 style="margin-top:0; color:white; font-weight:900;">Mover Atletas</h2>
+            <p style="color:#888; font-size:0.85rem; margin-top:-10px; margin-bottom:25px;">Estás editando el <span id="modalHeatNumber" style="color:var(--cf); font-weight:900;"></span></p>
+            
+            <div id="modalAthletesList" style="display:flex; flex-direction:column; gap:12px;"></div>
+            
+            <button class="btn-primary btn-gold" style="width:100%; margin-top:30px; justify-content:center; padding:16px;" onclick="guardarCambiosHeat()"><i class="fas fa-save"></i> Guardar Cambios</button>
         </div>
     </div>
 
@@ -269,6 +287,10 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let atletas = []; let wods = []; let isCoach = false; let editandoWodId = null;
+        
+        // ESTADOS DE LOS NUEVOS BADGES (Reemplazan a los selects)
+        let f_juezWod = null; let f_juezHeat = null;
+        let f_auditWod = null; let f_auditHeat = 'todos';
 
         function obtenerPesoCategoria(catStr) {
             let catUpper = (catStr || "").toUpperCase();
@@ -285,36 +307,27 @@
         async function init() {
             await cargarWods();
             await cargarAtletas();
-            // Auto-seleccionar primer WOD en auditoria para evitar vacio
-            if(wods.length > 0) {
-                document.getElementById('auditWodSelect').value = wods[0].id;
-                renderAuditTable();
-            }
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.querySelectorAll('.nav-item-mob').forEach(n => n.classList.remove('active'));
             
             document.getElementById(`sec-${tabId}`).classList.add('active');
             event.currentTarget.classList.add('active');
 
-            if(tabId === 'scores') { actualizarSelectHeatsJuez(); renderJudgeTable(); }
-            if(tabId === 'audit') { actualizarSelectHeatsAudit(); renderAuditTable(); }
+            if(tabId === 'scores') renderJudgeTable();
+            if(tabId === 'audit') renderAuditTable();
             if(tabId === 'heats') renderHeatsGrid();
         }
 
-        // Activación Instantánea
         function unlockCoach() {
             if(isCoach) return; 
             isCoach = true;
             document.body.classList.add('coach-mode'); 
-            document.getElementById('btnLockDesk').classList.add('unlocked');
-            document.getElementById('btnLockDesk').innerHTML = '<i class="fas fa-unlock"></i> Coach Activo';
-            document.getElementById('btnLockMob').classList.add('unlocked');
-            document.getElementById('btnLockMob').innerHTML = '<i class="fas fa-unlock"></i>';
-            document.querySelectorAll('.coach-only').forEach(el => el.classList.remove('locked'));
+            let btn = document.getElementById('btnLock');
+            btn.classList.add('unlocked');
+            btn.innerHTML = '<i class="fas fa-unlock"></i> <span id="textLock">Head Coach</span>';
         }
 
         function habilitarGuardado(idAtleta) {
@@ -349,9 +362,10 @@
             if(data) {
                 wods = data;
                 renderWodsManager();
-                let options = wods.map(w => `<option value="${w.id}">${w.nombre}</option>`).join('');
-                document.getElementById('judgeWodSelect').innerHTML = '<option value="">-- Selecciona el WOD --</option>' + options;
-                document.getElementById('auditWodSelect').innerHTML = '<option value="">-- Selecciona el WOD --</option>' + options;
+                if(wods.length > 0) {
+                    if(!f_auditWod) f_auditWod = wods[0].id;
+                }
+                actualizarBadgesFiltros();
             }
         }
 
@@ -359,33 +373,56 @@
             const { data, error } = await supabaseClient.from('atletas').select('*').ilike('modalidad', '%CrossFit%').order('dorsal', { ascending: true });
             if(data) { 
                 atletas = data; 
-                actualizarSelectHeatsJuez(); 
-                actualizarSelectHeatsAudit();
+                actualizarBadgesFiltros();
             }
         }
 
-        // --- SCORES ---
-        function actualizarSelectHeatsJuez() {
+        // --- SISTEMA DE BADGES (Reemplaza a los Selects) ---
+        function actualizarBadgesFiltros() {
+            // WODS
+            let htmlWodsJuez = wods.map(w => `<button class="btn-badge ${f_juezWod == w.id ? 'active' : ''}" onclick="setFiltro('juezWod', '${w.id}')">${w.nombre}</button>`).join('');
+            document.getElementById('judgeWodsRow').innerHTML = htmlWodsJuez || '<span style="color:#666; font-size:0.8rem;">No hay WODs</span>';
+            
+            let htmlWodsAudit = wods.map(w => `<button class="btn-badge ${f_auditWod == w.id ? 'active' : ''}" onclick="setFiltro('auditWod', '${w.id}')">${w.nombre}</button>`).join('');
+            document.getElementById('auditWodsRow').innerHTML = htmlWodsAudit || '<span style="color:#666; font-size:0.8rem;">No hay WODs</span>';
+
+            // HEATS
             let heatsSet = new Set();
             atletas.forEach(a => { if(a.heat && a.heat !== 'Sin Asignar') heatsSet.add(a.heat); });
             let heatsArray = Array.from(heatsSet).sort((a,b) => a - b);
-            document.getElementById('judgeHeatSelect').innerHTML = '<option value="">-- Selecciona Heat --</option>' + 
-                heatsArray.map(h => `<option value="${h}">Heat ${h}</option>`).join('');
+            
+            let htmlHeatsJuez = heatsArray.map(h => `<button class="btn-badge ${f_juezHeat == h ? 'active' : ''}" onclick="setFiltro('juezHeat', '${h}')">H-${h}</button>`).join('');
+            document.getElementById('judgeHeatsRow').innerHTML = htmlHeatsJuez || '<span style="color:#666; font-size:0.8rem;">Genera los heats primero</span>';
+
+            let htmlHeatsAudit = `<button class="btn-badge ${f_auditHeat === 'todos' ? 'active' : ''}" onclick="setFiltro('auditHeat', 'todos')">Todos</button>` + 
+                                 heatsArray.map(h => `<button class="btn-badge ${f_auditHeat == h ? 'active' : ''}" onclick="setFiltro('auditHeat', '${h}')">H-${h}</button>`).join('');
+            document.getElementById('auditHeatsRow').innerHTML = htmlHeatsAudit;
         }
 
-        function renderJudgeTable() {
-            let wodId = document.getElementById('judgeWodSelect').value;
-            let heatSelected = document.getElementById('judgeHeatSelect').value;
-            let tbody = document.getElementById('judgeTableBody');
-            let container = document.getElementById('judgeTableContainer');
+        function setFiltro(tipo, valor) {
+            if(tipo === 'juezWod') { f_juezWod = valor; f_juezHeat = null; } // Resetea heat al cambiar WOD
+            if(tipo === 'juezHeat') f_juezHeat = valor;
+            if(tipo === 'auditWod') f_auditWod = valor;
+            if(tipo === 'auditHeat') f_auditHeat = valor;
+            
+            actualizarBadgesFiltros();
+            
+            if(tipo.includes('juez')) renderJudgeTable();
+            if(tipo.includes('audit')) renderAuditTable();
+        }
 
-            if(!wodId || !heatSelected) { container.style.display = 'none'; return; }
+        // --- SCORES ---
+        function renderJudgeTable() {
+            let container = document.getElementById('judgeTableContainer');
+            let tbody = document.getElementById('judgeTableBody');
+
+            if(!f_juezWod || !f_juezHeat) { container.style.display = 'none'; return; }
             container.style.display = 'block'; tbody.innerHTML = '';
 
-            let atletasEnHeat = atletas.filter(a => a.heat == heatSelected);
-            if(atletasEnHeat.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Vacio</td></tr>'; return; }
+            let atletasEnHeat = atletas.filter(a => a.heat == f_juezHeat);
+            if(atletasEnHeat.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas en este heat.</td></tr>'; return; }
 
-            let wodActual = wods.find(w => w.id == wodId);
+            let wodActual = wods.find(w => w.id == f_juezWod);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
             let isTime1 = wodActual && wodActual.tipo && wodActual.tipo.toLowerCase().includes('time');
             let isTime2 = wodActual && wodActual.tipo2 && wodActual.tipo2.toLowerCase().includes('time');
@@ -394,7 +431,7 @@
             let place2 = isTime2 ? "MM:SS" : "Score 2";
 
             atletasEnHeat.forEach(a => {
-                let wData = a.wods_data || {}; let cWod = wData[wodId] || {};
+                let wData = a.wods_data || {}; let cWod = wData[f_juezWod] || {};
                 
                 let maskAttr1 = isTime1 ? `oninput="maskTimeInput(this, '${a.id}')"` : `oninput="habilitarGuardado('${a.id}')"`;
                 let maskAttr2 = isTime2 ? `oninput="maskTimeInput(this, '${a.id}')"` : `oninput="habilitarGuardado('${a.id}')"`;
@@ -411,15 +448,15 @@
 
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><span class="dorsal-tag">${a.dorsal}</span></td>
-                    <td><strong style="color:white;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
+                    <td><span class="dorsal-tag">#${a.dorsal}</span></td>
+                    <td><strong style="color:white; font-size:1.05rem;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
                     <td>${inputsScoreHTML}</td>
-                    <td><input type="text" id="j_pen_${a.id}" class="form-control" value="${cWod.penalizacion || ''}" placeholder="Penal." oninput="habilitarGuardado('${a.id}')"></td>
-                    <td><input type="text" id="j_nota_${a.id}" class="form-control" value="${cWod.notas || ''}" placeholder="Notas" oninput="habilitarGuardado('${a.id}')"></td>
+                    <td><input type="text" id="j_pen_${a.id}" class="form-control" style="text-align:center;" value="${cWod.penalizacion || ''}" placeholder="Penal." oninput="habilitarGuardado('${a.id}')"></td>
+                    <td><input type="text" id="j_nota_${a.id}" class="form-control" value="${cWod.notas || ''}" placeholder="Notas..." oninput="habilitarGuardado('${a.id}')"></td>
                     <td>
-                        <div style="display: flex; gap: 8px;">
-                            <button id="j_btn_del_${a.id}" class="btn-action-small" style="color:var(--cf); border-color:var(--cf); padding:10px;" onclick="borrarScoreJuez('${a.id}', '${wodId}')" title="Borrar Score"><i class="fas fa-trash"></i></button>
-                            <button id="j_btn_${a.id}" class="btn-save-row" ${btnState} onclick="guardarScoreJuez('${a.id}', '${wodId}')">${btnText}</button>
+                        <div style="display: flex; gap: 8px; align-items:center;">
+                            <button id="j_btn_del_${a.id}" class="btn-action-small" style="padding:13px;" onclick="borrarScoreJuez('${a.id}', '${f_juezWod}')" title="Borrar Score"><i class="fas fa-trash"></i></button>
+                            <button id="j_btn_${a.id}" class="btn-save-row" ${btnState} onclick="guardarScoreJuez('${a.id}', '${f_juezWod}')">${btnText}</button>
                         </div>
                     </td>
                 `;
@@ -446,13 +483,12 @@
             if(!error) {
                 atletas[index].wods_data = wodsData;
                 btn.innerHTML = '<i class="fas fa-check"></i> Listo';
-                btn.style.background = '#25D366';
-                btn.style.borderColor = '#25D366';
+                btn.style.background = '#25D366'; btn.style.borderColor = '#25D366';
             } else { alert("Error al guardar"); btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.disabled = false; }
         }
 
         async function borrarScoreJuez(idAtleta, wodId) {
-            if(!confirm("¿Estás seguro de borrar este score?")) return;
+            if(!confirm("¿Borrar definitivamente este score?")) return;
             let btnDel = document.getElementById(`j_btn_del_${idAtleta}`);
             btnDel.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btnDel.disabled = true;
 
@@ -473,7 +509,7 @@
             btnDel.innerHTML = '<i class="fas fa-trash"></i>'; btnDel.disabled = false;
         }
 
-        // --- SISTEMA MATEMÁTICO: PUNTOS 100-95-90 ---
+        // --- SISTEMA MATEMÁTICO (100-95-90) ---
         function parseScoreCF(scoreStr, isTime) {
             if (!scoreStr || scoreStr.trim() === "") return isTime ? Infinity : -Infinity;
             if (isTime) {
@@ -522,55 +558,44 @@
         }
 
         // --- AUDITORÍA ---
-        function actualizarSelectHeatsAudit() {
-            let heatsSet = new Set();
-            atletas.forEach(a => { if(a.heat && a.heat !== 'Sin Asignar') heatsSet.add(a.heat); });
-            let heatsArray = Array.from(heatsSet).sort((a,b) => a - b);
-            document.getElementById('auditHeatSelect').innerHTML = '<option value="todos">Todos los Heats</option>' + 
-                heatsArray.map(h => `<option value="${h}">Heat ${h}</option>`).join('');
-        }
-
         function renderAuditTable() {
-            let wodId = document.getElementById('auditWodSelect').value;
-            let heatSelected = document.getElementById('auditHeatSelect').value;
             let tbody = document.getElementById('auditTableBody');
-
-            if(!wodId) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
+            if(!f_auditWod) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
 
             calcularPuntosAbsolutos(); 
 
-            let filtrados = atletas.filter(a => heatSelected === 'todos' || a.heat == heatSelected);
+            let filtrados = atletas.filter(a => f_auditHeat === 'todos' || a.heat == f_auditHeat);
             filtrados.sort((a, b) => {
                 let hA = parseInt(a.heat) || 999; let hB = parseInt(b.heat) || 999;
                 if(hA !== hB) return hA - hB;
                 return parseInt(a.dorsal) - parseInt(b.dorsal);
             });
 
-            if(filtrados.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#666;">No hay atletas</td></tr>'; return; }
+            if(filtrados.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas</td></tr>'; return; }
 
-            let wodActual = wods.find(w => w.id == wodId);
+            let wodActual = wods.find(w => w.id == f_auditWod);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";
 
             tbody.innerHTML = filtrados.map(a => {
-                let wData = a.wods_data || {}; let cWod = wData[wodId] || {};
+                let wData = a.wods_data || {}; let cWod = wData[f_auditWod] || {};
                 let s1 = (cWod.score && cWod.score.trim() !== "") ? cWod.score : '--';
                 let scoreText = s1;
                 if(tieneDobleScore) {
                     let s2 = (cWod.score2 && cWod.score2.trim() !== "") ? cWod.score2 : '--';
-                    scoreText += ` <span style="color:#aaa; font-size:0.8rem; margin: 0 5px;">|</span> TB: ${s2}`;
+                    scoreText += ` <span style="color:#888; font-size:0.8rem; margin: 0 5px;">|</span> <span style="color:#aaa; font-size:0.85rem;">TB: ${s2}</span>`;
                 }
                 
-                let ptsObtenidos = (a.puntosPorWod || {})[wodId];
+                let ptsObtenidos = (a.puntosPorWod || {})[f_auditWod];
                 let ptsText = ptsObtenidos !== undefined ? `+${ptsObtenidos} pts` : '--';
 
                 return `
                     <tr>
                         <td><span class="heat-badge">H-${a.heat || '-'}</span></td>
-                        <td><span class="dorsal-tag">${a.dorsal}</span></td>
-                        <td><strong style="color:white;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
-                        <td><strong style="color:white; font-size:1.05rem;">${scoreText}</strong></td>
-                        <td><strong style="color:#ffd700;">${ptsText}</strong></td>
-                        <td style="color:#ff4444;">${cWod.penalizacion || '-'}</td>
+                        <td><span class="dorsal-tag">#${a.dorsal}</span></td>
+                        <td><strong style="color:white; font-size:1.05rem;">${a.nombre}</strong><br><small style="color:#aaa;">${a.categoria} | ${a.sexo}</small></td>
+                        <td><strong style="color:white; font-size:1.1rem; font-family:monospace;">${scoreText}</strong></td>
+                        <td><strong style="color:#ffd700; font-size:1.1rem;">${ptsText}</strong></td>
+                        <td style="color:var(--cf); font-weight:700;">${cWod.penalizacion || '-'}</td>
                     </tr>
                 `;
             }).join('');
@@ -581,7 +606,7 @@
             let container = document.getElementById('heatsGridContainer');
             container.innerHTML = '';
             
-            calcularPuntosAbsolutos(); // Calcula puntos para mostrarlos en la grilla
+            calcularPuntosAbsolutos();
 
             let heatsMap = {};
             atletas.forEach(a => { let h = a.heat || 'Sin Asignar'; if(!heatsMap[h]) heatsMap[h] = []; heatsMap[h].push(a); });
@@ -595,24 +620,20 @@
                     <div class="heat-header"><h3>Heat ${hKey}</h3><span>${tituloCat}</span></div>
                     <div style="flex:1;">${grupo.map(a => `
                         <div class="heat-athlete">
-                            <strong>${a.nombre} <span class="pts-badge">${a.totalPuntos} pts</span></strong>
+                            <strong style="color:white;">${a.nombre} <span class="pts-badge">${a.totalPuntos} pts</span></strong>
                             <span class="dorsal-tag" style="background:transparent; border-color:#444;">#${a.dorsal}</span>
                         </div>
                     `).join('')}</div>
-                    <div class="heat-footer coach-action"><button class="btn-edit-heat" onclick="abrirModalHeat('${hKey}')"><i class="fas fa-edit"></i> Editar Heat</button></div>
+                    <div class="heat-footer coach-only"><button class="btn-edit-heat" onclick="abrirModalHeat('${hKey}')"><i class="fas fa-user-edit"></i> Mover Atletas</button></div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // Generar Base
         async function autogenerarHeatsBase() {
             if(!confirm("Esto agrupará a los atletas desde Escalado Femenino hasta RX en grupos de 4. ¿Continuar?")) return;
-            
-            let btn = event.target;
-            let btnText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
-            btn.disabled = true;
+            let btn = event.target; let btnText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...'; btn.disabled = true;
 
             let atletasOrdenados = [...atletas].sort((a, b) => {
                 let pesoA = obtenerPesoCategoria(a.categoria + " " + a.sexo);
@@ -636,94 +657,69 @@
                     currentHeatGlobal++;
                 }
             }
-
-            // Ejecución Paralela Rápida
-            await Promise.all(actualizaciones.map(act => 
-                supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id)
-            ));
-
-            renderHeatsGrid(); actualizarSelectHeatsJuez(); actualizarSelectHeatsAudit();
-            btn.innerHTML = btnText; btn.disabled = false;
+            await Promise.all(actualizaciones.map(act => supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id)));
+            renderHeatsGrid(); actualizarBadgesFiltros(); btn.innerHTML = btnText; btn.disabled = false;
         }
 
-        // RESEEDING RESPETANDO CAPACIDAD EXACTA
         async function reordenarHeatsPorPuntaje() {
-            if(!confirm("RESEEDING: Esto reordenará los heats de forma que los que van perdiendo salen de primeros y los líderes salen de últimos en su categoría, RESPETANDO la cantidad de atletas que tenías en cada Heat. ¿Continuar?")) return;
-            
-            let btn = event.target;
-            let btnText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reseeding...';
-            btn.disabled = true;
+            if(!confirm("RESEEDING: ¿Reordenar respetando los cupos actuales?")) return;
+            let btn = event.target; let btnText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reseeding...'; btn.disabled = true;
 
             calcularPuntosAbsolutos();
-
-            // 1. Extraer la capacidad actual de los heats por categoría
             let capacidades = {};
             atletas.forEach(a => {
                 let key = `${a.categoria}_${a.sexo}`;
                 if(!capacidades[key]) capacidades[key] = {};
-                if(a.heat && a.heat !== 'Sin Asignar') {
-                    capacidades[key][a.heat] = (capacidades[key][a.heat] || 0) + 1;
-                }
+                if(a.heat && a.heat !== 'Sin Asignar') { capacidades[key][a.heat] = (capacidades[key][a.heat] || 0) + 1; }
             });
 
-            // 2. Ordenar a los atletas (Peso Categoría -> Peores primero)
             let atletasOrdenados = [...atletas].sort((a, b) => {
                 let pesoA = obtenerPesoCategoria(a.categoria + " " + a.sexo);
                 let pesoB = obtenerPesoCategoria(b.categoria + " " + b.sexo);
                 if(pesoA !== pesoB) return pesoA - pesoB;
-                return (a.totalPuntos || 0) - (b.totalPuntos || 0); // Menos puntos primero
+                return (a.totalPuntos || 0) - (b.totalPuntos || 0); 
             });
 
-            let actualizaciones = [];
-            let atletasAgrupados = {};
+            let actualizaciones = []; let atletasAgrupados = {};
             atletasOrdenados.forEach(a => { let k = `${a.categoria}_${a.sexo}`; if(!atletasAgrupados[k]) atletasAgrupados[k] = []; atletasAgrupados[k].push(a); });
 
-            // 3. Rellenar respetando los cupos exactos (ej: 4, 4, 3, 3)
             for(let key in atletasAgrupados) {
-                let grupo = atletasAgrupados[key];
-                let caps = capacidades[key] || {};
+                let grupo = atletasAgrupados[key]; let caps = capacidades[key] || {};
                 let heatsNumericos = Object.keys(caps).sort((a,b) => parseInt(a) - parseInt(b));
-                
                 let indiceAtleta = 0;
                 for(let h of heatsNumericos) {
                     let cupos = caps[h];
                     for(let i=0; i<cupos; i++) {
                         if(indiceAtleta < grupo.length) {
-                            let a = grupo[indiceAtleta];
-                            actualizaciones.push({ id: a.id, heat: h });
-                            let idx = atletas.findIndex(x => String(x.id) === String(a.id));
-                            if(idx !== -1) atletas[idx].heat = h;
+                            let a = grupo[indiceAtleta]; actualizaciones.push({ id: a.id, heat: h });
+                            let idx = atletas.findIndex(x => String(x.id) === String(a.id)); if(idx !== -1) atletas[idx].heat = h;
                             indiceAtleta++;
                         }
                     }
                 }
                 while(indiceAtleta < grupo.length) {
-                    let a = grupo[indiceAtleta];
-                    actualizaciones.push({ id: a.id, heat: 'Sin Asignar' });
-                    let idx = atletas.findIndex(x => String(x.id) === String(a.id));
-                    if(idx !== -1) atletas[idx].heat = 'Sin Asignar';
+                    let a = grupo[indiceAtleta]; actualizaciones.push({ id: a.id, heat: 'Sin Asignar' });
+                    let idx = atletas.findIndex(x => String(x.id) === String(a.id)); if(idx !== -1) atletas[idx].heat = 'Sin Asignar';
                     indiceAtleta++;
                 }
             }
 
-            // Ejecución Paralela Rápida
-            await Promise.all(actualizaciones.map(act => 
-                supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id)
-            ));
-
-            renderHeatsGrid(); actualizarSelectHeatsJuez(); actualizarSelectHeatsAudit();
-            btn.innerHTML = btnText; btn.disabled = false;
+            await Promise.all(actualizaciones.map(act => supabaseClient.from('atletas').update({ heat: act.heat }).eq('id', act.id)));
+            renderHeatsGrid(); actualizarBadgesFiltros(); btn.innerHTML = btnText; btn.disabled = false;
         }
 
         let atletasModalActual = [];
         function abrirModalHeat(heatStr) {
-            document.getElementById('modalHeatNumber').innerText = heatStr;
+            document.getElementById('modalHeatNumber').innerText = "H-" + heatStr;
             atletasModalActual = atletas.filter(a => (a.heat || 'Sin Asignar') === heatStr);
             document.getElementById('modalAthletesList').innerHTML = atletasModalActual.map(a => `
-                <div style="display:flex; align-items:center; gap:10px; background:#000; padding:10px; border-radius:8px; border:1px solid #333;">
-                    <div style="flex:1;"><strong style="color:white; font-size:0.9rem;">${a.nombre}</strong></div>
-                    <div><input type="text" id="modal_in_${a.id}" class="form-control" style="width:70px; text-align:center; padding:5px;" value="${a.heat || ''}"></div>
+                <div style="display:flex; align-items:center; gap:15px; background:rgba(0,0,0,0.5); padding:15px; border-radius:12px; border:1px solid #333;">
+                    <div style="flex:1;"><strong style="color:white; font-size:1rem;">${a.nombre}</strong><br><span style="color:#aaa; font-size:0.7rem;">${a.categoria}</span></div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:5px;">
+                        <label style="font-size:0.6rem; color:var(--cf); font-weight:900;">NUEVO HEAT</label>
+                        <input type="text" id="modal_in_${a.id}" class="form-control" style="width:70px; text-align:center; padding:8px; font-weight:900;" value="${a.heat || ''}">
+                    </div>
                 </div>
             `).join('');
             document.getElementById('modalEditHeat').style.display = 'flex';
@@ -731,7 +727,7 @@
         function cerrarModal() { document.getElementById('modalEditHeat').style.display = 'none'; }
 
         async function guardarCambiosHeat() {
-            let btn = event.target; btn.innerHTML = 'Guardando...'; btn.disabled = true;
+            let btn = event.target; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...'; btn.disabled = true;
             for(let a of atletasModalActual) {
                 let nuevoHeat = document.getElementById(`modal_in_${a.id}`).value.trim();
                 if(nuevoHeat === '') nuevoHeat = 'Sin Asignar';
@@ -740,8 +736,8 @@
                     let idx = atletas.findIndex(x => String(x.id) === String(a.id)); if(idx !== -1) atletas[idx].heat = nuevoHeat;
                 }
             }
-            cerrarModal(); renderHeatsGrid(); actualizarSelectHeatsJuez(); actualizarSelectHeatsAudit();
-            btn.innerHTML = 'Guardar Cambios'; btn.disabled = false;
+            cerrarModal(); renderHeatsGrid(); actualizarBadgesFiltros();
+            btn.innerHTML = '<i class="fas fa-save"></i> Guardar Cambios'; btn.disabled = false;
         }
 
         // --- WODS ---
@@ -750,11 +746,11 @@
             tbody.innerHTML = wods.map(w => `
                 <tr>
                     <td><span class="dorsal-tag">${w.id}</span></td>
-                    <td><strong style="color:white;">${w.nombre}</strong></td>
-                    <td><span style="color:var(--cf); font-size:0.7rem; border:1px solid var(--cf); padding:3px 8px; border-radius:4px;">${w.tipo}</span></td>
-                    <td>${w.tipo2 ? `<span style="color:#ffd700; font-size:0.7rem; border:1px solid #ffd700; padding:3px 8px; border-radius:4px;">${w.tipo2}</span>` : '<span style="color:#444;">-</span>'}</td>
+                    <td><strong style="color:white; font-size:1.05rem;">${w.nombre}</strong></td>
+                    <td><span class="heat-badge">${w.tipo}</span></td>
+                    <td>${w.tipo2 ? `<span class="heat-badge" style="background:rgba(255,215,0,0.1); color:#ffd700; border-color:rgba(255,215,0,0.3);">${w.tipo2}</span>` : '<span style="color:#444;">-</span>'}</td>
                     <td style="color:#aaa;">${w.descripcion || '-'}</td>
-                    <td style="text-align:right;">
+                    <td style="text-align:right; white-space:nowrap;">
                         <button class="btn-action-small" onclick="prepararEdicionWod('${w.id}')"><i class="fas fa-edit"></i></button>
                         <button class="btn-action-small" style="color:var(--cf); border-color:var(--cf);" onclick="borrarWod('${w.id}')"><i class="fas fa-trash"></i></button>
                     </td>
@@ -769,16 +765,16 @@
             let desc = document.getElementById('newWodDesc').value.trim();
             
             if(!nombre) return alert("Escribe el nombre del WOD");
-            let btn = document.getElementById('btnGuardarWod'); btn.innerHTML = 'Guardando...'; btn.disabled = true;
+            let btn = document.getElementById('btnGuardarWod'); btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
 
             if (editandoWodId) {
                 const { error } = await supabaseClient.from('wods_cf').update({ nombre, tipo, tipo2, descripcion: desc }).eq('id', editandoWodId);
-                if(!error) { alert("WOD Actualizado"); cancelarEdicionWod(); await cargarWods(); renderAuditTable(); }
+                if(!error) { cancelarEdicionWod(); await cargarWods(); renderAuditTable(); }
             } else {
                 const { error } = await supabaseClient.from('wods_cf').insert([{ nombre, tipo, tipo2, descripcion: desc }]);
                 if(!error) {
                     document.getElementById('newWodName').value = ''; document.getElementById('newWodDesc').value = ''; document.getElementById('newWodType2').value = '';
-                    alert("WOD Creado"); await cargarWods();
+                    await cargarWods();
                 }
             }
             btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; btn.disabled = false;
@@ -794,15 +790,13 @@
             
             editandoWodId = id;
             document.getElementById('btnGuardarWod').innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar';
-            document.getElementById('btnGuardarWod').classList.add('btn-gold');
-            document.getElementById('btnCancelarEdicion').style.display = 'inline-block';
+            document.getElementById('btnCancelarEdicion').style.display = 'inline-flex';
         }
 
         function cancelarEdicionWod() {
             editandoWodId = null;
             document.getElementById('newWodName').value = ''; document.getElementById('newWodDesc').value = ''; document.getElementById('newWodType2').value = '';
             document.getElementById('btnGuardarWod').innerHTML = '<i class="fas fa-save"></i> Guardar';
-            document.getElementById('btnGuardarWod').classList.remove('btn-gold');
             document.getElementById('btnCancelarEdicion').style.display = 'none';
         }
 

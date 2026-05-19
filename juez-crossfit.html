@@ -682,64 +682,88 @@
         }
         
         // --- AUDITORÍA ---
+       // --- VARIABLES Y FUNCIÓN PARA BOTONES DE FILTRO (Punto 4) ---
+        let f_auditCat = 'todas';
+        let f_auditSexo = 'todos';
+
+        function setFiltroAudit(tipo, valor) {
+            if (tipo === 'cat') f_auditCat = valor;
+            if (tipo === 'sexo') f_auditSexo = valor;
+            renderAuditTable(); // Volvemos a dibujar la tabla para aplicar el filtro y pintar el botón activo
+        }
+        // ------------------------------------------------------------
+
         function renderAuditTable() {
             let tbody = document.getElementById('auditTableBody');
-            let container = tbody.closest('.tab-content'); // Buscamos el contenedor padre de la pestaña
+            let container = tbody.closest('.tab-content'); 
 
-            if(!f_auditWod) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba</td></tr>'; return; }
-
-            // --- AGREGAR FILTROS VISUALES SI NO EXISTEN (Punto 4) ---
-            let wrapperFiltros = document.getElementById('wrapperFiltrosAudit');
-            if (!wrapperFiltros) {
-                wrapperFiltros = document.createElement('div');
-                wrapperFiltros.id = 'wrapperFiltrosAudit';
-                wrapperFiltros.style = 'display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border: 1px solid #222;';
-                
-                // Creamos los selectores obteniendo dinámicamente los valores únicos de tus atletas
-                let categorias = [...new Set(atletas.map(a => a.categoria))];
-                let sexos = [...new Set(atletas.map(a => a.sexo))];
-
-                let optionCat = `<option value="todas">-- Todas las Categorías --</option>` + categorias.map(c => `<option value="${c}">${c}</option>`).join('');
-                let optionSexo = `<option value="todos">-- Todos los Sexos --</option>` + sexos.map(s => `<option value="${s}">${s}</option>`).join('');
-
-                wrapperFiltros.innerHTML = `
-                    <div style="flex: 1; min-width: 200px;">
-                        <label style="font-size: 0.8rem; color: #888; display: block; margin-bottom: 5px;">Filtrar por Categoría:</label>
-                        <select id="f_audit_cat" class="form-control" onchange="renderAuditTable()">${optionCat}</select>
-                    </div>
-                    <div style="flex: 1; min-width: 200px;">
-                        <label style="font-size: 0.8rem; color: #888; display: block; margin-bottom: 5px;">Filtrar por Sexo:</label>
-                        <select id="f_audit_sexo" class="form-control" onchange="renderAuditTable()">${optionSexo}</select>
-                    </div>
-                `;
-                // Lo insertamos justo antes de la tabla de auditoría
-                let tablaAudit = document.querySelector('.table-responsive');
-                if(tablaAudit) tablaAudit.parentNode.insertBefore(wrapperFiltros, tablaAudit);
+            if(!f_auditWod) { 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">Selecciona un WOD arriba</td></tr>'; 
+                return; 
             }
 
-            // Capturamos los valores seleccionados en los filtros
-            let filtroCat = document.getElementById('f_audit_cat') ? document.getElementById('f_audit_cat').value : 'todas';
-            let filtroSexo = document.getElementById('f_audit_sexo') ? document.getElementById('f_audit_sexo').value : 'todos';
-            // --------------------------------------------------------
+            // Eliminamos el selector viejo de listas desplegables si quedó por ahí
+            let oldDropdown = document.getElementById('wrapperFiltrosAudit');
+            if (oldDropdown) oldDropdown.remove();
+
+            // --- CREACIÓN DE BOTONES DE FILTRO VISUALES ---
+            let wrapperBotones = document.getElementById('wrapperFiltrosAuditBotones');
+            if (!wrapperBotones) {
+                wrapperBotones = document.createElement('div');
+                wrapperBotones.id = 'wrapperFiltrosAuditBotones';
+                wrapperBotones.style = 'margin-bottom: 20px; display:flex; flex-direction:column; gap:15px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border: 1px solid #222;';
+                
+                let tablaAudit = document.querySelector('.table-responsive');
+                if(tablaAudit) tablaAudit.parentNode.insertBefore(wrapperBotones, tablaAudit);
+            }
+
+            // Extraemos todas las categorías y sexos que existan en la tabla de atletas
+            let categorias = [...new Set(atletas.map(a => a.categoria))].filter(c => c);
+            let sexos = [...new Set(atletas.map(a => a.sexo))].filter(s => s);
+
+            // Estilos CSS para los botones (activos vs inactivos)
+            let btnBase = "padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; border: none; transition: 0.2s;";
+            let btnActivo = btnBase + " background: var(--cf); color: white; box-shadow: 0 0 10px rgba(255,68,68,0.4);";
+            let btnInactivo = btnBase + " background: #222; color: #888;";
+
+            // Construimos la fila de botones de Categoría
+            let htmlCat = `<div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                <span style="color:#aaa; font-size:0.85rem; width:70px; font-weight:bold;">Categoría:</span>
+                <button onclick="setFiltroAudit('cat', 'todas')" style="${f_auditCat === 'todas' ? btnActivo : btnInactivo}">Todas</button>`;
+            categorias.forEach(c => {
+                htmlCat += `<button onclick="setFiltroAudit('cat', '${c}')" style="${f_auditCat === c ? btnActivo : btnInactivo}">${c}</button>`;
+            });
+            htmlCat += `</div>`;
+
+            // Construimos la fila de botones de Sexo
+            let htmlSexo = `<div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                <span style="color:#aaa; font-size:0.85rem; width:70px; font-weight:bold;">Sexo:</span>
+                <button onclick="setFiltroAudit('sexo', 'todos')" style="${f_auditSexo === 'todos' ? btnActivo : btnInactivo}">Todos</button>`;
+            sexos.forEach(s => {
+                htmlSexo += `<button onclick="setFiltroAudit('sexo', '${s}')" style="${f_auditSexo === s ? btnActivo : btnInactivo}">${s}</button>`;
+            });
+            htmlSexo += `</div>`;
+
+            // Inyectamos los botones en la pantalla
+            wrapperBotones.innerHTML = htmlCat + htmlSexo;
+            // ----------------------------------------------
 
             calcularPuntosAbsolutos(); 
 
-            // Aplicamos todos los filtros de forma combinada (Heat + Categoría + Sexo)
+            // Aplicamos los filtros seleccionados (Heat + Categoría + Sexo)
             let filtrados = atletas.filter(a => {
                 let cumpleHeat = (f_auditHeat === 'todos' || a.heat == f_auditHeat);
-                let cumpleCat = (filtroCat === 'todas' || a.categoria === filtroCat);
-                let cumpleSexo = (filtroSexo === 'todos' || a.sexo === filtroSexo);
+                let cumpleCat = (f_auditCat === 'todas' || a.categoria === f_auditCat);
+                let cumpleSexo = (f_auditSexo === 'todos' || a.sexo === f_auditSexo);
                 return cumpleHeat && cumpleCat && cumpleSexo;
             });
             
-            // Ordenamos la lista de auditoría para reflejar quién va ganando
+            // Ordenamos a los filtrados (Puntos > Heat > Dorsal)
             filtrados.sort((a, b) => {
-                // Primero ordenamos por los puntos obtenidos en este WOD específico de mayor a menor
                 let ptsA = (a.puntosPorWod || {})[f_auditWod] || 0;
                 let ptsB = (b.puntosPorWod || {})[f_auditWod] || 0;
                 if(ptsA !== ptsB) return ptsB - ptsA; 
                 
-                // Si empatan en puntos, los ordena por el Heat más bajo primero
                 let hA = parseInt(a.heat) || 999; 
                 let hB = parseInt(b.heat) || 999;
                 if(hA !== hB) return hA - hB;
@@ -747,7 +771,10 @@
                 return a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true});
             });
 
-            if(filtrados.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;">No hay atletas que coincidan con los filtros seleccionados.</td></tr>'; return; }
+            if(filtrados.length === 0) { 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:#666;"><i class="fas fa-search" style="font-size:2rem; margin-bottom:10px;"></i><br>No hay atletas que coincidan con estos filtros.</td></tr>'; 
+                return; 
+            }
 
             let wodActual = wods.find(w => w.id == f_auditWod);
             let tieneDobleScore = wodActual && wodActual.tipo2 && wodActual.tipo2.trim() !== "";

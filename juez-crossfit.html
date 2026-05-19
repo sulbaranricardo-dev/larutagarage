@@ -387,14 +387,12 @@
         }
 
         function maskTimeInput(input, idAtleta) {
-            // Verificamos si el atleta tiene marcado el CAP
             let capCheck = document.getElementById(`j_cap_${idAtleta}`);
             if (capCheck && capCheck.checked) {
-                input.value = input.value.replace(/\D/g, ''); // Solo permite números (reps)
+                input.value = input.value.replace(/\D/g, ''); 
                 habilitarGuardado(idAtleta);
                 return;
             }
-
             let val = input.value.replace(/\D/g, ''); 
             let formatted = "";
             if (val.length <= 4) {
@@ -411,12 +409,11 @@
             habilitarGuardado(idAtleta); 
         }
 
-        // Nueva función para cambiar la vista cuando tocan el checkbox de CAP
         function toggleCapUi(idAtleta) {
             let isCap = document.getElementById(`j_cap_${idAtleta}`).checked;
             let input = document.getElementById(`j_score_${idAtleta}`);
             input.placeholder = isCap ? "Total Reps" : "MM:SS";
-            input.value = ""; // Limpiamos el input para evitar errores de formato
+            input.value = ""; 
             habilitarGuardado(idAtleta);
         }
 
@@ -499,14 +496,11 @@
                 let maskAttr2 = isTime2 ? `oninput="maskTimeInput(this, '${a.id}')"` : `oninput="habilitarGuardado('${a.id}')"`;
                 
                 let isCapped1 = cWod.isCapped || false;
-                
-                // Si es For Time, mostramos el checkbox de Time Cap
                 let capHTML = isTime1 ? `<label style="font-size:0.7rem; color:var(--cf); display:flex; align-items:center; gap:5px; margin-bottom:5px; cursor:pointer;"><input type="checkbox" id="j_cap_${a.id}" ${isCapped1 ? 'checked' : ''} onchange="toggleCapUi('${a.id}')"> TIME CAP</label>` : '';
 
                 let inputsScoreHTML = `<div class="score-stack">
                     ${capHTML}
                     <div><span class="score-label">${wodActual.tipo}</span><input type="text" id="j_score_${a.id}" class="input-score" value="${cWod.score || ''}" placeholder="${isCapped1 ? 'Total Reps' : place1}" ${maskAttr1}></div>`;
-                
                 if(tieneDobleScore) {
                     inputsScoreHTML += `<div><span class="score-label">${wodActual.tipo2}</span><input type="text" id="j_score2_${a.id}" class="input-score" value="${cWod.score2 || ''}" placeholder="${place2}" ${maskAttr2}></div>`;
                 }
@@ -548,7 +542,6 @@
             let index = atletas.findIndex(a => String(a.id) === String(idAtleta));
             let wodsData = atletas[index].wods_data || {};
             
-            // Agregamos isCapped al JSON
             wodsData[wodId] = { score: score1, score2: score2, penalizacion: pen, notas: nota, isCapped: isCap1 };
 
             const { error } = await supabaseClient.from('atletas').update({ wods_data: wodsData }).eq('id', idAtleta);
@@ -583,7 +576,22 @@
             btnDel.innerHTML = '<i class="fas fa-trash"></i>'; btnDel.disabled = false;
         }
 
-        // --- SISTEMA MATEMÁTICO (100-95-90) ---
+       // --- SISTEMA MATEMÁTICO (100-95-90) ---
+        function parseScoreCF(scoreStr, isTime, isCapped) {
+            if (!scoreStr || scoreStr.trim() === "") return isTime ? Infinity : -Infinity;
+            if (isTime) {
+                if (isCapped) {
+                    let num = parseFloat(scoreStr); return isNaN(num) ? -Infinity : num;
+                } else {
+                    let partes = scoreStr.split(':');
+                    if (partes.length === 2) return (parseInt(partes[0]) || 0) * 60 + parseFloat(partes[1] || 0);
+                    let num = parseFloat(scoreStr); return isNaN(num) ? Infinity : num;
+                }
+            } else {
+                let num = parseFloat(scoreStr); return isNaN(num) ? -Infinity : num;
+            }
+        }
+
         function calcularPuntosAbsolutos() {
             atletas.forEach(a => { a.totalPuntos = 0; a.puntosPorWod = {}; });
 
@@ -612,24 +620,19 @@
                     if(iniciado) {
                         grupo.sort((a,b) => {
                             if (isTime) {
-                                // Lógica For Time:
-                                if (a.isCapped && !b.isCapped) return 1; // b lo terminó, a no. (b gana)
-                                if (!a.isCapped && b.isCapped) return -1; // a lo terminó, b no. (a gana)
+                                if (a.isCapped && !b.isCapped) return 1; 
+                                if (!a.isCapped && b.isCapped) return -1; 
                                 if (a.isCapped && b.isCapped) {
-                                    // Ambos en CAP: evaluamos como AMRAP (El que tenga más reps gana)
                                     return b.val - a.val;
                                 }
-                                // Ambos terminaron: evaluamos tiempo (Menor tiempo gana)
                                 return a.val - b.val;
                             } else {
-                                // AMRAP o RM estándar (Mayor número gana)
                                 return b.val - a.val;
                             }
                         });
 
                         let rank = 1;
                         for(let i=0; i < grupo.length; i++) {
-                            // En caso de empate técnico
                             if(i > 0 && grupo[i].val !== grupo[i-1].val) rank = i + 1;
                             let pts = 0;
                             if(grupo[i].tiene) {
@@ -644,42 +647,7 @@
                 }
             });
         }
-
-        function calcularPuntosAbsolutos() {
-            atletas.forEach(a => { a.totalPuntos = 0; a.puntosPorWod = {}; });
-
-            wods.forEach(wod => {
-                let isTime = wod.tipo && wod.tipo.toLowerCase().includes('time');
-                let gruposCat = {};
-                
-                atletas.forEach(a => {
-                    let k = `${a.categoria}_${a.sexo}`;
-                    if(!gruposCat[k]) gruposCat[k] = [];
-                    let s = ((a.wods_data||{})[wod.id]||{}).score;
-                    gruposCat[k].push({ id: a.id, val: parseScoreCF(s, isTime), tiene: (s && s.trim() !== "") });
-                });
-
-                for(let k in gruposCat) {
-                    let grupo = gruposCat[k];
-                    let iniciado = grupo.some(x => x.tiene);
-                    if(iniciado) {
-                        grupo.sort((a,b) => isTime ? a.val - b.val : b.val - a.val);
-                        let rank = 1;
-                        for(let i=0; i < grupo.length; i++) {
-                            if(i > 0 && grupo[i].val !== grupo[i-1].val) rank = i + 1;
-                            let pts = 0;
-                            if(grupo[i].tiene) {
-                                pts = 100 - ((rank - 1) * 5);
-                                if(pts < 0) pts = 0;
-                            }
-                            let aObj = atletas.find(x => x.id === grupo[i].id);
-                            aObj.totalPuntos += pts;
-                            aObj.puntosPorWod[wod.id] = pts;
-                        }
-                    }
-                }
-            });
-        }
+       
 
         // --- AUDITORÍA ---
         function renderAuditTable() {
@@ -699,7 +667,6 @@
                 let ptsB = (b.puntosPorWod || {})[f_auditWod] || 0;
                 if(ptsA !== ptsB) return ptsB - ptsA; 
                 
-                // ORDENAMIENTO ALFANUMÉRICO DE DORSALES
                 return a.dorsal.localeCompare(b.dorsal, undefined, {numeric: true});
             });
 
@@ -713,7 +680,6 @@
                 let s1 = (cWod.score && cWod.score.trim() !== "") ? cWod.score : '--';
                 let scoreText = s1;
                 
-                // Si está en CAP, mostramos que son repeticiones
                 if (cWod.isCapped && s1 !== '--') {
                     scoreText = `CAP (${s1} reps)`;
                 }

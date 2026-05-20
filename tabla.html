@@ -19,26 +19,18 @@
         .header-public img { width: 100px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2)); }
         .header-public h1 { font-weight: 900; color: white; font-size: 1.5rem; text-transform: uppercase; margin: 0; letter-spacing: 1px; }
 
-        .modality-selector { display: flex; max-width: 900px; margin: 0 auto 25px auto; background: rgba(0,0,0,0.6); border-radius: 12px; padding: 6px; border: 1px solid #333; }
-        .mod-btn { flex: 1; padding: 15px; background: transparent; border: none; color: #666; font-family: 'Montserrat'; font-weight: 900; font-size: 0.9rem; text-transform: uppercase; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .mod-btn.active-race { background: var(--neon); color: black; box-shadow: 0 0 15px rgba(216, 255, 94, 0.3); }
-        .mod-btn.active-cf { background: var(--cf); color: white; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
-
         .controls { max-width: 900px; margin: 0 auto 20px auto; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 16px; border: 1px solid #222; }
         .filter-group { margin-bottom: 15px; }
-        .filter-group:last-child { margin-bottom: 0; }
-        .filter-label { font-size: 0.65rem; color: #888; text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 8px; padding-left: 5px; }
+        .filter-label { font-size: 0.65rem; color: #cfcfcf; text-transform: uppercase; font-weight: 800; display: block; margin-bottom: 8px; padding-left: 5px; }
         .filter-row { display: flex; gap: 8px; flex-wrap: wrap; padding-bottom: 6px; }
 
         .btn-pill { padding: 8px 16px; background: rgba(20,20,20,0.8); color: #aaa; border: 1px solid #333; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; font-family: 'Montserrat'; transition: 0.2s; white-space: nowrap; }
-        
-        .race-mode .btn-pill.active { background: var(--neon); color: black; border-color: var(--neon); font-weight: 900; }
-        .cf-mode .btn-pill.active { background: white; color: black; border-color: white; font-weight: 900; }
-        .cf-mode .btn-pill.active-wod { background: var(--cf); color: white; border-color: var(--cf); }
+        .btn-pill.active { background: white; color: black; border-color: white; font-weight: 900; }
+        .btn-pill.active-wod { background: var(--cf); color: white; border-color: var(--cf); }
 
-        .leaderboard-container { max-width: 900px; margin: 0 auto 40px auto; background: var(--card); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        .leaderboard-container { max-width: 900px; margin: 0 auto 40px auto; background: var(--card); backdrop-filter: blur(15px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
         .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
         th { background: rgba(255, 255, 255, 0.03); color: #888; text-align: left; padding: 16px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; border-bottom: 2px solid #222; }
         td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.9rem; font-weight: 400; vertical-align: middle; }
         
@@ -60,89 +52,57 @@
         .athlete-details { display: flex; flex-direction: column; align-items: flex-start; }
         .athlete-details strong { font-size: 1rem; color: white; }
         .athlete-details small { color: #aaa; font-size: 0.65rem; text-transform: uppercase; margin-top: 2px; }
-        .athlete-box { font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .badge-dorsal { padding: 4px 8px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; text-align: center; display: inline-block; background: #222; color: white; border: 1px solid #444; }
         
-        .winner-heat-badge { background: var(--cf); color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: 900; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 10px rgba(255,68,68,0.5); display: inline-block; }
+        .score-display { font-weight: 900; font-size: 1.2rem; font-family: 'Montserrat', monospace; color: white; }
+        .points-wod { color: var(--cf); font-weight: 900; font-size: 0.9rem; }
+        .total-acumulado { font-size: 1.3rem; font-weight: 900; color: #d8ff5e; text-shadow: 0 0 10px rgba(216, 255, 94, 0.3); }
 
-        .race-mode .athlete-box { color: var(--neon); }
-        .race-mode .badge-dorsal { color: var(--neon); border: 1px solid rgba(216, 255, 94, 0.2); background: rgba(216, 255, 94, 0.05); }
-        .race-mode .score-display { color: var(--neon); }
-        
-        .cf-mode .athlete-box { color: var(--cf); }
-        .cf-mode .badge-dorsal { color: white; border: 1px solid #444; background: #222; }
-        .cf-mode .score-display { color: white; }
-
-        .badge-dorsal { padding: 4px 8px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; text-align: center; display: inline-block; }
-        .score-display { font-weight: 900; font-size: 1.2rem; text-align: right; display: block; font-family: 'Montserrat', monospace; }
-        .points-label { font-size: 0.6rem; color: #888; display: block; text-align: right; text-transform: uppercase; margin-top: -3px; }
-
-        .loader { text-align: center; padding: 30px; font-weight: 900; font-size: 0.9rem; letter-spacing: 2px; color: white; }
+        .loader { text-align: center; padding: 40px; font-weight: 900; font-size: 1.2rem; letter-spacing: 1px; color: #888; }
+        .locked-msg { text-align: center; padding: 50px 20px; }
+        .locked-msg i { font-size: 3rem; color: var(--cf); margin-bottom: 15px; }
+        .locked-msg h3 { margin: 0; font-size: 1.5rem; color: white; }
+        .locked-msg p { color: #888; font-size: 0.9rem; margin-top: 10px; }
     </style>
 </head>
-<body class="race-mode" id="mainBody">
+<body>
 
     <div class="header-public">
         <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="Logo">
         <h1>TABLA DE POSICIONES</h1>
     </div>
 
-    <div class="modality-selector">
-        <button id="btnRace" class="mod-btn active-race" onclick="setModality('Race')"><i class="fas fa-flag-checkered"></i> Ruta Race</button>
-        <button id="btnCf" class="mod-btn" onclick="setModality('CrossFit')"><i class="fas fa-dumbbell"></i> Ruta CrossFit</button>
-    </div>
-
-    <div id="controls-race" class="controls">
+    <div class="controls">
         <div class="filter-group">
-            <span class="filter-label">Género</span>
+            <span class="filter-label">1. Selecciona el Evento (WOD)</span>
+            <div class="filter-row" id="cf-wods-container"></div>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">2. Selecciona la Categoría</span>
+            <div class="filter-row" id="cf-cat-container"></div>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">3. Selecciona el Género</span>
             <div class="filter-row">
-                <button class="btn-pill active" id="r-sex-todos" onclick="setFilterRace('sex', 'todos')">Todos</button>
-                <button class="btn-pill" id="r-sex-Masculino" onclick="setFilterRace('sex', 'Masculino')">Masculino</button>
-                <button class="btn-pill" id="r-sex-Femenino" onclick="setFilterRace('sex', 'Femenino')">Femenino</button>
-            </div>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Rango Competitivo</span>
-            <div class="filter-row">
-                <button class="btn-pill active" id="r-age-todos" onclick="setFilterRace('age', 'todos')">General</button>
-                <button class="btn-pill" id="r-age-0-29" onclick="setFilterRace('age', '0-29')">0 - 29</button>
-                <button class="btn-pill" id="r-age-30-44" onclick="setFilterRace('age', '30-44')">30 - 44</button>
-                <button class="btn-pill" id="r-age-45+" onclick="setFilterRace('age', '45+')">45+</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="controls-cf" class="controls" style="display:none;">
-        <div class="filter-group">
-            <span class="filter-label">Puntuación / Evento (Selecciona un WOD para ver Tiempos/Scores)</span>
-            <div class="filter-row" id="cf-wods-container">
-                <button class="btn-pill active-wod" id="cf-wod-general" onclick="setFilterCF('wod', 'general')"><i class="fas fa-trophy"></i> Overall (Puntos)</button>
-            </div>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Categoría</span>
-            <div class="filter-row" id="cf-cat-container">
-                <button class="btn-pill active" id="cf-cat-todos" onclick="setFilterCF('cat', 'todos')">General</button>
-            </div>
-        </div>
-        <div class="filter-group">
-            <span class="filter-label">Género & Heats</span>
-            <div class="filter-row">
-                <button class="btn-pill active" id="cf-sex-todos" onclick="setFilterCF('sex', 'todos')">M & F</button>
                 <button class="btn-pill" id="cf-sex-Masculino" onclick="setFilterCF('sex', 'Masculino')">Hombres</button>
                 <button class="btn-pill" id="cf-sex-Femenino" onclick="setFilterCF('sex', 'Femenino')">Mujeres</button>
             </div>
-            <div class="filter-row" id="cf-heat-container" style="margin-top: 10px;">
-                <button class="btn-pill active" id="cf-heat-todos" onclick="setFilterCF('heat', 'todos')">Todos los Heats</button>
-            </div>
         </div>
     </div>
 
-    <div id="loader" class="loader"><i class="fas fa-circle-notch fa-spin"></i> Sincronizando Base de Datos...</div>
-
-    <div class="leaderboard-container">
+    <div id="loader" class="loader"><i class="fas fa-circle-notch fa-spin"></i> Cargando Base de Datos...</div>
+    <div id="leaderboard-area" class="leaderboard-container" style="display:none;">
         <div class="table-wrapper">
             <table>
-                <thead id="tablaHead"></thead>
+                <thead id="tablaHead">
+                    <tr>
+                        <th style="width: 50px; text-align: center;">Pos</th>
+                        <th>Atleta / Box</th>
+                        <th style="width: 70px; text-align: center;">Dorsal</th>
+                        <th style="text-align: center;">Score WOD</th>
+                        <th style="text-align: right; padding-right: 25px;">Pts Acumulados</th>
+                    </tr>
+                </thead>
                 <tbody id="tablaCuerpo"></tbody>
             </table>
         </div>
@@ -155,19 +115,21 @@
 
         let atletas = [];
         let wodsCF = [];
-        let modalidadActual = 'Race';
-        let filtrosRace = { sex: 'todos', age: 'todos' };
-        let filtrosCF = { wod: 'general', cat: 'todos', sex: 'todos', heat: 'todos' };
+        let filtrosCF = { wod: null, cat: null, sex: null };
 
         async function inicializar() {
             const { data: dataWods } = await supabaseClient.from('wods_cf').select('*').order('id', { ascending: true });
-            if(dataWods) wodsCF = dataWods;
+            if(dataWods) {
+                wodsCF = dataWods;
+                if(wodsCF.length > 0) filtrosCF.wod = wodsCF[0].id; // Auto-selecciona el WOD 1
+            }
             renderizarBotonesWodsCF();
 
-            const { data: dataAtletas } = await supabaseClient.from('atletas').select('*');
+            const { data: dataAtletas } = await supabaseClient.from('atletas').select('*').ilike('modalidad', '%CrossFit%');
             if(dataAtletas) atletas = dataAtletas;
             
             document.getElementById('loader').style.display = 'none';
+            document.getElementById('leaderboard-area').style.display = 'block';
             renderizarFiltrosDinamicosCF();
             procesarYRenderizar();
 
@@ -181,92 +143,7 @@
                 .on('postgres_changes', { event: '*', scheme: 'public', table: 'wods_cf' }, async payload => {
                     const { data } = await supabaseClient.from('wods_cf').select('*').order('id', { ascending: true });
                     if(data) { wodsCF = data; renderizarBotonesWodsCF(); procesarYRenderizar(); }
-                })
-                .subscribe();
-        }
-
-        function setModality(mod) {
-            modalidadActual = mod;
-            let body = document.getElementById('mainBody');
-            
-            if(mod === 'Race') {
-                document.getElementById('btnRace').classList.add('active-race');
-                document.getElementById('btnCf').classList.remove('active-cf');
-                document.getElementById('controls-race').style.display = 'block';
-                document.getElementById('controls-cf').style.display = 'none';
-                body.className = 'race-mode';
-            } else {
-                document.getElementById('btnRace').classList.remove('active-race');
-                document.getElementById('btnCf').classList.add('active-cf');
-                document.getElementById('controls-race').style.display = 'none';
-                document.getElementById('controls-cf').style.display = 'block';
-                body.className = 'cf-mode';
-            }
-            procesarYRenderizar();
-        }
-
-        function convertirDriveUrl(url) {
-            if (!url || url.trim() === "") return "https://ui-avatars.com/api/?name=Atleta&background=222&color=fff";
-            let match = url.match(/\/d\/(.*?)\//);
-            return match && match[1] ? `https://drive.google.com/thumbnail?id=${match[1]}&sz=w150-h150` : url;
-        }
-
-        function calcularEdad(fechaNacStr) {
-            if (!fechaNacStr) return 'N/A';
-            let nacimiento = new Date(fechaNacStr);
-            if (isNaN(nacimiento.getTime())) return 'N/A';
-            let hoy = new Date();
-            let edad = hoy.getFullYear() - nacimiento.getFullYear();
-            let m = hoy.getMonth() - nacimiento.getMonth();
-            if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) { edad--; }
-            return edad;
-        }
-
-        function setFilterRace(tipo, valor) {
-            filtrosRace[tipo] = valor;
-            document.querySelectorAll(`[id^="r-${tipo}-"]`).forEach(b => b.classList.remove('active'));
-            document.getElementById(`r-${tipo}-${valor}`).classList.add('active');
-            procesarYRenderizar();
-        }
-
-        function scoreToSecondsRace(scoreStr) {
-            if (!scoreStr || scoreStr.trim() === "" || scoreStr.toLowerCase() === "dns" || scoreStr.toLowerCase() === "dnf") return Infinity;
-            let partes = scoreStr.split(':');
-            if (partes.length === 2) return (parseInt(partes[0]) || 0) * 60 + parseFloat(partes[1] || 0);
-            let num = parseFloat(scoreStr);
-            return isNaN(num) ? Infinity : num;
-        }
-
-        function renderizarRace() {
-            let filtrados = atletas.filter(a => {
-                if (!a.modalidad || !a.modalidad.toLowerCase().includes('race')) return false;
-                if (filtrosRace.sex !== 'todos' && a.sexo !== filtrosRace.sex) return false;
-                
-                let edad = calcularEdad(a.fechaNac);
-                if (filtrosRace.age !== 'todos') {
-                    if (edad === 'N/A') return false;
-                    if (filtrosRace.age === '0-29' && edad > 29) return false;
-                    if (filtrosRace.age === '30-44' && (edad < 30 || edad > 44)) return false;
-                    if (filtrosRace.age === '45+' && edad < 45) return false;
-                }
-                return true;
-            });
-
-            filtrados.sort((a, b) => scoreToSecondsRace(a.score) - scoreToSecondsRace(b.score));
-
-            document.getElementById('tablaHead').innerHTML = `
-                <tr>
-                    <th style="width: 50px; text-align: center;">Pos</th>
-                    <th>Atleta / Box</th>
-                    <th style="width: 70px; text-align: center;">Dorsal</th>
-                    <th style="text-align: right; padding-right: 25px;">Tiempo Race</th>
-                </tr>
-            `;
-
-            dibujarFilas(filtrados, (a, isTop) => {
-                let scoreText = a.score || '--:--';
-                return `<td style="padding-right: 25px;"><span class="score-display" style="${isTop ? 'color:#ffd700;' : ''}">${scoreText}</span></td>`;
-            }, false, false, null); 
+                }).subscribe();
         }
 
         function setFilterCF(tipo, valor) {
@@ -284,175 +161,136 @@
         }
 
         function renderizarBotonesWodsCF() {
-            let container = document.getElementById('cf-wods-container');
-            let html = `<button class="btn-pill active-wod" id="cf-wod-general" onclick="setFilterCF('wod', 'general')"><i class="fas fa-trophy"></i> Overall (Puntos)</button>`;
+            let html = '';
             wodsCF.forEach(w => {
-                html += `<button class="btn-pill" id="cf-wod-${w.id}" onclick="setFilterCF('wod', '${w.id}')">${w.nombre}</button>`;
+                let act = (w.id == filtrosCF.wod) ? 'active-wod' : '';
+                html += `<button class="btn-pill ${act}" id="cf-wod-${w.id}" onclick="setFilterCF('wod', '${w.id}')">${w.nombre}</button>`;
             });
-            container.innerHTML = html;
+            document.getElementById('cf-wods-container').innerHTML = html;
         }
 
         function renderizarFiltrosDinamicosCF() {
-            let cats = new Set(); let heats = new Set();
-            atletas.forEach(a => {
-                if(a.modalidad && a.modalidad.toLowerCase().includes('crossfit')) {
-                    if(a.categoria) cats.add(a.categoria);
-                    if(a.heat && a.heat !== 'Sin Asignar') heats.add(a.heat);
-                }
-            });
+            let cats = new Set();
+            atletas.forEach(a => { if(a.categoria) cats.add(a.categoria); });
             
-            let htmlCat = `<button class="btn-pill active" id="cf-cat-todos" onclick="setFilterCF('cat', 'todos')">General</button>`;
-            Array.from(cats).sort().forEach(c => htmlCat += `<button class="btn-pill" id="cf-cat-${c.replace(/\s+/g, '')}" onclick="setFilterCF('cat', '${c}')">${c}</button>`);
+            let htmlCat = '';
+            Array.from(cats).sort().forEach(c => {
+                let act = (c === filtrosCF.cat) ? 'active' : '';
+                htmlCat += `<button class="btn-pill ${act}" id="cf-cat-${c.replace(/\s+/g, '')}" onclick="setFilterCF('cat', '${c}')">${c}</button>`;
+            });
             document.getElementById('cf-cat-container').innerHTML = htmlCat;
-
-            let htmlHeat = `<button class="btn-pill active" id="cf-heat-todos" onclick="setFilterCF('heat', 'todos')">Todos los Heats</button>`;
-            Array.from(heats).sort((a,b)=>a-b).forEach(h => htmlHeat += `<button class="btn-pill" id="cf-heat-${h}" onclick="setFilterCF('heat', '${h}')">Heat ${h}</button>`);
-            document.getElementById('cf-heat-container').innerHTML = htmlHeat;
         }
 
-        function parseScoreCF(scoreStr, isTime) {
-            if (!scoreStr || scoreStr.trim() === "" || scoreStr.toLowerCase() === "dns" || scoreStr.toLowerCase() === "dnf") return isTime ? Infinity : -Infinity;
-            if (isTime) {
-                let partes = scoreStr.split(':');
-                if (partes.length === 2) return (parseInt(partes[0]) || 0) * 60 + parseFloat(partes[1] || 0);
-                let num = parseFloat(scoreStr); return isNaN(num) ? Infinity : num;
-            } else {
-                let num = parseFloat(scoreStr); return isNaN(num) ? -Infinity : num;
+        function parseScoreCF(s, isTime) {
+            if (!s || s.trim() === "") return isTime ? Infinity : -Infinity;
+            if (s.includes('+')) {
+                let parts = s.split('+');
+                let val = (parseInt(parts[0]) || 0) * 10000 + (parseInt(parts[1]) || 0);
+                return isTime ? 1000000 - val : val;
             }
-        }
-
-        // MOTOR MATEMÁTICO MEJORADO: Ignora los WODs que aún no han sido jugados por nadie
-        function calcularPuntosOverallCF(atletasBase) {
-            atletasBase.forEach(a => { a.tempTotalPts = 0; a.tempWodRanks = {}; a.wodsJugados = 0; });
-            
-            wodsCF.forEach(wod => {
-                let isTime = wod.tipo && wod.tipo.toLowerCase().includes('time');
-                let arrayWod = atletasBase.map(a => {
-                    let wData = a.wods_data || {};
-                    let s = (wData[wod.id] || {}).score;
-                    return { id: a.id, val: parseScoreCF(s, isTime), tieneScore: (s && s.trim() !== "") };
-                });
-
-                // Comprobación de Inteligencia: ¿Este WOD ya arrancó? (Al menos 1 persona tiene score)
-                let wodIniciado = arrayWod.some(x => x.tieneScore);
-
-                if (wodIniciado) {
-                    arrayWod.sort((a, b) => isTime ? a.val - b.val : b.val - a.val);
-
-                    let currentRank = 1;
-                    for (let i = 0; i < arrayWod.length; i++) {
-                        if (i > 0 && arrayWod[i].val !== arrayWod[i-1].val) currentRank = i + 1;
-                        // Si no tiene score, se le asigna puntos del último lugar + 1
-                        let pts = arrayWod[i].tieneScore ? currentRank : atletasBase.length + 1;
-                        
-                        let atletaObj = atletasBase.find(a => a.id === arrayWod[i].id);
-                        atletaObj.tempTotalPts += pts;
-                        atletaObj.tempWodRanks[wod.id] = pts;
-                        if(arrayWod[i].tieneScore) atletaObj.wodsJugados++;
-                    }
-                }
-            });
-        }
-
-        function renderizarCF() {
-            let competidores = atletas.filter(a => {
-                if (!a.modalidad || !a.modalidad.toLowerCase().includes('crossfit')) return false;
-                if (filtrosCF.cat !== 'todos' && a.categoria !== filtrosCF.cat) return false;
-                if (filtrosCF.sex !== 'todos' && a.sexo !== filtrosCF.sex) return false;
-                return true;
-            });
-
-            if (filtrosCF.wod === 'general') {
-                calcularPuntosOverallCF(competidores);
-                competidores.sort((a, b) => a.tempTotalPts - b.tempTotalPts);
-                document.getElementById('tablaHead').innerHTML = `
-                    <tr>
-                        <th style="width: 50px; text-align: center;">Pos</th>
-                        <th>Atleta / Box</th>
-                        <th style="width: 70px; text-align: center;">Dorsal</th>
-                        <th style="text-align: right; padding-right: 25px;">Pts Totales</th>
-                    </tr>
-                `;
-            } else {
-                let wodActual = wodsCF.find(w => w.id == filtrosCF.wod);
-                let isTime = wodActual && wodActual.tipo && wodActual.tipo.toLowerCase().includes('time');
-                
-                competidores.sort((a, b) => {
-                    let vA = parseScoreCF(((a.wods_data||{})[filtrosCF.wod]||{}).score, isTime);
-                    let vB = parseScoreCF(((b.wods_data||{})[filtrosCF.wod]||{}).score, isTime);
-                    return isTime ? vA - vB : vB - vA;
-                });
-
-                document.getElementById('tablaHead').innerHTML = `
-                    <tr>
-                        <th style="width: 50px; text-align: center;">Pos</th>
-                        <th>Atleta / Box</th>
-                        <th style="width: 70px; text-align: center;">Dorsal</th>
-                        <th style="text-align: right; padding-right: 25px;">Score Evento</th>
-                    </tr>
-                `;
+            if (s.includes(':')) {
+                let parts = s.split(':');
+                return (parseInt(parts[0]) || 0) * 60 + parseFloat(parts[1] || 0);
             }
-
-            competidores.forEach((a, idx) => a.tempGlobalRank = idx + 1);
-
-            let aMostrar = competidores.filter(a => {
-                if (filtrosCF.heat !== 'todos' && (a.heat || 'Sin Asignar') !== filtrosCF.heat) return false;
-                return true;
-            });
-
-            let mostrarGanadorHeat = (filtrosCF.wod !== 'general' && filtrosCF.heat !== 'todos');
-
-            dibujarFilas(aMostrar, (a, isTop) => {
-                if(filtrosCF.wod === 'general') {
-                    // Si el atleta no ha jugado ningún WOD (o el evento no ha empezado), mostramos '--'
-                    let text = (a.tempTotalPts > 0 && a.wodsJugados > 0) ? a.tempTotalPts : '--';
-                    return `<td style="padding-right: 25px; text-align:right;">
-                                <span class="score-display" style="${isTop ? 'color:white;' : ''}">${text}</span>
-                                <span class="points-label">PUNTOS</span>
-                            </td>`;
-                } else {
-                    let s1 = ((a.wods_data||{})[filtrosCF.wod]||{}).score;
-                    let text1 = (s1 && s1.trim() !== "") ? s1 : '--';
-                    let s2 = ((a.wods_data||{})[filtrosCF.wod]||{}).score2;
-                    let out = `<span class="score-display" style="${isTop ? 'color:white;' : ''}">${text1}</span>`;
-                    if(s2) out += `<span class="points-label">TB: ${s2}</span>`;
-                    return `<td style="padding-right: 25px; text-align:right;">${out}</td>`;
-                }
-            }, true, mostrarGanadorHeat, filtrosCF.wod);
+            return parseFloat(s) || (isTime ? Infinity : -Infinity);
         }
 
         function procesarYRenderizar() {
-            if(modalidadActual === 'Race') renderizarRace();
-            else renderizarCF();
-        }
-
-        function dibujarFilas(array, funcScoreHTML, useTempRank = false, mostrarGanadorHeat = false, wodIdStr = null) {
             const tbody = document.getElementById('tablaCuerpo');
-            tbody.innerHTML = '';
-
-            if(array.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#666;">No se encontraron resultados para este filtro.</td></tr>';
+            
+            // Obligamos al usuario a seleccionar Filtros
+            if(!filtrosCF.cat || !filtrosCF.sex || !filtrosCF.wod) {
+                tbody.innerHTML = `<tr><td colspan="5"><div class="locked-msg"><i class="fas fa-hand-pointer"></i><h3>Selecciona Categoría y Género</h3><p>Para ver los resultados oficiales de la competencia.</p></div></td></tr>`;
                 return;
             }
 
-            array.forEach((atleta, visualIndex) => {
-                let rankNumber = useTempRank ? atleta.tempGlobalRank : (visualIndex + 1);
+            // Validar si el WOD actual fue publicado por el Head Coach
+            let wodActualObj = wodsCF.find(w => w.id == filtrosCF.wod);
+            let keyCheck = `${filtrosCF.cat}_${filtrosCF.sex}`;
+            let isPublished = wodActualObj?.publicados?.[keyCheck] === true;
+
+            if(!isPublished) {
+                tbody.innerHTML = `<tr><td colspan="5"><div class="locked-msg"><i class="fas fa-lock"></i><h3>Resultados en Validación</h3><p>Los jueces están cerrando los heats. Los resultados aparecerán pronto.</p></div></td></tr>`;
+                return;
+            }
+
+            // MATEMÁTICA EXACTA: Calculamos TODO el torneo para obtener el "Total Acumulado"
+            atletas.forEach(a => {
+                a.totalPts = 0;
+                a.wodPtsData = {}; // Guarda los puntos ganados por cada WOD
+                a.tieneScoreWod = {};
+            });
+
+            wodsCF.forEach(wod => {
+                let isTime = wod.tipo?.toLowerCase().includes('time');
+                let isWodPublished = wod.publicados?.[keyCheck] === true;
+                
+                let filtradosCat = atletas.filter(a => a.categoria === filtrosCF.cat && a.sexo === filtrosCF.sex);
+                let parseados = filtradosCat.map(a => {
+                    let s = a.wods_data?.[wod.id]?.score || "";
+                    return { id: a.id, val: parseScoreCF(s, isTime), tiene: s.trim() !== "", txt: s };
+                });
+
+                let conScore = parseados.filter(g => g.tiene);
+                conScore.sort((a,b) => isTime ? a.val - b.val : b.val - a.val);
+
+                let rank = 1;
+                for(let i=0; i<conScore.length; i++) {
+                    if(i > 0 && conScore[i].val !== conScore[i-1].val) rank = i+1;
+                    let pts = Math.max(100 - ((rank - 1) * 5), 0);
+
+                    let atletaRef = atletas.find(x => x.id === conScore[i].id);
+                    if(atletaRef) {
+                        atletaRef.wodPtsData[wod.id] = pts;
+                        atletaRef.tieneScoreWod[wod.id] = true;
+                        if(isWodPublished) atletaRef.totalPts += pts; // Solo suma si el WOD fue publicado
+                    }
+                }
+            });
+
+            // Filtramos a los que vamos a mostrar en la tabla (La categoría seleccionada)
+            let aMostrar = atletas.filter(a => a.categoria === filtrosCF.cat && a.sexo === filtrosCF.sex);
+
+            // Ordenamos: Primero los que TENGAN score en este WOD, luego por PUNTOS del WOD, luego por TOTAL.
+            aMostrar.sort((a, b) => {
+                let tieneA = a.tieneScoreWod[filtrosCF.wod];
+                let tieneB = b.tieneScoreWod[filtrosCF.wod];
+                if(tieneA !== tieneB) return tieneA ? -1 : 1; // Los sin score van de últimos
+                
+                let ptsA = a.wodPtsData[filtrosCF.wod] || 0;
+                let ptsB = b.wodPtsData[filtrosCF.wod] || 0;
+                if(ptsA !== ptsB) return ptsB - ptsA; // Quien hizo más puntos en el WOD va arriba
+                
+                return b.totalPts - a.totalPts; // Desempate por puntaje general
+            });
+
+            dibujarFilas(aMostrar, filtrosCF.wod);
+        }
+
+        function convertirDriveUrl(url) {
+            if (!url || url.trim() === "") return "https://ui-avatars.com/api/?name=CF&background=222&color=fff";
+            let match = url.match(/\/d\/(.*?)\//);
+            return match && match[1] ? `https://drive.google.com/thumbnail?id=${match[1]}&sz=w150-h150` : url;
+        }
+
+        function dibujarFilas(array, wodActivo) {
+            const tbody = document.getElementById('tablaCuerpo');
+            tbody.innerHTML = '';
+
+            array.forEach((atleta, index) => {
+                let tieneScoreEnEsteWod = atleta.tieneScoreWod[wodActivo];
+                let rankNumber = tieneScoreEnEsteWod ? (index + 1) : '-';
+                
+                // Las coronas SOLO salen si el atleta tiene score
                 let claseRank = ""; let contenidoRank = rankNumber; let claseRow = "";
-                let isTop = rankNumber <= 3;
+                let isTop = rankNumber <= 3 && tieneScoreEnEsteWod;
 
                 if (rankNumber === 1) { claseRank = "rank-1"; contenidoRank = `<i class="fas fa-crown"></i>`; claseRow = "top-1"; }
                 else if (rankNumber === 2) { claseRank = "rank-2"; contenidoRank = `2`; claseRow = "top-2"; }
                 else if (rankNumber === 3) { claseRank = "rank-3"; contenidoRank = `3`; claseRow = "top-3"; }
 
-                let badgeHeat = "";
-                if (mostrarGanadorHeat && visualIndex === 0) {
-                    let tieneS = false;
-                    if(modalidadActual !== 'Race') {
-                         let s = ((atleta.wods_data||{})[wodIdStr]||{}).score;
-                         tieneS = s && s.trim() !== "";
-                    }
-                    if(tieneS) badgeHeat = `<span class="winner-heat-badge"><i class="fas fa-fire"></i> Ganador de Heat</span>`;
-                }
+                let textScore = tieneScoreEnEsteWod ? atleta.wods_data[wodActivo].score : '--';
+                let ptsWod = tieneScoreEnEsteWod ? `+${atleta.wodPtsData[wodActivo]} pts` : '--';
 
                 let tr = document.createElement('tr');
                 tr.className = claseRow;
@@ -466,14 +304,20 @@
                             <img src="${convertirDriveUrl(atleta.foto)}" alt="Avatar" class="avatar-img" onerror="this.src='https://ui-avatars.com/api/?name=${atleta.nombre}&background=222&color=fff'">
                             <div class="athlete-details">
                                 <strong>${atleta.nombre}</strong>
-                                <small>${atleta.categoria}</small>
-                                <small class="athlete-box"><i class="fas fa-map-marker-alt"></i> ${atleta.box || 'Independiente'}</small>
-                                ${badgeHeat}
+                                <small>${atleta.categoria} | ${atleta.sexo}</small>
+                                <small style="color: #666;"><i class="fas fa-map-marker-alt"></i> ${atleta.box || 'Independiente'}</small>
                             </div>
                         </div>
                     </td>
                     <td style="text-align: center;"><span class="badge-dorsal">#${atleta.dorsal}</span></td>
-                    ${funcScoreHTML(atleta, isTop)}
+                    <td style="text-align: center;">
+                        <span class="score-display">${textScore}</span>
+                        <div class="points-wod">${ptsWod}</div>
+                    </td>
+                    <td style="text-align: right; padding-right: 25px;">
+                        <span class="total-acumulado">${atleta.totalPts}</span>
+                        <span style="display:block; font-size: 0.6rem; color: #888; text-transform: uppercase;">Total General</span>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });

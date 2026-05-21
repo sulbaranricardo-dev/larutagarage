@@ -155,6 +155,7 @@
                 <div class="filter-row">
                     <button class="btn-pill" style="background:#555; border-color:#555; color:white;" onclick="imprimirPDFHeats()"><i class="fas fa-list"></i> PDF de Salidas Públicas</button>
                     <button class="btn-pill" style="background:#ff4444; border-color:#ff4444; color:white;" onclick="imprimirPDFPlanilla()"><i class="fas fa-file-pdf"></i> PDF Planilla de Jueces (Vacía)</button>
+                    <button class="btn-pill" style="background:var(--neon); border-color:var(--neon); color:black;" onclick="imprimirIGHeats()"><i class="fab fa-instagram"></i> PDF para Instagram</button>
                 </div>
             </div>
         </div>
@@ -218,7 +219,6 @@
             }
         }
 
-        // --- CONVERTIDOR DE HORAS A FORMATO 12H (AM/PM) ---
         function format12Hour(time24) {
             if (!time24) return '';
             let [h, m] = time24.split(':');
@@ -229,9 +229,8 @@
             return `${h}:${m} ${ampm}`;
         }
 
-        // --- MÁSCARA INTELIGENTE DE TIEMPOS (4500 -> 45:00) ---
         function formatRaceTime(val) {
-            let raw = val.replace(/\D/g, ''); // Deja solo números
+            let raw = val.replace(/\D/g, ''); 
             if (raw.length === 0) return '';
             if (raw.length <= 2) return raw;
             if (raw.length <= 4) return raw.slice(0, -2) + ":" + raw.slice(-2);
@@ -279,15 +278,11 @@
             }).subscribe();
         }
 
-        // --- LÓGICA DE AUDITORÍA CON BUSCADOR ---
         function procesarYRenderizar() {
             let searchVal = document.getElementById('searchAudit').value.toLowerCase().trim();
 
             let filtrados = atletasLocales.filter(atleta => {
-                // Filtro Sexo
                 if (filtroSexo !== 'todos' && atleta.sexo !== filtroSexo) return false;
-                
-                // Filtro Edad
                 let edad = calcularEdad(atleta.fechaNac);
                 if (filtroEdad !== 'todos') {
                     if (edad === 'N/A') return false;
@@ -295,16 +290,11 @@
                     if (filtroEdad === '30-44' && (edad < 30 || edad > 44)) return false;
                     if (filtroEdad === '45+' && edad < 45) return false;
                 }
-
-                // Filtro del Buscador
                 if (searchVal) {
                     let nombreAtleta = (atleta.nombre || '').toLowerCase();
                     let dorsalAtleta = String(atleta.dorsal || '').toLowerCase();
-                    if (!nombreAtleta.includes(searchVal) && !dorsalAtleta.includes(searchVal)) {
-                        return false;
-                    }
+                    if (!nombreAtleta.includes(searchVal) && !dorsalAtleta.includes(searchVal)) return false;
                 }
-
                 return true;
             });
 
@@ -344,7 +334,6 @@
         function cambiarSexo(valor) { filtroSexo = valor; document.querySelectorAll('[id^="sex-"]').forEach(b => b.classList.remove('active')); document.getElementById('sex-' + valor.toLowerCase()).classList.add('active'); procesarYRenderizar(); }
         function cambiarEdad(valor) { filtroEdad = valor; document.querySelectorAll('[id^="age-"]').forEach(b => b.classList.remove('active')); let idBoton = valor === 'todos' ? 'todos' : valor === '0-29' ? 'junior' : valor === '30-44' ? 'master' : 'senior'; document.getElementById('age-' + idBoton).classList.add('active'); procesarYRenderizar(); }
 
-        // --- MANEJO DE MODALES ---
         function cerrarModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
         function abrirModalScore(id) {
@@ -376,7 +365,6 @@
             procesarYRenderizar();
         }
 
-        // --- FUNCIÓN PARA BORRAR SCORE ---
         async function borrarScoreRace() {
             if(!confirm('¿Estás 100% seguro de que deseas borrar por completo el score, penalizaciones y notas de este atleta?')) return;
             
@@ -393,7 +381,6 @@
             procesarYRenderizar();
         }
 
-        // Modal Heats
         function abrirModalEditHeat(id, nombre, heatActual) {
             document.getElementById('modalAtletaId').value = id;
             document.getElementById('modalAtletaNombre').innerText = nombre;
@@ -416,7 +403,6 @@
             renderizarGrillaHeats();
         }
 
-        // --- LÓGICA DE HEATS RACE ---
         async function generarHeatsRace(sexoFiltro, cantidadHeats, prefijo, startNum) {
             if(!confirm(`¿Agrupar a los atletas de sexo ${sexoFiltro} en ${cantidadHeats} Heats, comenzando desde el Heat ${startNum}?`)) return;
             document.getElementById('mainLoader').style.display = 'block';
@@ -503,7 +489,6 @@
             });
         }
 
-        // --- EXPORTAR PDFs CON FORMATO 12H ---
         function getSortedHeatsKeys(heatsMap) {
             return Object.keys(heatsMap).sort((a, b) => {
                 let numA = parseInt(a.replace(/\D/g, '')) || 999;
@@ -542,7 +527,6 @@
                 let grupo = heatsMap[hKey];
                 grupo.sort((a,b) => a.dorsal.localeCompare(b.dorsal, undefined, { numeric: true }));
                 
-                // Aplicamos el formateador a 12h (AM/PM) aquí para la impresión
                 let hora12 = format12Hour(horariosHeats[hKey]);
                 let horaTex = hora12 ? ` | Salida: ${hora12}` : '';
                 
@@ -599,7 +583,6 @@
                 let grupo = heatsMap[hKey];
                 grupo.sort((a,b) => a.dorsal.localeCompare(b.dorsal, undefined, { numeric: true }));
                 
-                // Formato AM/PM para la planilla de jueces
                 let hora12 = format12Hour(horariosHeats[hKey]);
                 let horaTex = hora12 ? `HORA OFICIAL: ${hora12}` : 'HORA OFICIAL: __:__';
                 
@@ -635,6 +618,103 @@
             });
             html += `</body><script>window.print();<\/script></html>`;
             let win = window.open('', '', 'width=1100,height=700');
+            win.document.write(html); win.document.close();
+        }
+
+        // --- NUEVA FUNCIÓN PARA INSTAGRAM ---
+        function imprimirIGHeats() {
+            let heatsMap = {};
+            atletasLocales.forEach(a => { let h = a.heat || 'Sin Asignar'; if(!heatsMap[h]) heatsMap[h] = []; heatsMap[h].push(a); });
+            let heatsKeys = getSortedHeatsKeys(heatsMap);
+
+            let html = `
+            <html><head><title>Heats_Instagram_Race</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700;900&display=swap');
+                
+                @page { size: A4; margin: 0; } 
+                body { 
+                    /* Usa RBNo3.1 si está instalada, sino Montserrat */
+                    font-family: 'RBNo3.1', 'Montserrat', sans-serif; 
+                    background-color: #050505; 
+                    background-image: radial-gradient(rgba(216, 255, 94, 0.15) 1px, transparent 1px); 
+                    background-size: 25px 25px;
+                    color: white; 
+                    margin: 0;
+                    padding: 40px 20px;
+                }
+                .header-logo { text-align: center; margin-bottom: 20px; }
+                .header-logo img { width: 110px; filter: drop-shadow(0 0 15px rgba(216, 255, 94, 0.3)); }
+                h1 { text-align: center; color: #d8ff5e; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; font-size: 24pt; letter-spacing: 2px;}
+                h3 { text-align: center; color: #fff; margin-top: 0; font-weight: 700; font-size: 13pt; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 1px;}
+                
+                .heats-wrapper { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1000px; margin: 0 auto; }
+                .heat-container { 
+                    background: rgba(10, 10, 10, 0.95); 
+                    border: 2px solid #d8ff5e; 
+                    border-radius: 15px; 
+                    width: calc(48% - 20px); 
+                    margin-bottom: 20px; 
+                    page-break-inside: avoid; 
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+                    overflow: hidden;
+                }
+                .heat-title { 
+                    background: #d8ff5e; 
+                    color: black; 
+                    padding: 12px 20px; 
+                    font-weight: 900; 
+                    font-size: 14pt; 
+                    text-transform: uppercase; 
+                    display: flex; 
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .heat-time { font-size: 10pt; font-weight: 700; background: black; color: #d8ff5e; padding: 4px 10px; border-radius: 6px; letter-spacing: 1px;}
+                
+                table { width: 100%; border-collapse: collapse; }
+                th { background: rgba(255,255,255,0.03); padding: 10px 20px; text-align: left; font-size: 9pt; color: #888; text-transform: uppercase; border-bottom: 1px solid #333; letter-spacing: 1px;}
+                td { padding: 12px 20px; border-bottom: 1px solid #222; color: white; font-size: 11pt;}
+                tr:last-child td { border-bottom: none; }
+                .dorsal { font-weight: 900; color: #d8ff5e; font-size: 12pt; width: 60px; text-align: center;}
+                .nombre { font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
+            </style>
+            </head><body>
+            <div class="header-logo">
+                <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="La Ruta Garage">
+            </div>
+            <h1>LA RUTA GARAGE</h1>
+            <h3>Horarios Oficiales de Salida - RACE</h3>
+            <div class="heats-wrapper">
+            `;
+
+            heatsKeys.forEach(hKey => {
+                let grupo = heatsMap[hKey];
+                grupo.sort((a,b) => a.dorsal.localeCompare(b.dorsal, undefined, { numeric: true }));
+                
+                let hora12 = format12Hour(horariosHeats[hKey]);
+                let horaTex = hora12 ? `<span class="heat-time">${hora12}</span>` : '';
+                
+                html += `
+                <div class="heat-container">
+                    <div class="heat-title">
+                        <span>HEAT ${hKey}</span>
+                        ${horaTex}
+                    </div>
+                    <table>
+                        <tr>
+                            <th>Dorsal</th>
+                            <th>Atleta</th>
+                        </tr>
+                `;
+                grupo.forEach(a => {
+                    // Ocultamos las edades para las redes sociales, dejando todo limpio
+                    html += `<tr><td class="dorsal">#${a.dorsal}</td><td class="nombre">${a.nombre}</td></tr>`;
+                });
+                html += `</table></div>`;
+            });
+            html += `</div></body><script>window.print();<\/script></html>`;
+            let win = window.open('', '', 'width=1000,height=800');
             win.document.write(html); win.document.close();
         }
 

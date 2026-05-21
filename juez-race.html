@@ -28,12 +28,15 @@
         .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ESTILOS COMUNES */
+        /* ESTILOS COMUNES Y BUSCADOR */
         .controls { max-width: 1200px; margin: 0 auto 20px auto; display: flex; flex-direction: column; gap: 15px; }
         .filter-row { display: flex; flex-wrap: wrap; gap: 10px; }
         .filter-label { font-size: 0.7rem; color: var(--neon); text-transform: uppercase; font-weight: 900; display: block; margin-bottom: 5px; width: 100%; letter-spacing: 1px; }
         .btn-pill { padding: 10px 20px; background: rgba(0,0,0,0.6); color: white; border: 1px solid #333; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; font-family: 'Montserrat'; transition: 0.3s; }
         .btn-pill.active { background: var(--neon); color: black; border-color: var(--neon); font-weight: 900; box-shadow: 0 0 10px rgba(216, 255, 94, 0.2); }
+        .search-box { width: 100%; padding: 14px; background: rgba(0,0,0,0.8); border: 1px solid #333; color: white; border-radius: 10px; font-size: 0.9rem; font-family: 'Montserrat'; outline: none; margin-top: 5px; transition: 0.3s; }
+        .search-box:focus { border-color: var(--neon); box-shadow: 0 0 10px rgba(216, 255, 94, 0.2); }
+        
         .container { max-width: 1200px; margin: auto; background: var(--card); backdrop-filter: blur(10px); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .loader { text-align: center; padding: 15px; color: var(--neon); font-weight: 900; font-size: 0.9rem; display: none; }
 
@@ -68,10 +71,12 @@
         .modal-box h3 { margin-top: 0; color: white; font-weight: 900; }
         .modal-box p.subtitle { color: #aaa; font-size: 0.85rem; margin-bottom: 15px; }
         .modal-box label { display: block; text-align: left; font-size: 0.7rem; color: var(--neon); font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
-        .modal-box input { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: white; border-radius: 8px; text-align: center; font-size: 1.1rem; font-weight: 900; box-sizing: border-box; margin-bottom: 15px; }
+        .modal-box input { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: white; border-radius: 8px; text-align: center; font-size: 1.1rem; font-weight: 900; box-sizing: border-box; margin-bottom: 15px; transition: 0.3s;}
         .modal-box input:focus { border-color: var(--neon); outline: none; }
-        .modal-box button.btn-save { width: 100%; padding: 12px; background: var(--neon); color: black; font-weight: 900; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; text-transform: uppercase; margin-bottom: 10px; }
-        .modal-box button.btn-cancel { background: transparent; color: #888; border: none; cursor: pointer; font-size: 0.8rem; }
+        .modal-box button.btn-save { width: 100%; padding: 12px; background: var(--neon); color: black; font-weight: 900; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; text-transform: uppercase; margin-bottom: 10px; transition: 0.2s;}
+        .modal-box button.btn-delete { background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid #ff4444; }
+        .modal-box button.btn-delete:hover { background: #ff4444; color: white; }
+        .modal-box button.btn-cancel { background: transparent; color: #888; border: none; cursor: pointer; font-size: 0.8rem; margin-top: 5px;}
     </style>
 </head>
 <body>
@@ -107,6 +112,10 @@
                     <button class="btn-pill" id="age-master" onclick="cambiarEdad('30-44')">30 - 44 años</button>
                     <button class="btn-pill" id="age-senior" onclick="cambiarEdad('45+')">45+ años</button>
                 </div>
+            </div>
+            
+            <div>
+                <input type="text" id="searchAudit" class="search-box" placeholder="🔍 Buscar rápidamente por Nombre o # Dorsal..." oninput="procesarYRenderizar()">
             </div>
             <p style="font-size: 0.75rem; color: #888; margin: 0;"><i class="fas fa-info-circle"></i> Haz clic sobre cualquier atleta en la tabla para editar su score, penalización o notas.</p>
         </div>
@@ -170,8 +179,8 @@
             <p id="modalScoreNombre" class="subtitle"></p>
             <input type="hidden" id="modalScoreId">
             
-            <label>Tiempo Oficial (MM:SS)</label>
-            <input type="text" id="modalInputTiempo" placeholder="Ej: 45:30" style="color: var(--neon);">
+            <label>Tiempo Oficial (HH:MM:SS / MM:SS)</label>
+            <input type="text" id="modalInputTiempo" placeholder="Ej: 4500 (45:00) o 10000 (1:00:00)" style="color: var(--neon);" oninput="this.value = formatRaceTime(this.value)">
             
             <label>Penalización (Opcional)</label>
             <input type="text" id="modalInputPen" placeholder="+ 1 Minuto" style="color: #ff4444;">
@@ -180,6 +189,7 @@
             <input type="text" id="modalInputNotas" placeholder="Salió de ruta..." style="color: #aaa; font-size: 0.9rem; font-weight: normal;">
             
             <button class="btn-save" onclick="guardarScoreRace()"><i class="fas fa-save"></i> Guardar Resultados</button>
+            <button class="btn-save btn-delete" onclick="borrarScoreRace()"><i class="fas fa-trash"></i> Borrar Score Completo</button>
             <button class="btn-cancel" onclick="cerrarModal('modalEditScore')">Cancelar</button>
         </div>
     </div>
@@ -192,8 +202,6 @@
         let atletasLocales = [];
         let filtroSexo = 'todos';
         let filtroEdad = 'todos';
-        
-        // Memoria local para los horarios de los heats
         let horariosHeats = JSON.parse(localStorage.getItem('horariosRaceLaRuta')) || {};
 
         function switchTab(tab) {
@@ -208,6 +216,26 @@
                 document.getElementById('tab-heats').classList.add('active');
                 renderizarGrillaHeats();
             }
+        }
+
+        // --- CONVERTIDOR DE HORAS A FORMATO 12H (AM/PM) ---
+        function format12Hour(time24) {
+            if (!time24) return '';
+            let [h, m] = time24.split(':');
+            h = parseInt(h);
+            if (isNaN(h)) return time24;
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${h}:${m} ${ampm}`;
+        }
+
+        // --- MÁSCARA INTELIGENTE DE TIEMPOS (4500 -> 45:00) ---
+        function formatRaceTime(val) {
+            let raw = val.replace(/\D/g, ''); // Deja solo números
+            if (raw.length === 0) return '';
+            if (raw.length <= 2) return raw;
+            if (raw.length <= 4) return raw.slice(0, -2) + ":" + raw.slice(-2);
+            return raw.slice(0, -4) + ":" + raw.slice(-4, -2) + ":" + raw.slice(-2);
         }
 
         function calcularEdad(fechaNacStr) {
@@ -225,6 +253,7 @@
             if (!scoreStr || scoreStr.trim() === "" || scoreStr.toLowerCase() === "dns" || scoreStr.toLowerCase() === "dnf") return Infinity;
             let partes = scoreStr.split(':');
             if (partes.length === 2) return (parseInt(partes[0]) || 0) * 60 + parseFloat(partes[1] || 0);
+            if (partes.length === 3) return (parseInt(partes[0]) || 0) * 3600 + (parseInt(partes[1]) || 0) * 60 + parseFloat(partes[2] || 0);
             let num = parseFloat(scoreStr); return isNaN(num) ? Infinity : num;
         }
 
@@ -250,10 +279,15 @@
             }).subscribe();
         }
 
-        // --- LÓGICA DE AUDITORÍA (MODAL SCORES) ---
+        // --- LÓGICA DE AUDITORÍA CON BUSCADOR ---
         function procesarYRenderizar() {
+            let searchVal = document.getElementById('searchAudit').value.toLowerCase().trim();
+
             let filtrados = atletasLocales.filter(atleta => {
+                // Filtro Sexo
                 if (filtroSexo !== 'todos' && atleta.sexo !== filtroSexo) return false;
+                
+                // Filtro Edad
                 let edad = calcularEdad(atleta.fechaNac);
                 if (filtroEdad !== 'todos') {
                     if (edad === 'N/A') return false;
@@ -261,6 +295,16 @@
                     if (filtroEdad === '30-44' && (edad < 30 || edad > 44)) return false;
                     if (filtroEdad === '45+' && edad < 45) return false;
                 }
+
+                // Filtro del Buscador
+                if (searchVal) {
+                    let nombreAtleta = (atleta.nombre || '').toLowerCase();
+                    let dorsalAtleta = String(atleta.dorsal || '').toLowerCase();
+                    if (!nombreAtleta.includes(searchVal) && !dorsalAtleta.includes(searchVal)) {
+                        return false;
+                    }
+                }
+
                 return true;
             });
 
@@ -269,6 +313,11 @@
             const tbody = document.getElementById('tablaCuerpo');
             tbody.innerHTML = '';
 
+            if(filtrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 30px; color:#666;">No se encontraron atletas con esos filtros.</td></tr>';
+                return;
+            }
+
             filtrados.forEach((atleta, index) => {
                 let edadVal = calcularEdad(atleta.fechaNac);
                 let tieneScore = atleta.score && atleta.score.trim() !== "";
@@ -276,7 +325,6 @@
 
                 let tr = document.createElement('tr');
                 tr.className = "atleta-row";
-                // Al hacer clic, abrimos el modal de scores
                 tr.onclick = () => abrirModalScore(atleta.id);
                 
                 tr.innerHTML = `
@@ -299,7 +347,6 @@
         // --- MANEJO DE MODALES ---
         function cerrarModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
-        // Modal Scores
         function abrirModalScore(id) {
             let atleta = atletasLocales.find(a => a.id === id);
             if(!atleta) return;
@@ -329,6 +376,23 @@
             procesarYRenderizar();
         }
 
+        // --- FUNCIÓN PARA BORRAR SCORE ---
+        async function borrarScoreRace() {
+            if(!confirm('¿Estás 100% seguro de que deseas borrar por completo el score, penalizaciones y notas de este atleta?')) return;
+            
+            let id = document.getElementById('modalScoreId').value;
+            document.getElementById('mainLoader').style.display = 'block';
+            cerrarModal('modalEditScore');
+
+            await supabaseClient.from('atletas').update({ score: '', penalizacion: '', notas: '' }).eq('id', id);
+            
+            let ref = atletasLocales.find(a => a.id === id);
+            if(ref) { ref.score = ''; ref.penalizacion = ''; ref.notas = ''; }
+
+            document.getElementById('mainLoader').style.display = 'none';
+            procesarYRenderizar();
+        }
+
         // Modal Heats
         function abrirModalEditHeat(id, nombre, heatActual) {
             document.getElementById('modalAtletaId').value = id;
@@ -352,7 +416,7 @@
             renderizarGrillaHeats();
         }
 
-        // --- LÓGICA DE HEATS RACE (NUMERACIÓN CONTINUA Y HORARIOS) ---
+        // --- LÓGICA DE HEATS RACE ---
         async function generarHeatsRace(sexoFiltro, cantidadHeats, prefijo, startNum) {
             if(!confirm(`¿Agrupar a los atletas de sexo ${sexoFiltro} en ${cantidadHeats} Heats, comenzando desde el Heat ${startNum}?`)) return;
             document.getElementById('mainLoader').style.display = 'block';
@@ -439,7 +503,7 @@
             });
         }
 
-        // --- EXPORTAR PDFs ---
+        // --- EXPORTAR PDFs CON FORMATO 12H ---
         function getSortedHeatsKeys(heatsMap) {
             return Object.keys(heatsMap).sort((a, b) => {
                 let numA = parseInt(a.replace(/\D/g, '')) || 999;
@@ -449,7 +513,6 @@
             });
         }
 
-        // PDF 1: Salidas Públicas (El que ya teníamos)
         function imprimirPDFHeats() {
             let heatsMap = {};
             atletasLocales.forEach(a => { let h = a.heat || 'Sin Asignar'; if(!heatsMap[h]) heatsMap[h] = []; heatsMap[h].push(a); });
@@ -478,7 +541,10 @@
             heatsKeys.forEach(hKey => {
                 let grupo = heatsMap[hKey];
                 grupo.sort((a,b) => a.dorsal.localeCompare(b.dorsal, undefined, { numeric: true }));
-                let horaTex = horariosHeats[hKey] ? ` | Salida: ${horariosHeats[hKey]}` : '';
+                
+                // Aplicamos el formateador a 12h (AM/PM) aquí para la impresión
+                let hora12 = format12Hour(horariosHeats[hKey]);
+                let horaTex = hora12 ? ` | Salida: ${hora12}` : '';
                 
                 html += `
                 <div class="heat-container">
@@ -501,7 +567,6 @@
             win.document.write(html); win.document.close();
         }
 
-        // PDF 2: Planilla de Jueces (Para anotar tiempos)
         function imprimirPDFPlanilla() {
             let heatsMap = {};
             atletasLocales.forEach(a => { let h = a.heat || 'Sin Asignar'; if(!heatsMap[h]) heatsMap[h] = []; heatsMap[h].push(a); });
@@ -533,7 +598,10 @@
             heatsKeys.forEach(hKey => {
                 let grupo = heatsMap[hKey];
                 grupo.sort((a,b) => a.dorsal.localeCompare(b.dorsal, undefined, { numeric: true }));
-                let horaTex = horariosHeats[hKey] ? `HORA OFICIAL: ${horariosHeats[hKey]}` : 'HORA OFICIAL: __:__';
+                
+                // Formato AM/PM para la planilla de jueces
+                let hora12 = format12Hour(horariosHeats[hKey]);
+                let horaTex = hora12 ? `HORA OFICIAL: ${hora12}` : 'HORA OFICIAL: __:__';
                 
                 html += `
                 <div class="heat-container">

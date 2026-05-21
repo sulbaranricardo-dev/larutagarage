@@ -19,8 +19,6 @@
         .header h1 { font-weight: 900; color: var(--neon); font-size: 1.6rem; text-transform: uppercase; letter-spacing: 2px; margin: 0; }
         .header p { color: #aaa; font-size: 0.8rem; margin-top: 5px; font-weight: 600; text-transform: uppercase; }
         .live-indicator { display: inline-flex; align-items: center; gap: 8px; font-size: 0.7rem; background: rgba(37, 211, 102, 0.1); border: 1px solid #25D366; color: #25D366; padding: 5px 12px; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
-        .live-dot { width: 8px; height: 8px; background: #25D366; border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.8); opacity: 0.5; } }
         
         /* PESTAÑAS (TABS) */
         .tab-menu { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
@@ -44,28 +42,36 @@
         table { width: 100%; border-collapse: collapse; }
         th { background: rgba(216, 255, 94, 0.05); color: var(--neon); text-align: left; padding: 15px; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid var(--neon); }
         td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; font-weight: 300; }
-        tr:hover { background: rgba(255,255,255,0.02); }
+        tr.atleta-row { cursor: pointer; transition: 0.2s; }
+        tr.atleta-row:hover { background: rgba(216, 255, 94, 0.1); }
         .badge-dorsal { background: #222; color: var(--neon); padding: 4px 10px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; border: 1px solid #333; }
         .text-score { color: var(--neon); font-weight: 900; font-size: 1rem; }
         .text-pen { color: #ff4444; font-weight: 600; }
         .text-notes { color: #aaa; font-style: italic; font-size: 0.8rem; }
 
         /* GRID DE HEATS */
-        .heats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
+        .heats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
         .heat-card { background: var(--card); border: 1px solid #333; border-radius: 12px; overflow: hidden; }
-        .heat-header { background: rgba(216, 255, 94, 0.1); padding: 15px; border-bottom: 1px solid var(--neon); color: var(--neon); font-weight: 900; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; text-transform: uppercase; }
+        .heat-header { background: rgba(216, 255, 94, 0.1); padding: 15px; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; }
+        .heat-title { color: var(--neon); font-weight: 900; font-size: 1.1rem; text-transform: uppercase; }
+        .heat-time-input { background: #000; border: 1px solid #444; color: white; padding: 5px 10px; border-radius: 6px; font-family: 'Montserrat'; font-weight: 600; font-size: 0.8rem; outline: none; }
+        .heat-time-input:focus { border-color: var(--neon); }
         .heat-body { padding: 15px; display: flex; flex-direction: column; gap: 8px; }
         .heat-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; padding-bottom: 8px; border-bottom: 1px solid #222; }
         .heat-row:last-child { border-bottom: none; padding-bottom: 0; }
         .btn-edit-heat { background: #222; border: 1px solid #444; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
         .btn-edit-heat:hover { border-color: var(--neon); color: var(--neon); }
 
-        /* MODAL */
+        /* MODALES */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 9999; display: none; align-items: center; justify-content: center; }
         .modal-box { background: #111; padding: 25px; border-radius: 15px; border: 1px solid #333; width: 90%; max-width: 400px; text-align: center; }
         .modal-box h3 { margin-top: 0; color: white; font-weight: 900; }
-        .modal-box input { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: var(--neon); border-radius: 8px; text-align: center; font-size: 1.2rem; font-weight: 900; box-sizing: border-box; margin-bottom: 15px; }
-        .modal-box button { width: 100%; padding: 12px; background: var(--neon); color: black; font-weight: 900; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; text-transform: uppercase; }
+        .modal-box p.subtitle { color: #aaa; font-size: 0.85rem; margin-bottom: 15px; }
+        .modal-box label { display: block; text-align: left; font-size: 0.7rem; color: var(--neon); font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
+        .modal-box input { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: white; border-radius: 8px; text-align: center; font-size: 1.1rem; font-weight: 900; box-sizing: border-box; margin-bottom: 15px; }
+        .modal-box input:focus { border-color: var(--neon); outline: none; }
+        .modal-box button.btn-save { width: 100%; padding: 12px; background: var(--neon); color: black; font-weight: 900; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; text-transform: uppercase; margin-bottom: 10px; }
+        .modal-box button.btn-cancel { background: transparent; color: #888; border: none; cursor: pointer; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -73,7 +79,7 @@
     <div class="header">
         <div class="live-indicator"><div class="live-dot"></div> Conexión en Vivo Realtime</div>
         <h1 style="margin-top: 10px;">Panel Administrativo (Race)</h1>
-        <p>Control Central de la Carrera</p>
+        <p>La Ruta Garage - Control Central</p>
     </div>
 
     <div class="tab-menu">
@@ -102,6 +108,7 @@
                     <button class="btn-pill" id="age-senior" onclick="cambiarEdad('45+')">45+ años</button>
                 </div>
             </div>
+            <p style="font-size: 0.75rem; color: #888; margin: 0;"><i class="fas fa-info-circle"></i> Haz clic sobre cualquier atleta en la tabla para editar su score, penalización o notas.</p>
         </div>
 
         <div class="container">
@@ -114,7 +121,7 @@
                             <th>Atleta</th>
                             <th>Categoría Base</th>
                             <th style="text-align: center; width: 80px;">Edad</th>
-                            <th>Score / Tiempo</th>
+                            <th>Tiempo Total</th>
                             <th>Penalización</th>
                             <th>Notas del Juez</th>
                         </tr>
@@ -130,9 +137,15 @@
             <div>
                 <span class="filter-label">Generación Automática (Ordenados por Edad)</span>
                 <div class="filter-row">
-                    <button class="btn-pill" onclick="generarHeatsRace('Femenino', 13, 'F-')"><i class="fas fa-magic"></i> Crear 13 Heats Femeninos</button>
-                    <button class="btn-pill" onclick="generarHeatsRace('Masculino', 10, 'M-')"><i class="fas fa-magic"></i> Crear 10 Heats Masculinos</button>
-                    <button class="btn-pill" style="background:#ff4444; border-color:#ff4444; color:white;" onclick="imprimirPDFHeats()"><i class="fas fa-file-pdf"></i> Exportar PDF Salidas</button>
+                    <button class="btn-pill" onclick="generarHeatsRace('Femenino', 13, 'F-', 1)"><i class="fas fa-magic"></i> Crear 13 Heats Fem (F-1 a F-13)</button>
+                    <button class="btn-pill" onclick="generarHeatsRace('Masculino', 10, 'M-', 14)"><i class="fas fa-magic"></i> Crear 10 Heats Masc (M-14 a M-23)</button>
+                </div>
+            </div>
+            <div style="margin-top: 10px;">
+                <span class="filter-label">Exportación Oficial (La Ruta Garage)</span>
+                <div class="filter-row">
+                    <button class="btn-pill" style="background:#555; border-color:#555; color:white;" onclick="imprimirPDFHeats()"><i class="fas fa-list"></i> PDF de Salidas Públicas</button>
+                    <button class="btn-pill" style="background:#ff4444; border-color:#ff4444; color:white;" onclick="imprimirPDFPlanilla()"><i class="fas fa-file-pdf"></i> PDF Planilla de Jueces (Vacía)</button>
                 </div>
             </div>
         </div>
@@ -142,11 +155,32 @@
     <div class="modal-overlay" id="modalEditHeat">
         <div class="modal-box">
             <h3>Mover Atleta</h3>
-            <p id="modalAtletaNombre" style="color: #aaa; font-size: 0.85rem; margin-bottom: 15px;"></p>
+            <p id="modalAtletaNombre" class="subtitle"></p>
             <input type="hidden" id="modalAtletaId">
+            <label>Nuevo Heat</label>
             <input type="text" id="modalInputHeat" placeholder="Ej: F-1">
-            <button onclick="guardarEdicionHeat()"><i class="fas fa-save"></i> Guardar Heat</button>
-            <button onclick="cerrarModal()" style="background: transparent; color: #888; margin-top: 10px; font-size: 0.8rem;">Cancelar</button>
+            <button class="btn-save" onclick="guardarEdicionHeat()"><i class="fas fa-save"></i> Guardar Heat</button>
+            <button class="btn-cancel" onclick="cerrarModal('modalEditHeat')">Cancelar</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalEditScore">
+        <div class="modal-box">
+            <h3>Ingresar Resultados</h3>
+            <p id="modalScoreNombre" class="subtitle"></p>
+            <input type="hidden" id="modalScoreId">
+            
+            <label>Tiempo Oficial (MM:SS)</label>
+            <input type="text" id="modalInputTiempo" placeholder="Ej: 45:30" style="color: var(--neon);">
+            
+            <label>Penalización (Opcional)</label>
+            <input type="text" id="modalInputPen" placeholder="+ 1 Minuto" style="color: #ff4444;">
+            
+            <label>Notas del Juez (Opcional)</label>
+            <input type="text" id="modalInputNotas" placeholder="Salió de ruta..." style="color: #aaa; font-size: 0.9rem; font-weight: normal;">
+            
+            <button class="btn-save" onclick="guardarScoreRace()"><i class="fas fa-save"></i> Guardar Resultados</button>
+            <button class="btn-cancel" onclick="cerrarModal('modalEditScore')">Cancelar</button>
         </div>
     </div>
 
@@ -158,8 +192,10 @@
         let atletasLocales = [];
         let filtroSexo = 'todos';
         let filtroEdad = 'todos';
+        
+        // Memoria local para los horarios de los heats
+        let horariosHeats = JSON.parse(localStorage.getItem('horariosRaceLaRuta')) || {};
 
-        // --- SISTEMA DE PESTAÑAS ---
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -209,12 +245,12 @@
                     else atletasLocales.push(nuevo);
                     
                     procesarYRenderizar();
-                    renderizarGrillaHeats();
+                    if(document.getElementById('tab-heats').classList.contains('active')) renderizarGrillaHeats();
                 }
             }).subscribe();
         }
 
-        // --- LÓGICA DE AUDITORÍA (PESTAÑA 1) ---
+        // --- LÓGICA DE AUDITORÍA (MODAL SCORES) ---
         function procesarYRenderizar() {
             let filtrados = atletasLocales.filter(atleta => {
                 if (filtroSexo !== 'todos' && atleta.sexo !== filtroSexo) return false;
@@ -239,6 +275,10 @@
                 let posMostrar = tieneScore ? (index + 1) : '-';
 
                 let tr = document.createElement('tr');
+                tr.className = "atleta-row";
+                // Al hacer clic, abrimos el modal de scores
+                tr.onclick = () => abrirModalScore(atleta.id);
+                
                 tr.innerHTML = `
                     <td style="text-align: center; font-weight: 900; color: ${tieneScore ? 'var(--neon)' : '#666'}">${posMostrar}</td>
                     <td><span class="badge-dorsal">${atleta.dorsal}</span></td>
@@ -256,15 +296,68 @@
         function cambiarSexo(valor) { filtroSexo = valor; document.querySelectorAll('[id^="sex-"]').forEach(b => b.classList.remove('active')); document.getElementById('sex-' + valor.toLowerCase()).classList.add('active'); procesarYRenderizar(); }
         function cambiarEdad(valor) { filtroEdad = valor; document.querySelectorAll('[id^="age-"]').forEach(b => b.classList.remove('active')); let idBoton = valor === 'todos' ? 'todos' : valor === '0-29' ? 'junior' : valor === '30-44' ? 'master' : 'senior'; document.getElementById('age-' + idBoton).classList.add('active'); procesarYRenderizar(); }
 
-        // --- LÓGICA DE HEATS RACE (PESTAÑA 2) ---
-        async function generarHeatsRace(sexoFiltro, cantidadHeats, prefijo) {
-            if(!confirm(`¿Estás seguro de reordenar a TODOS los atletas de sexo ${sexoFiltro} en ${cantidadHeats} Heats ordenados por edad?`)) return;
+        // --- MANEJO DE MODALES ---
+        function cerrarModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+        // Modal Scores
+        function abrirModalScore(id) {
+            let atleta = atletasLocales.find(a => a.id === id);
+            if(!atleta) return;
+            document.getElementById('modalScoreId').value = atleta.id;
+            document.getElementById('modalScoreNombre').innerText = `${atleta.nombre} (#${atleta.dorsal})`;
+            document.getElementById('modalInputTiempo').value = atleta.score || '';
+            document.getElementById('modalInputPen').value = atleta.penalizacion || '';
+            document.getElementById('modalInputNotas').value = atleta.notas || '';
+            document.getElementById('modalEditScore').style.display = 'flex';
+        }
+
+        async function guardarScoreRace() {
+            let id = document.getElementById('modalScoreId').value;
+            let scoreVal = document.getElementById('modalInputTiempo').value.trim();
+            let penVal = document.getElementById('modalInputPen').value.trim();
+            let notasVal = document.getElementById('modalInputNotas').value.trim();
             
+            document.getElementById('mainLoader').style.display = 'block';
+            cerrarModal('modalEditScore');
+
+            await supabaseClient.from('atletas').update({ score: scoreVal, penalizacion: penVal, notas: notasVal }).eq('id', id);
+            
+            let ref = atletasLocales.find(a => a.id === id);
+            if(ref) { ref.score = scoreVal; ref.penalizacion = penVal; ref.notas = notasVal; }
+
+            document.getElementById('mainLoader').style.display = 'none';
+            procesarYRenderizar();
+        }
+
+        // Modal Heats
+        function abrirModalEditHeat(id, nombre, heatActual) {
+            document.getElementById('modalAtletaId').value = id;
+            document.getElementById('modalAtletaNombre').innerText = nombre;
+            document.getElementById('modalInputHeat').value = heatActual && heatActual !== 'Sin Asignar' ? heatActual : '';
+            document.getElementById('modalEditHeat').style.display = 'flex';
+        }
+
+        async function guardarEdicionHeat() {
+            let id = document.getElementById('modalAtletaId').value;
+            let nuevoHeat = document.getElementById('modalInputHeat').value.trim() || 'Sin Asignar';
+            
+            document.getElementById('mainLoader').style.display = 'block';
+            cerrarModal('modalEditHeat');
+
+            await supabaseClient.from('atletas').update({ heat: nuevoHeat }).eq('id', id);
+            let ref = atletasLocales.find(a => a.id === id);
+            if(ref) ref.heat = nuevoHeat;
+
+            document.getElementById('mainLoader').style.display = 'none';
+            renderizarGrillaHeats();
+        }
+
+        // --- LÓGICA DE HEATS RACE (NUMERACIÓN CONTINUA Y HORARIOS) ---
+        async function generarHeatsRace(sexoFiltro, cantidadHeats, prefijo, startNum) {
+            if(!confirm(`¿Agrupar a los atletas de sexo ${sexoFiltro} en ${cantidadHeats} Heats, comenzando desde el Heat ${startNum}?`)) return;
             document.getElementById('mainLoader').style.display = 'block';
 
             let grupo = atletasLocales.filter(a => a.sexo === sexoFiltro);
-            
-            // Ordenar de menor a mayor edad
             grupo.sort((a, b) => {
                 let eA = calcularEdad(a.fechaNac); let eB = calcularEdad(b.fechaNac);
                 if(eA === 'N/A') eA = 999; if(eB === 'N/A') eB = 999;
@@ -275,22 +368,24 @@
             let actualizaciones = [];
 
             grupo.forEach((atleta, i) => {
-                let numeroDeHeat = Math.floor(i / atletasPorHeat) + 1;
-                if(numeroDeHeat > cantidadHeats) numeroDeHeat = cantidadHeats; // Evitar que se pase del límite
-                actualizaciones.push({ id: atleta.id, heat: prefijo + numeroDeHeat });
+                let numeroSecuencial = startNum + Math.floor(i / atletasPorHeat);
+                let heatFinal = prefijo + numeroSecuencial;
+                actualizaciones.push({ id: atleta.id, heat: heatFinal });
             });
 
-            // Guardamos en Supabase en bloque
             for(let upd of actualizaciones) {
                 await supabaseClient.from('atletas').update({ heat: upd.heat }).eq('id', upd.id);
-                // Actualizar local
                 let ref = atletasLocales.find(a => a.id === upd.id);
                 if(ref) ref.heat = upd.heat;
             }
 
             document.getElementById('mainLoader').style.display = 'none';
             renderizarGrillaHeats();
-            alert(`✅ Se han generado ${cantidadHeats} Heats para la categoría ${sexoFiltro} exitosamente.`);
+        }
+
+        function guardarHorarioLocal(heatKey, valorHora) {
+            horariosHeats[heatKey] = valorHora;
+            localStorage.setItem('horariosRaceLaRuta', JSON.stringify(horariosHeats));
         }
 
         function renderizarGrillaHeats() {
@@ -301,7 +396,6 @@
                 heatsMap[h].push(a);
             });
 
-            // Ordenamos los heats: Primero las F (F-1, F-2), luego M (M-1, M-2), etc.
             let heatsKeys = Object.keys(heatsMap).sort((a, b) => {
                 let numA = parseInt(a.replace(/\D/g, '')) || 999;
                 let numB = parseInt(b.replace(/\D/g, '')) || 999;
@@ -314,14 +408,15 @@
 
             heatsKeys.forEach(hKey => {
                 let atletasDelHeat = heatsMap[hKey];
-                // Ordenarlos por dorsal para visualización
                 atletasDelHeat.sort((a,b) => a.dorsal.localeCompare(b.dorsal, undefined, { numeric: true }));
+
+                let valorHora = horariosHeats[hKey] || '';
 
                 let html = `
                     <div class="heat-card">
                         <div class="heat-header">
-                            <span>HEAT ${hKey}</span>
-                            <span style="font-size: 0.7rem; color:#888;">${atletasDelHeat.length} Atletas</span>
+                            <span class="heat-title">HEAT ${hKey}</span>
+                            <input type="time" class="heat-time-input" value="${valorHora}" onchange="guardarHorarioLocal('${hKey}', this.value)" title="Hora de Salida">
                         </div>
                         <div class="heat-body">
                 `;
@@ -334,7 +429,7 @@
                                 <span style="color:var(--neon); font-weight:900; margin-right:5px;">#${a.dorsal}</span>
                                 <strong>${a.nombre}</strong> <small style="color:#aaa;">(${edadStr} años)</small>
                             </div>
-                            <button class="btn-edit-heat" onclick="abrirModalEdit('${a.id}', '${a.nombre}', '${a.heat}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn-edit-heat" onclick="abrirModalEditHeat('${a.id}', '${a.nombre}', '${a.heat}')"><i class="fas fa-edit"></i></button>
                         </div>
                     `;
                 });
@@ -344,48 +439,21 @@
             });
         }
 
-        // --- EDICIÓN MANUAL DE HEATS ---
-        function abrirModalEdit(id, nombre, heatActual) {
-            document.getElementById('modalAtletaId').value = id;
-            document.getElementById('modalAtletaNombre').innerText = nombre;
-            document.getElementById('modalInputHeat').value = heatActual && heatActual !== 'Sin Asignar' ? heatActual : '';
-            document.getElementById('modalEditHeat').style.display = 'flex';
-        }
-
-        function cerrarModal() {
-            document.getElementById('modalEditHeat').style.display = 'none';
-        }
-
-        async function guardarEdicionHeat() {
-            let id = document.getElementById('modalAtletaId').value;
-            let nuevoHeat = document.getElementById('modalInputHeat').value.trim() || 'Sin Asignar';
-            
-            document.getElementById('mainLoader').style.display = 'block';
-            cerrarModal();
-
-            await supabaseClient.from('atletas').update({ heat: nuevoHeat }).eq('id', id);
-            let ref = atletasLocales.find(a => a.id === id);
-            if(ref) ref.heat = nuevoHeat;
-
-            document.getElementById('mainLoader').style.display = 'none';
-            renderizarGrillaHeats();
-        }
-
-        // --- EXPORTAR PDF DE HEATS ---
-        function imprimirPDFHeats() {
-            let heatsMap = {};
-            atletasLocales.forEach(a => {
-                let h = a.heat || 'Sin Asignar';
-                if(!heatsMap[h]) heatsMap[h] = [];
-                heatsMap[h].push(a);
-            });
-
-            let heatsKeys = Object.keys(heatsMap).sort((a, b) => {
+        // --- EXPORTAR PDFs ---
+        function getSortedHeatsKeys(heatsMap) {
+            return Object.keys(heatsMap).sort((a, b) => {
                 let numA = parseInt(a.replace(/\D/g, '')) || 999;
                 let numB = parseInt(b.replace(/\D/g, '')) || 999;
                 if (a.charAt(0) !== b.charAt(0)) return a.localeCompare(b);
                 return numA - numB;
             });
+        }
+
+        // PDF 1: Salidas Públicas (El que ya teníamos)
+        function imprimirPDFHeats() {
+            let heatsMap = {};
+            atletasLocales.forEach(a => { let h = a.heat || 'Sin Asignar'; if(!heatsMap[h]) heatsMap[h] = []; heatsMap[h].push(a); });
+            let heatsKeys = getSortedHeatsKeys(heatsMap);
 
             let html = `
             <html><head><title>Heats_Salida_Race</title>
@@ -410,10 +478,11 @@
             heatsKeys.forEach(hKey => {
                 let grupo = heatsMap[hKey];
                 grupo.sort((a,b) => a.dorsal.localeCompare(b.dorsal, undefined, { numeric: true }));
+                let horaTex = horariosHeats[hKey] ? ` | Salida: ${horariosHeats[hKey]}` : '';
                 
                 html += `
                 <div class="heat-container">
-                    <div class="heat-title">HEAT ${hKey} <span style="float:right; font-size:9pt; color:white; margin-top:3px;">${grupo.length} Atletas</span></div>
+                    <div class="heat-title">HEAT ${hKey} ${horaTex} <span style="float:right; font-size:9pt; color:white; margin-top:3px;">${grupo.length} Atletas</span></div>
                     <table>
                         <tr>
                             <th style="width:80px;">Dorsal</th>
@@ -423,22 +492,82 @@
                         </tr>
                 `;
                 grupo.forEach(a => {
+                    html += `<tr><td class="dorsal">#${a.dorsal}</td><td><strong>${a.nombre}</strong></td><td>${a.sexo}</td><td>${calcularEdad(a.fechaNac)} años</td></tr>`;
+                });
+                html += `</table></div>`;
+            });
+            html += `</body><script>window.print();<\/script></html>`;
+            let win = window.open('', '', 'width=900,height=700');
+            win.document.write(html); win.document.close();
+        }
+
+        // PDF 2: Planilla de Jueces (Para anotar tiempos)
+        function imprimirPDFPlanilla() {
+            let heatsMap = {};
+            atletasLocales.forEach(a => { let h = a.heat || 'Sin Asignar'; if(!heatsMap[h]) heatsMap[h] = []; heatsMap[h].push(a); });
+            let heatsKeys = getSortedHeatsKeys(heatsMap);
+
+            let html = `
+            <html><head><title>Planilla_Jueces_Race</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700;900&display=swap');
+                @page { size: A4 landscape; margin: 10mm; } 
+                body { font-family: 'Montserrat', sans-serif; color: #111; font-size: 10pt; }
+                h1 { text-align: center; color: #111; font-weight: 900; margin-bottom: 5px; text-transform: uppercase; font-size: 16pt; }
+                h3 { text-align: center; color: #555; margin-top: 0; font-weight: 700; font-size: 11pt; margin-bottom: 15px;}
+                .heat-container { margin-bottom: 25px; page-break-inside: avoid; border: 2px solid #111;}
+                .heat-title { background: #111; color: white; padding: 10px; font-weight: 900; font-size: 11pt; text-transform: uppercase; display:flex; justify-content:space-between; }
+                table { width: 100%; border-collapse: collapse; }
+                th { background: #eee; padding: 10px; text-align: left; font-size: 9pt; border-bottom: 2px solid #ccc; border-right: 1px solid #ccc; text-transform: uppercase;}
+                td { padding: 12px 10px; border-bottom: 1px solid #ddd; border-right: 1px solid #ddd; height: 35px;}
+                .dorsal { font-weight: 900; font-family: monospace; font-size: 11pt; width: 60px; text-align:center;}
+                .nombre { font-weight: 700; width: 220px; }
+                .empty-cell { width: 120px; }
+                .notes-cell { width: auto; }
+            </style>
+            </head><body>
+            <h1>LA RUTA GARAGE</h1>
+            <h3>PLANILLA OFICIAL DE JUECES - MODALIDAD RACE</h3>
+            `;
+
+            heatsKeys.forEach(hKey => {
+                let grupo = heatsMap[hKey];
+                grupo.sort((a,b) => a.dorsal.localeCompare(b.dorsal, undefined, { numeric: true }));
+                let horaTex = horariosHeats[hKey] ? `HORA OFICIAL: ${horariosHeats[hKey]}` : 'HORA OFICIAL: __:__';
+                
+                html += `
+                <div class="heat-container">
+                    <div class="heat-title">
+                        <span>HEAT ${hKey}</span>
+                        <span>${horaTex}</span>
+                    </div>
+                    <table>
+                        <tr>
+                            <th>Dorsal</th>
+                            <th>Atleta</th>
+                            <th>Hora Salida</th>
+                            <th>Hora Llegada</th>
+                            <th>Tiempo Total</th>
+                            <th>Notas / Penalización</th>
+                        </tr>
+                `;
+                grupo.forEach(a => {
                     html += `
                         <tr>
                             <td class="dorsal">#${a.dorsal}</td>
-                            <td><strong>${a.nombre}</strong></td>
-                            <td>${a.sexo}</td>
-                            <td>${calcularEdad(a.fechaNac)} años</td>
+                            <td class="nombre">${a.nombre}</td>
+                            <td class="empty-cell"></td>
+                            <td class="empty-cell"></td>
+                            <td class="empty-cell"></td>
+                            <td class="notes-cell"></td>
                         </tr>
                     `;
                 });
                 html += `</table></div>`;
             });
-
             html += `</body><script>window.print();<\/script></html>`;
-            let win = window.open('', '', 'width=900,height=700');
-            win.document.write(html);
-            win.document.close();
+            let win = window.open('', '', 'width=1100,height=700');
+            win.document.write(html); win.document.close();
         }
 
         window.onload = inicializar;

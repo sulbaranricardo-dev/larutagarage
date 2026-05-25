@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Póster IG | La Ruta Garage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { 
+            --neon: #d8ff5e; 
+            --bg: #000000; /* Fondo totalmente negro para contraste */
+            /* Estilo Glassmorphism Pro */
+            --glass: rgba(20, 20, 20, 0.7); 
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --blur: blur(15px);
+        }
+
+        /* RESET PARA CAPTURA PERFECTA */
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background-color: var(--bg);
+            /* Usamos tipografía premium si está disponible, sino Montserrat */
+            font-family: 'RBNo3.1', 'Montserrat', sans-serif; 
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* CONTROLES DEL ADMINISTRADOR (No salen en la captura) */
+        .admin-controls {
+            background: #111;
+            padding: 15px;
+            width: 100%;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            position: sticky;
+            top: 0;
+            z-index: 9999;
+        }
+        .btn-pill { 
+            padding: 10px 20px; 
+            background: #222; 
+            color: #aaa; 
+            border: 1px solid #444; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 0.8rem; 
+            text-transform: uppercase; 
+            margin: 0 5px;
+            transition: 0.3s;
+        }
+        .btn-pill.active { background: var(--neon); color: black; border-color: var(--neon); font-weight: 900; }
+        .info-msg { color: #888; font-size: 0.8rem; margin-top: 10px; }
+
+        /* --- CONTENEDOR DEL PÓSTER (DIMENSIONES INSTAGRAM 3:4) --- */
+        #poster-container {
+            width: 1080px; /* Ancho exacto IG */
+            /* Min-height para asegurar proporción 3:4 (1080x1440) 
+               Si hay muchos atletas, crecerá hacia abajo, lo cual está bien para historias o carruseles */
+            min-height: 1440px; 
+            padding: 60px 40px; /* Márgenes de seguridad para IG */
+            background-color: var(--bg);
+            /* Textura de fondo sutil de La Ruta */
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.95)),
+                url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FbglarutawebsiteBlack.jpg?alt=media&token=8e8d0ddb-b8a4-43f0-8199-98d31beaf078');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER DEL PÓSTER */
+        .poster-header { text-align: center; margin-bottom: 50px; position: relative; }
+        .poster-header img { width: 150px; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(216, 255, 94, 0.5)); }
+        .poster-header h1 { font-weight: 900; color: white; font-size: 40px; text-transform: uppercase; margin: 0; letter-spacing: 4px; }
+        .poster-header h2 { font-weight: 600; color: var(--neon); font-size: 20px; text-transform: uppercase; margin: 5px 0 0 0; letter-spacing: 2px; }
+
+        /* --- LISTA DE ATLETAS (ESTILO LEADERBOARD IG) --- */
+        #leaderboard-list { display: flex; flex-direction: column; gap: 15px; }
+
+        /* ITEM INDIVIDUAL (GLASSMORPHISM) */
+        .athlete-card {
+            background: var(--glass);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Brillo de neón sutil en el borde izquierdo */
+        .athlete-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 4px;
+            background-color: transparent;
+        }
+
+        /* SECCIÓN IZQUIERDA: POSICIÓN Y AVATAR */
+        .card-left { display: flex; align-items: center; gap: 20px; flex: 1; }
+        
+        .rank-box { width: 60px; text-align: center; }
+        .rank-number { font-weight: 900; font-size: 36px; color: #fff; }
+        .rank-icon { font-size: 32px; }
+
+        .avatar-box { position: relative; }
+        .avatar-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #333; background: #222; }
+        
+        .dorsal-tag {
+            position: absolute;
+            bottom: -8px; right: -8px;
+            background: var(--bg);
+            color: var(--neon);
+            font-weight: 900;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--neon);
+            font-family: monospace;
+        }
+
+        /* SECCIÓN CENTRAL: DATOS PERSONALES */
+        .card-center { flex: 3; display: flex; flex-direction: column; gap: 4px; }
+        .athlete-name { font-size: 22px; font-weight: 900; text-transform: uppercase; color: white; letter-spacing: 1px; }
+        .athlete-meta { font-size: 12px; color: #aaa; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+        .athlete-box { font-size: 14px; color: var(--neon); font-weight: 700; display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+
+        /* SECCIÓN DERECHA: TIEMPO */
+        .card-right { flex: 1; text-align: right; }
+        .time-display { font-weight: 900; font-size: 28px; color: white; font-family: 'Montserrat', monospace; }
+
+        /* --- ESTILOS DE PODIO (COLORES SOLICITADOS) --- */
+        
+        /* ORO #1 */
+        .athlete-card.top-1 { border-color: rgba(255, 215, 0, 0.3); box-shadow: 0 0 30px rgba(255, 215, 0, 0.15); }
+        .athlete-card.top-1::before { background-color: #ffd700; box-shadow: 0 0 15px #ffd700; }
+        .top-1 .rank-number { color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        .top-1 .rank-icon { color: #ffd700; }
+        .top-1 .avatar-img { border-color: #ffd700; }
+        .top-1 .time-display { color: #ffd700; }
+
+        /* PLATA #2 */
+        .athlete-card.top-2 { border-color: rgba(192, 192, 192, 0.2); }
+        .athlete-card.top-2::before { background-color: #c0c0c0; }
+        .top-2 .rank-number { color: #c0c0c0; }
+        .top-2 .avatar-img { border-color: #c0c0c0; }
+
+        /* BRONCE #3 */
+        .athlete-card.top-3 { border-color: rgba(205, 127, 50, 0.2); }
+        .athlete-card.top-3::before { background-color: #cd7f32; }
+        .top-3 .rank-number { color: #cd7f32; }
+        .top-3 .avatar-img { border-color: #cd7f32; }
+
+        /* LOADER */
+        .poster-loader { text-align: center; padding: 100px; color: var(--neon); font-size: 2rem; font-weight: 900; }
+
+        /* MEDIA QUERY PARA IMPRESIÓN/CAPTURA (Oculta controles) */
+        @media print {
+            .admin-controls { display: none !important; }
+            body { background: #000; }
+            #poster-container { box-shadow: none; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-controls">
+        <div class="filter-group">
+            <span class="filter-label" style="color:white; font-size:0.9rem; font-weight:900;">GENERAR PÓSTER GENERAL RACE:</span>
+            <div class="filter-row" style="margin-top:10px;">
+                <button class="btn-pill active" id="sex-Masculino" onclick="cambiarSexo('Masculino')">Hombres ♂</button>
+                <button class="btn-pill" id="sex-Femenino" onclick="cambiarSexo('Femenino')">Mujeres ♀</button>
+            </div>
+        </div>
+        <div class="info-msg">
+            <i class="fas fa-info-circle"></i> Usa una extensión como "Full Page Screen Capture" o las herramientas de desarrollador de Chrome (Ctrl+Shift+I -> Ctrl+Shift+P -> "Capture full size screenshot") para guardar la imagen perfecta de 1080px de ancho.
+        </div>
+    </div>
+
+    <div id="poster-loader" class="poster-loader">
+        <i class="fas fa-circle-notch fa-spin"></i> CALCULANDO LÍDERES GENERALES...
+    </div>
+
+    <div id="poster-container" style="display:none;">
+        
+        <div class="poster-header">
+            <img src="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FLogo%20Icono%20Verde.png?alt=media&token=07ce2638-9667-4bad-8de1-c38abc5112f8" alt="Logo">
+            <h1>LA RUTA GARAGE</h1>
+            <h2 id="poster-subtitle">TABLA GENERAL RACE - HOMBRES</h2>
+        </div>
+
+        <div id="leaderboard-list">
+            </div>
+
+    </div>
+
+    <script>
+        // MISMA CONFIGURACIÓN DE SUPABASE
+        const SUPABASE_URL = 'https://hzywpjzvlvdxscgtebvi.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eXdwanp2bHZkeHNjZ3RlYnZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNjI0OTQsImV4cCI6MjA5NDYzODQ5NH0.L7gdDpxOD7N1gpSoCVI0FEiwxR44sG8XwAORYm16sEM';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let atletas = [];
+        let sexoActual = 'Masculino'; // Por defecto hombres
+
+        // REUTILIZAMOS TUS FUNCIONES LÓGICAS EXACTAS
+        function convertirDriveUrl(url) {
+            if (!url || url.trim() === "") return "https://ui-avatars.com/api/?name=LRG&background=222&color=fff";
+            let match = url.match(/\/d\/(.*?)\//);
+            return match && match[1] ? `https://drive.google.com/thumbnail?id=${match[1]}&sz=w300-h300` : url; // sz=300 para mejor calidad en foto
+        }
+
+        function calcularEdad(fechaNacStr) {
+            if (!fechaNacStr) return 'N/A';
+            let nacimiento = new Date(fechaNacStr);
+            if (isNaN(nacimiento.getTime())) return 'N/A';
+            let hoy = new Date();
+            let edad = hoy.getFullYear() - nacimiento.getFullYear();
+            let m = hoy.getMonth() - nacimiento.getMonth();
+            if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) { edad--; }
+            return edad;
+        }
+
+        function scoreToSecondsRace(scoreStr) {
+            if (!scoreStr || scoreStr.trim() === "") return Infinity;
+            let partes = scoreStr.split(':');
+            if (partes.length === 2) return (parseInt(partes[0]) || 0) * 60 + parseFloat(partes[1] || 0);
+            let num = parseFloat(scoreStr);
+            return isNaN(num) ? Infinity : num;
+        }
+
+        async function inicializarPoster() {
+            // Cargar TODOS los Atletas
+            const { data: dataAtletas } = await supabaseClient.from('atletas').select('*');
+            if(dataAtletas) atletas = dataAtletas;
+            
+            document.getElementById('poster-loader').style.display = 'none';
+            document.getElementById('poster-container').style.display = 'flex';
+            procesarYRenderizarPoster();
+        }
+
+        function cambiarSexo(nuevoSexo) {
+            sexoActual = nuevoSexo;
+            // Actualizar botones UI
+            document.querySelectorAll('.btn-pill').forEach(b => b.classList.remove('active'));
+            document.getElementById(`sex-${nuevoSexo}`).classList.add('active');
+            
+            // Actualizar subtítulo del póster
+            const textoSexo = nuevoSexo === 'Masculino' ? 'HOMBRES' : 'MUJERES';
+            document.getElementById('poster-subtitle').innerText = `TABLA GENERAL RACE - ${textoSexo}`;
+            
+            procesarYRenderizarPoster();
+        }
+
+        function procesarYRenderizarPoster() {
+            // FILTRAR SOLO RACE Y EL SEXO SELECCIONADO
+            let filtrados = atletas.filter(a => {
+                if (!a.modalidad || !a.modalidad.toLowerCase().includes('race')) return false;
+                return a.sexo === sexoActual;
+            });
+
+            // ORDENAR POR TIEMPO (Menor a Mayor)
+            filtrados.sort((a, b) => {
+                let sA = scoreToSecondsRace(a.score);
+                let sB = scoreToSecondsRace(b.score);
+                if (sA !== sB) return sA - sB;
+                // Desempate por Dorsal
+                return a.dorsal.localeCompare(b.dorsal, undefined, { numeric: true });
+            });
+
+            const listaUl = document.getElementById('leaderboard-list');
+            listaUl.innerHTML = '';
+
+            filtrados.forEach((atleta, index) => {
+                let tieneScore = atleta.score && atleta.score.trim() !== "";
+                if (!tieneScore) return; // En el póster solo mostramos a los que terminaron
+
+                let rankNumber = index + 1;
+                let clasePodio = "";
+                let contenidoRank = `<span class="rank-number">${rankNumber}</span>`;
+
+                // Lógica de Podio Solicitada
+                if (rankNumber === 1) { 
+                    clasePodio = "top-1"; 
+                    contenidoRank = `<span class="rank-icon"><i class="fas fa-crown"></i></span>`; 
+                }
+                else if (rankNumber === 2) { clasePodio = "top-2"; }
+                else if (rankNumber === 3) { clasePodio = "top-3"; }
+
+                const boxAtleta = atleta.box && atleta.box.trim() !== "" ? atleta.box : 'Independiente';
+                const edadAtleta = calcularEdad(atleta.fechaNac);
+
+                // Crear elemento HTML estilo IG con Glassmorphism
+                const cardDiv = document.createElement('div');
+                cardDiv.className = `athlete-card ${clasePodio}`;
+                cardDiv.innerHTML = `
+                    <div class="card-left">
+                        <div class="rank-box">
+                            ${contenidoRank}
+                        </div>
+                        <div class="avatar-box">
+                            <img src="${convertirDriveUrl(atleta.foto)}" alt="${atleta.nombre}" class="avatar-img" onerror="this.src='https://ui-avatars.com/api/?name=${atleta.nombre}&background=222&color=fff'">
+                            <span class="dorsal-tag">#${atleta.dorsal}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-center">
+                        <div class="athlete-name">${atleta.nombre}</div>
+                        <div class="athlete-meta">Edad: ${edadAtleta} | Sexo: ${atleta.sexo}</div>
+                        <div class="athlete-box"><i class="fas fa-map-marker-alt"></i> ${boxAtleta}</div>
+                    </div>
+                    
+                    <div class="card-right">
+                        <div class="time-display">${atleta.score}</div>
+                    </div>
+                `;
+                listaUl.appendChild(cardDiv);
+            });
+        }
+
+        // Correr al cargar
+        window.onload = inicializarPoster;
+    </script>
+</body>
+</html>

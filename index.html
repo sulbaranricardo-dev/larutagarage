@@ -5,306 +5,402 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Ruta Garage | Official Event</title>
     <link rel="icon" type="image/png" href="https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/La%20Ruta%20Garage%2FFavicon.png?alt=media&token=0e2d4383-2c9b-4005-9b46-943b40c0637d">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root {
             --neon: #d8ff5e; 
-            --neon-glow: rgba(216, 255, 94, 0.4);
-            --bg: #050505;
-            --surface: rgba(20, 20, 20, 0.6);
-            --glass: rgba(0, 0, 0, 0.7);
+            --neon-glow: rgba(216, 255, 94, 0.5);
+            --bg: #030303;
+            --surface-gradient: linear-gradient(145deg, rgba(25, 25, 25, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%);
+            --glass: rgba(5, 5, 5, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
             background-color: var(--bg);
-            color: white;
+            color: #ffffff;
             font-family: 'Montserrat', sans-serif;
             overflow-x: hidden;
             scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- NAVBAR EVOLUCIONADO --- */
+        /* --- CUSTOM SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--neon); }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px var(--neon-glow); }
+            50% { box-shadow: 0 0 30px var(--neon-glow), 0 0 10px var(--neon); }
+            100% { box-shadow: 0 0 15px var(--neon-glow); }
+        }
+
+        /* --- NAVBAR --- */
         nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 5%;
+            padding: 15px 5%;
             background: var(--glass);
-            border-bottom: 1px solid rgba(216, 255, 94, 0.1);
-            position: sticky;
+            border-bottom: 1px solid var(--glass-border);
+            position: fixed;
+            width: 100%;
             top: 0;
             z-index: 1000;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
         }
 
         .logo-container { display: flex; align-items: center; text-decoration: none; }
-        .nav-logo { height: 45px; width: auto; display: block; transition: 0.3s; }
-        .nav-logo:hover { transform: scale(1.05) rotate(-3deg); }
+        .nav-logo { height: 40px; width: auto; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .nav-logo:hover { transform: scale(1.1) rotate(-3deg); }
 
         .nav-links {
             display: flex;
-            gap: 25px;
+            gap: 35px;
             align-items: center;
-            margin: 0;
-            padding: 0;
             list-style: none;
         }
 
         .nav-links a {
             text-decoration: none;
-            color: #aaa;
-            font-size: 0.75rem;
+            color: #a0a0a0;
+            font-size: 0.8rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             transition: 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
             position: relative;
-            padding: 10px 0;
+            padding: 5px 0;
         }
 
-        .nav-links a i { font-size: 0.9rem; transition: 0.3s; }
+        .nav-links a i { font-size: 1rem; transition: 0.3s; }
 
         .nav-links a:hover, .nav-links a.active { color: white; }
-        .nav-links a:hover i, .nav-links a.active i { color: var(--neon); text-shadow: 0 0 10px var(--neon-glow); }
+        .nav-links a:hover i, .nav-links a.active i { color: var(--neon); text-shadow: 0 0 15px var(--neon-glow); transform: translateY(-2px); }
         
         .nav-links a::after {
             content: '';
             position: absolute;
             width: 0; height: 2px;
-            bottom: 0; left: 0;
+            bottom: -5px; left: 0;
             background-color: var(--neon);
             box-shadow: 0 0 10px var(--neon-glow);
-            transition: width 0.3s;
+            transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+            border-radius: 2px;
         }
         .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
 
-        .btn-neon-nav {
-            padding: 10px 20px;
-            background: var(--neon);
-            color: black;
-            font-weight: 900;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px var(--neon-glow);
-            transition: 0.4s;
-            font-size: 0.7rem;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .btn-neon-nav:hover { transform: translateY(-2px); box-shadow: 0 5px 20px var(--neon-glow); background: white; }
-
         /* --- HERO SECTION --- */
         .hero {
-            height: 90vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: linear-gradient(0deg, var(--bg) 0%, rgba(0,0,0,0.3) 100%),
-                        url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/Intop%2FBGWEBSITE.jpg?alt=media&token=9c2d429e-7842-42a0-abac-58d2544b1557') center/cover fixed;
+            background: linear-gradient(180deg, rgba(3, 3, 3, 0.4) 0%, rgba(3, 3, 3, 0.95) 100%),
+                        url('https://firebasestorage.googleapis.com/v0/b/d-clan-athletes.firebasestorage.app/o/DSC04333.jpg?alt=media&token=fc4a6586-982d-498c-9a36-56c960e7758f') center/cover no-repeat fixed;
             padding: 0 20px;
+            position: relative;
+        }
+
+        .hero-content {
+            animation: fadeInUp 1s ease-out forwards;
+            max-width: 900px;
+            z-index: 2;
         }
 
         .hero h1 {
             font-weight: 900;
-            font-size: clamp(2.2rem, 8vw, 4.5rem);
-            margin: 10px 0;
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            margin: 15px 0;
             text-transform: uppercase;
             letter-spacing: -2px;
-            line-height: 1;
+            line-height: 1.1;
+            text-shadow: 0px 10px 30px rgba(0,0,0,0.8);
         }
 
         .hero h1 span { 
             color: var(--neon); 
-            text-shadow: 0 0 20px var(--neon-glow); 
+            text-shadow: 0 0 25px var(--neon-glow); 
+            display: inline-block;
+        }
+
+        .hero p {
+            color: #d1d1d1;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            margin: 25px auto;
+            line-height: 1.8;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
         }
 
         /* --- BOTONES HERO --- */
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
         .btn-neon {
-            margin-top: 10px;
-            padding: 18px 50px;
+            padding: 18px 40px;
             background: var(--neon);
-            color: black;
-            font-weight: 900;
+            color: #000;
+            font-weight: 800;
             text-decoration: none;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            border-radius: 8px;
-            box-shadow: 0 0 20px var(--neon-glow);
-            transition: 0.4s;
-            display: inline-block;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .btn-neon:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px var(--neon-glow);
-            background: white;
-        }
-
-        /* --- CARRUSEL MARCAS ALIADAS --- */
-        .sponsors-wrapper {
-            background: #050505;
-            padding: 40px 0;
-            border-top: 1px solid rgba(216, 255, 94, 0.1);
+            letter-spacing: 1.5px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(216, 255, 94, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.9rem;
             position: relative;
-        }
-
-        .sponsors-title {
-            text-align: center;
-            font-size: 0.7rem;
-            color: #aaa;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-top: 0;
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
-
-        .sponsors-carousel {
-            display: flex;
             overflow: hidden;
-            position: relative;
-            width: 100%;
+            border: 2px solid var(--neon);
         }
 
-        .sponsors-carousel::before,
-        .sponsors-carousel::after {
-            content: "";
+        .btn-neon::before {
+            content: '';
             position: absolute;
-            top: 0;
-            width: 80px;
-            height: 100%;
-            z-index: 2;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-neon:hover:not(.disabled) {
+            transform: translateY(-5px) scale(1.02);
+            background: #fff;
+            border-color: #fff;
+            box-shadow: 0 15px 35px var(--neon-glow);
+        }
+
+        .btn-neon:hover:not(.disabled)::before { left: 100%; }
+
+        .btn-neon.disabled {
+            background: rgba(20, 20, 20, 0.5);
+            border: 2px solid rgba(216, 255, 94, 0.3);
+            color: rgba(216, 255, 94, 0.6);
+            backdrop-filter: blur(10px);
+            box-shadow: none;
+            cursor: not-allowed;
             pointer-events: none;
         }
 
-        .sponsors-carousel::before {
-            left: 0;
-            background: linear-gradient(to right, #050505 0%, transparent 100%);
-        }
-
-        .sponsors-carousel::after {
-            right: 0;
-            background: linear-gradient(to left, #050505 0%, transparent 100%);
-        }
-
-        .sponsors-track {
-            display: flex;
-            align-items: center;
-            gap: 60px;
-            padding-right: 60px;
-            animation: scroll-sponsors 20s linear infinite;
-        }
-
-        .sponsors-track img {
-            height: 45px;
-            max-width: 180px;
-            object-fit: contain;
-            filter: grayscale(100%);
-            opacity: 0.5;
-            transition: 0.3s;
-        }
-
-        .sponsors-track img:hover {
-            filter: grayscale(0%);
-            opacity: 1;
-        }
-
-        @keyframes scroll-sponsors {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
-        }
-
         /* --- ESTADÍSTICAS --- */
+        .stats-section {
+            padding: 100px 5%;
+            position: relative;
+        }
+
         .section-title {
             text-align: center;
             font-weight: 900;
-            font-size: 1.8rem;
-            margin: 80px 0 40px;
+            font-size: 2.2rem;
+            margin-bottom: 60px;
             color: #fff;
-            letter-spacing: 4px;
+            letter-spacing: 6px;
             text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 4px;
+            background: var(--neon);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+            box-shadow: 0 0 15px var(--neon-glow);
         }
 
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            padding: 0 10% 80px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .hex-stat {
-            background: var(--surface);
-            backdrop-filter: blur(10px);
-            padding: 40px 20px;
+            background: var(--surface-gradient);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 50px 30px;
             text-align: center;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: 0.4s;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s ease;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hex-stat::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--neon);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+            transform-origin: left;
         }
 
         .hex-stat:hover { 
-            border-color: var(--neon); 
-            transform: translateY(-10px);
-            background: rgba(216, 255, 94, 0.05);
+            transform: translateY(-12px);
+            border-color: rgba(216, 255, 94, 0.3);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 20px rgba(216, 255, 94, 0.05);
         }
+
+        .hex-stat:hover::before { transform: scaleX(1); }
 
         .hex-stat i { 
             color: var(--neon); 
-            font-size: 2.5rem; 
-            margin-bottom: 15px; 
+            font-size: 3rem; 
+            margin-bottom: 20px; 
             display: block; 
-            filter: drop-shadow(0 0 10px var(--neon-glow));
+            filter: drop-shadow(0 0 15px var(--neon-glow));
+            transition: 0.3s;
         }
 
-        .hex-stat h2 { font-weight: 900; font-size: 2.5rem; margin: 5px 0; }
-        .hex-stat p { color: #aaa; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+        .hex-stat:hover i { transform: scale(1.1); }
+
+        .hex-stat h2 { 
+            font-weight: 900; 
+            font-size: 3.5rem; 
+            margin: 10px 0; 
+            background: linear-gradient(to right, #fff, #bbb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hex-stat p { 
+            color: #888; 
+            font-size: 0.9rem; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            font-weight: 600; 
+        }
+
+        /* --- ACCIONES FINALES --- */
+        .actions {
+            display: flex;
+            justify-content: center;
+            padding: 0 10% 80px;
+        }
 
         .btn-outline {
-            padding: 15px 30px;
-            border: 2px solid var(--neon);
-            color: var(--neon);
+            padding: 18px 40px;
+            background: transparent;
+            border: 2px solid var(--glass-border);
+            color: #fff;
             text-decoration: none;
-            font-weight: 900;
-            font-size: 0.8rem;
-            border-radius: 8px;
-            transition: 0.3s;
+            font-weight: 800;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            transition: all 0.4s ease;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            backdrop-filter: blur(10px);
         }
 
-        .btn-outline:hover { background: var(--neon); color: black; box-shadow: 0 0 20px var(--neon-glow); }
+        .btn-outline:hover { 
+            border-color: var(--neon); 
+            color: var(--neon); 
+            box-shadow: 0 0 30px rgba(216, 255, 94, 0.15) inset; 
+            transform: translateY(-3px);
+        }
 
         footer {
-            padding: 60px 10%;
+            padding: 50px 10% 120px; /* Padding bottom extra por el nav móvil */
             background: #000;
             text-align: center;
             border-top: 1px solid #111;
-            color: #444;
-            font-size: 0.8rem;
+            color: #555;
+            font-size: 0.85rem;
             font-weight: 600;
+            letter-spacing: 1px;
+            line-height: 2;
         }
+
+        footer span { color: #333; font-weight: 800; letter-spacing: 3px; }
 
         /* --- RESPONSIVE --- */
         @media (max-width: 1000px) {
-            nav { padding: 10px 3%; }
-            .nav-links { gap: 15px; }
-            .nav-links a { font-size: 0.7rem; letter-spacing: 1px; }
+            .nav-links { gap: 20px; }
+            .nav-links a { font-size: 0.75rem; letter-spacing: 1px; }
+            .hex-stat h2 { font-size: 2.8rem; }
         }
 
         @media (max-width: 800px) {
-            nav { flex-direction: column; gap: 10px; padding: 15px; }
-            .nav-links { flex-wrap: wrap; justify-content: center; gap: 10px 20px; }
-            .hero h1 { font-size: 2.3rem; }
+            /* Barra estilo píldora inferior */
+            nav { 
+                top: auto; 
+                bottom: 25px; 
+                left: 50%; 
+                transform: translateX(-50%);
+                width: 90%; 
+                max-width: 400px;
+                border-radius: 60px; 
+                flex-direction: row; 
+                justify-content: center; 
+                padding: 12px 25px; 
+                background: rgba(15, 15, 15, 0.85);
+                border: 1px solid rgba(216, 255, 94, 0.15);
+                box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.5);
+            }
+            .logo-container { display: none; }
+            .nav-links { width: 100%; justify-content: space-between; gap: 0; }
+            .nav-links a { 
+                flex-direction: column; 
+                gap: 6px; 
+                font-size: 0.65rem; 
+                letter-spacing: 1px;
+                padding: 8px 10px;
+            }
+            .nav-links a::after { display: none; } /* Ocultar línea hover en móvil */
+            .nav-links a.active { color: var(--neon); }
+            
+            .hero-content { padding-top: 50px; }
+            .hero h1 { font-size: 2.8rem; }
+            .hero p { font-size: 0.95rem; text-align: justify; text-align-last: center; }
+            .hero-buttons { flex-direction: column; width: 100%; padding: 0 10px; gap: 15px; }
+            .btn-neon { width: 100%; text-align: center; }
+            
+            .stats-container { gap: 25px; }
+            .hex-stat { padding: 40px 20px; }
+            .btn-outline { width: 100%; text-align: center; font-size: 0.8rem; padding: 15px 20px; }
+            footer { padding-bottom: 110px; }
         }
     </style>
 </head>
@@ -319,74 +415,50 @@
             <li><a href="la-ruta.html"><i class="fas fa-info-circle"></i>La Ruta</a></li>
             <li><a href="faq.html"><i class="fas fa-question-circle"></i>FAQ</a></li>
         </ul>
-        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon-nav"><i class="fas fa-user-plus"></i>Inscríbete!</a>
     </nav>
 
     <section class="hero">
-        <p id="hero-tag" style="letter-spacing: 10px; font-weight: 300; color: var(--neon); text-transform: uppercase; margin-bottom: 0;">¡INSCRIPCIONES ABIERTAS!</p>
-        
-        <h1>UN PLAN. <span>UNA RUTA.</span> UNA META.</h1>
-        <p style="max-width: 700px; color: #ccc; margin-top: 20px; line-height: 1.8; font-weight: 300;">
-            Vuelve la competencia que pone a prueba tus límites. Maturín se prepara para recibir a los mejores atletas en una jornada de pura potencia y resistencia.
-        </p>
-        <a href="https://www.larutagarage.com/inscripcion" class="btn-neon" id="hero-btn-reg">INSCRIBIRME AHORA</a>
-    </section>
-
-    <div class="sponsors-wrapper">
-        <h3 class="sponsors-title">Marcas Aliadas</h3>
-        <div class="sponsors-carousel">
-            <div class="sponsors-track">
-                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
-                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
-                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
-                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
-                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
-                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
-                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
-                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
-                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
+        <div class="hero-content">
+            <h1>¡LA RUTA HA <span>TERMINADO!</span></h1>
+            <p>
+                Finalizó nuestra segunda edición con una energía increíble. Ya puedes buscar tus fotos en la galería oficial. ¡No olvides etiquetarnos en tus redes sociales para compartir los mejores momentos de la competencia!
+            </p>
+            
+            <div class="hero-buttons">
+                <a href="https://drive.google.com/drive/folders/1wJhbMWEBOfvQknwnHcWzCYhoeqZtpERO?usp=sharing" target="_blank" class="btn-neon">Ruta Race 2º Edición - Ver Fotos</a>
+                <a href="#" class="btn-neon disabled">Ruta CrossFit - Ver Fotos (Próximamente)</a>
             </div>
-            <div class="sponsors-track">
-                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
-                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
-                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
-                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
-                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
-                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
-                <img src="https://i.ibb.co/7xcymgPx/Cix-copia.png" alt="Cix">
-                <img src="https://i.ibb.co/ZzgFKKdn/Encabezado-Correo.png" alt="Correo">
-                <img src="https://i.ibb.co/v6WfVq2Z/Blast-Logo-copia-Peque-o.png" alt="Blast">
-            </div>
-        </div>
-    </div>
-
-    <h2 class="section-title">MEMORIAS 2025</h2>
-    <section class="stats-container">
-        <div class="hex-stat">
-            <i class="fas fa-user-ninja"></i>
-            <h2>206+</h2>
-            <p>Atletas</p>
-        </div>
-        <div class="hex-stat">
-            <i class="fas fa-handshake"></i>
-            <h2>36+</h2>
-            <p>Patrocinantes</p>
-        </div>
-        <div class="hex-stat">
-            <i class="fas fa-users"></i>
-            <h2>600+</h2>
-            <p>Visitantes</p>
         </div>
     </section>
 
-    <div class="actions" style="display: flex; justify-content: center; gap: 20px; padding: 60px 10%; flex-wrap: wrap;">
-        <a href="https://drive.google.com/drive/u/0/folders/1jvNeuXgAO6jxJWh3sJoujsYOiHGAZHnr" target="_blank" class="btn-outline">VER GALERÍA DE FOTOS</a>
-        <a href="https://wa.link/5j0kc7" target="_blank" class="btn-outline">¿QUIERES SER NUESTRO ALIADO?</a>
+    <section class="stats-section">
+        <h2 class="section-title">MEMORIAS 2025</h2>
+        <div class="stats-container">
+            <div class="hex-stat">
+                <i class="fas fa-user-ninja"></i>
+                <h2>+232</h2>
+                <p>Atletas</p>
+            </div>
+            <div class="hex-stat">
+                <i class="fas fa-handshake"></i>
+                <h2>+40</h2>
+                <p>Patrocinantes</p>
+            </div>
+            <div class="hex-stat">
+                <i class="fas fa-video"></i>
+                <h2>+6000</h2>
+                <p>Visitas del Stream</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="actions">
+        <a href="https://drive.google.com/drive/u/0/folders/1jvNeuXgAO6jxJWh3sJoujsYOiHGAZHnr" target="_blank" class="btn-outline">VER FOTOS DE PRIMERA EDICIÓN</a>
     </div>
 
     <footer>
         &copy; 2026 LA RUTA GARAGE | MATURIN, VENEZUELA <br>
-        <span style="color: #222;">DESIGNED FOR CHAMPIONS</span>
+        <span>DESIGNED FOR CHAMPIONS</span>
     </footer>
 
 </body>

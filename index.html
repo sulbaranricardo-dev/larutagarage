@@ -45,12 +45,6 @@
             100% { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 15px var(--neon-glow); }
-            50% { box-shadow: 0 0 30px var(--neon-glow), 0 0 10px var(--neon); }
-            100% { box-shadow: 0 0 15px var(--neon-glow); }
-        }
-
         /* --- NAVBAR --- */
         nav {
             display: flex;
@@ -192,24 +186,14 @@
             transition: 0.5s;
         }
 
-        .btn-neon:hover:not(.disabled) {
+        .btn-neon:hover {
             transform: translateY(-5px) scale(1.02);
             background: #fff;
             border-color: #fff;
             box-shadow: 0 15px 35px var(--neon-glow);
         }
 
-        .btn-neon:hover:not(.disabled)::before { left: 100%; }
-
-        .btn-neon.disabled {
-            background: rgba(20, 20, 20, 0.5);
-            border: 2px solid rgba(216, 255, 94, 0.3);
-            color: rgba(216, 255, 94, 0.6);
-            backdrop-filter: blur(10px);
-            box-shadow: none;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
+        .btn-neon:hover::before { left: 100%; }
 
         /* --- ESTADÍSTICAS --- */
         .stats-section {
@@ -342,7 +326,7 @@
         }
 
         footer {
-            padding: 50px 10% 120px; /* Padding bottom extra por el nav móvil */
+            padding: 50px 10% 120px;
             background: #000;
             text-align: center;
             border-top: 1px solid #111;
@@ -363,7 +347,6 @@
         }
 
         @media (max-width: 800px) {
-            /* Barra estilo píldora inferior */
             nav { 
                 top: auto; 
                 bottom: 25px; 
@@ -388,7 +371,7 @@
                 letter-spacing: 1px;
                 padding: 8px 10px;
             }
-            .nav-links a::after { display: none; } /* Ocultar línea hover en móvil */
+            .nav-links a::after { display: none; } 
             .nav-links a.active { color: var(--neon); }
             
             .hero-content { padding-top: 50px; }
@@ -426,13 +409,13 @@
             
             <div class="hero-buttons">
                 <a href="https://drive.google.com/drive/folders/1wJhbMWEBOfvQknwnHcWzCYhoeqZtpERO?usp=sharing" target="_blank" class="btn-neon">Ruta Race 2º Edición - Ver Fotos</a>
-                <a href="#" class="btn-neon disabled">Ruta CrossFit - Ver Fotos (Próximamente)</a>
+                <a href="https://drive.google.com/drive/folders/1RVVolsRpy3QAUV2cva0ZurHsfhj7G5fG?usp=sharing" target="_blank" class="btn-neon">Ruta CrossFit 2º Edición - Ver Fotos</a>
             </div>
         </div>
     </section>
 
     <section class="stats-section">
-        <h2 class="section-title">MEMORIAS 2026</h2>
+        <h2 class="section-title">MEMORIAS 2025</h2>
         <div class="stats-container">
             <div class="hex-stat">
                 <i class="fas fa-user-ninja"></i>
